@@ -1,5 +1,4 @@
 # Copyright (C) 2011 American Registry for Internet Numbers
-# $Id$
 
 require 'rexml/document'
 require 'whois_xml_object'
