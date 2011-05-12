@@ -37,6 +37,10 @@ TEXT_XML
     assert_equal( "Text", a.b.to_s )
     assert_equal( "2", a.b.c[0].y )
     assert_equal( "C2", a.b.c[1].to_s )
+    assert_equal( 1, [ a.b ].length )
+    assert_equal( 1, a.b.to_ary().length )
+    assert_equal( 2, a.b.c.length )
+    assert_equal( 2, a.b.c.to_ary.length )
 
   end
 

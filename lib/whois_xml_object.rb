@@ -38,6 +38,12 @@ module ARINr
         return REXML::XPath.match(@element, "text()").join.squeeze("\n\t").strip
       end
 
+      # Simply returns this object as an array containing itself.
+      # This method was added by Andy
+      def to_ary
+        return [ self ]
+      end
+
     end
 
   end
