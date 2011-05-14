@@ -9,21 +9,29 @@ module ARINr
   # Handles configuration of the application
   class Config
 
-    attr_accessor :logger, :config
+    attr_accessor :logger, :config, :whois_cache_dir
 
-    def initialize
+    # Intializes the configuration with a place to look for the config file
+    # If the file doesn't exist, a default is used.
+    # Main routines will do something like ARINr::Config.new( ARINr::Config.formulate_app_data_dir() )
+    def initialize app_data
 
-      @app_data = Config.formulate_app_data_dir()
+      @app_data = app_data
       @logger = ARINr::Logger.new
 
       config_file_name = Config.formulate_config_file_name( @app_data )
-      if File.exists?( config_file_name )
-        @config = YAML.load( config_file_name )
-        configure_logger
+      if File.exist?( config_file_name )
+        @config = YAML.load( File.open( config_file_name ) )
+      else
+        @config = YAML.load( @@yaml_config )
       end
 
-      @logger.mesg "ARINr v.0.1 -- Copyright (C) 2011 American Registry for Internet Numbers"
+      configure_logger()
+    end
 
+    # Setups work space for the application and lays down default config
+    # If directory is nil, then it uses its own value
+    def setup_workspace
 
       if ! File.exist?( @app_data )
 
@@ -33,6 +41,9 @@ module ARINr
         f.puts @@yaml_config
         f.close
 
+        @whois_cache_dir = File.join( @app_data, "whois_cache" )
+        Dir.mkdir( @whois_cache_dir )
+
       else
 
         @logger.mesg "Using configuration found in " + @app_data
@@ -41,6 +52,7 @@ module ARINr
 
     end
 
+    # Configures the logger
     def configure_logger
       output = @config[ "output" ]
       return if output == nil
@@ -117,10 +129,13 @@ output:
   # If specified, data goest to this file
   # otherwise, leave it commented out to go to stdout
   #data_file: /tmp/ARINr.data
+
+whois:
+
+  # the base URL for the Whois-RWS service
+  url: http://whois.arin.net
 YAML_CONFIG
 
   end
-
-  Config.new
 
 end
