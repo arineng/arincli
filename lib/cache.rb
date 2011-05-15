@@ -1,5 +1,6 @@
 # Copyright (C) 2011 American Registry for Internet Numbers
 
+require 'time'
 require 'uri'
 
 module ARINr
@@ -21,9 +22,11 @@ module ARINr
       end
 
       def get url
+        return nil if @config.config[ "whois" ][ "use_cache" ] == false
         safe = Cache.make_safe( url )
         file_name = File.join( @config.whois_cache_dir, safe )
-        if( File.exist( file_name ) )
+        expiry = Time.now - @config.config[ "whois" ][ "cache_expiry" ]
+        if( File.exist( file_name ) && File.mtime( file_name) > expiry )
           @config.logger.mesg( "Getting " + url + " from cache." )
           f = File.open( file_name, "r" )
           data = ''

@@ -134,6 +134,19 @@ whois:
 
   # the base URL for the Whois-RWS service
   url: http://whois.arin.net
+
+  # The maximum age an item from the cache will be used.
+  # This value is in seconds
+  cache_expiry: 3600
+
+  # The maximum age an item will be in the cache before it is evicted
+  # when the cache is cleaned.
+  # This value is in seconds
+  cache_eviction: 604800
+
+  # Use the cache.
+  # Values are true or false
+  use_cache: true
 YAML_CONFIG
 
   end
