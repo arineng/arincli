@@ -26,7 +26,7 @@ module ARINr
         safe = Cache.make_safe( url )
         file_name = File.join( @config.whois_cache_dir, safe )
         expiry = Time.now - @config.config[ "whois" ][ "cache_expiry" ]
-        if( File.exist( file_name ) && File.mtime( file_name) > expiry )
+        if( File.exist?( file_name ) && File.mtime( file_name) > expiry )
           @config.logger.mesg( "Getting " + url + " from cache." )
           f = File.open( file_name, "r" )
           data = ''
@@ -38,6 +38,22 @@ module ARINr
         end
         #else
         return nil
+      end
+
+      def clean
+        cache_files = Dir::entries( @config.whois_cache_dir )
+        eviction = Time.now - @config.config[ "whois" ][ "cache_eviction" ]
+        eviction_count = 0
+        cache_files.each do |file|
+          full_file_name = File.join( @config.whois_cache_dir, file )
+          if !file.start_with?( "." ) && File::mtime( full_file_name ) > eviction
+            @config.logger.trace( "Evicting " + full_file_name )
+            File::unlink( full_file_name )
+            eviction_count += 1
+          end
+        end
+        @config.logger.mesg( "Evicted " + eviction_count.to_s + " files from the cache" )
+        return eviction_count
       end
 
       def self.make_safe( url )

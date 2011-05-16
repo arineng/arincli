@@ -6,7 +6,7 @@ require 'test/unit'
 require 'config'
 require 'logger'
 
-class ConfigText < Test::Unit::TestCase
+class ConfigTest < Test::Unit::TestCase
 
   @work_dir = nil
 
@@ -72,6 +72,7 @@ NOT_DEFAULT_CONFIG
     dir = File.join( @work_dir, "test_setup_workspace" )
 
     c = ARINr::Config.new( dir )
+    c.logger.message_level = "NONE"
     c.setup_workspace
 
     assert( File.exist?( File.join( dir, "config.yaml" ) ) )

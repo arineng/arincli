@@ -1,0 +1,17 @@
+All options
+
+--message=ALL|SOME|NON
+--data==TERSE|NORMAL|EXTRA
+--messages-out=/dev/stderr
+--data-out=/dev/stdout
+
+--help (all support but different for each)
+
+ARINr Whois
+
+arinw --no-cache --cache-expiry=300 --type=POC|NET|ORG|ASN|DEL
+      --query=SEARCH|LOOKUP
+
+ARINr Control
+
+arinc --list-cache --clean-cache --empty-cache --cache-eviction=300

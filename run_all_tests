@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby -I lib
+
+Dir["test/*.rb"].each { |file| require file }

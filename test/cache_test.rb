@@ -56,7 +56,7 @@ NET_XML
 
     dir = File.join( @work_dir, "test_put" )
     c = ARINr::Config.new( dir )
-    c.logger.message_level = "ALL"
+    c.logger.message_level = "NONE"
     c.setup_workspace
 
     cache = ARINr::Whois::Cache.new c
@@ -73,6 +73,98 @@ NET_XML
     end
     f.close
     assert_equal( @net_xml, data )
+
+  end
+
+  def test_get_hit
+
+    dir = File.join( @work_dir, "test_get_hit" )
+    c = ARINr::Config.new( dir )
+    c.logger.message_level = "NONE"
+    c.setup_workspace
+
+    c.config[ "whois" ][ "use_cache" ] = true
+    c.config[ "whois" ][ "cache_expiry" ] = 9000 # really any number above 1 should be good
+    cache = ARINr::Whois::Cache.new c
+    url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
+    cache.put( url, @net_xml )
+
+    data = cache.get( url )
+    assert_equal( @net_xml, data )
+
+  end
+
+  def test_get_no_hit
+
+    dir = File.join( @work_dir, "test_get_no_hit" )
+    c = ARINr::Config.new( dir )
+    c.logger.message_level = "NONE"
+    c.setup_workspace
+
+    c.config[ "whois" ][ "use_cache" ] = true
+    c.config[ "whois" ][ "cache_expiry" ] = 9000 # really any number above 1 should be good
+    cache = ARINr::Whois::Cache.new c
+    url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
+    cache.put( url, @net_xml )
+
+    data = cache.get( "http://whois.arin.net/rest/net/NET-192-136-136-0-2" )
+    assert_nil( data )
+
+  end
+
+  def test_get_expired_hit
+
+    dir = File.join( @work_dir, "test_get_expired_hit" )
+    c = ARINr::Config.new( dir )
+    c.logger.message_level = "NONE"
+    c.setup_workspace
+
+    c.config[ "whois" ][ "use_cache" ] = true
+    c.config[ "whois" ][ "cache_expiry" ] = -19000 # really any number less than -1 should be good
+    cache = ARINr::Whois::Cache.new c
+    url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
+    cache.put( url, @net_xml )
+
+    data = cache.get( url )
+    assert_nil( data )
+
+  end
+
+  def test_no_use_cache
+
+    dir = File.join( @work_dir, "test_no_use_cache" )
+    c = ARINr::Config.new( dir )
+    c.logger.message_level = "NONE"
+    c.setup_workspace
+
+    c.config[ "whois" ][ "use_cache" ] = false
+    c.config[ "whois" ][ "cache_expiry" ] = 9000 # really any number above 1 should be good
+    cache = ARINr::Whois::Cache.new c
+    url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
+    cache.put( url, @net_xml )
+
+    data = cache.get( url )
+    assert_nil( data )
+
+  end
+
+  def test_clean
+
+    dir = File.join( @work_dir, "test_clean" )
+    c = ARINr::Config.new( dir )
+    c.logger.message_level = "NONE"
+    c.setup_workspace
+
+    c.config[ "whois" ][ "use_cache" ] = true
+    c.config[ "whois" ][ "cache_expiry" ] = -19000 # really any number less than -1 should be good
+    cache = ARINr::Whois::Cache.new c
+    url = "http://whois.arin.net/rest/net/NET-192-136-136-0-"
+    cache.put( url + "1", @net_xml )
+    cache.put( url + "2", @net_xml )
+    cache.put( url + "3", @net_xml )
+
+    count = cache.clean
+    assert_equal( 3, count )
 
   end
 
