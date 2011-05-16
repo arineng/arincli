@@ -33,8 +33,8 @@ class ConfigText < Test::Unit::TestCase
     assert_nil( c.config[ "output" ][ "data_file" ] )
     assert_equal( "http://whois.arin.net", c.config[ "whois" ][ "url" ] )
 
-    assert_equal( "NORMAL_DATA", c.logger.data_amount.to_s )
-    assert_equal( "SOME_MESSAGES", c.logger.message_level.to_s )
+    assert_equal( "NORMAL", c.logger.data_amount )
+    assert_equal( "SOME", c.logger.message_level )
 
   end
 
@@ -62,8 +62,8 @@ NOT_DEFAULT_CONFIG
     assert_nil( c.config[ "output" ][ "data_file" ] )
     assert_equal( "http://whois.test.arin.net", c.config[ "whois" ][ "url" ] )
 
-    assert_equal( "TERSE_DATA", c.logger.data_amount.to_s )
-    assert_equal( "NO_MESSAGES", c.logger.message_level.to_s )
+    assert_equal( "TERSE", c.logger.data_amount )
+    assert_equal( "NONE", c.logger.message_level )
 
   end
 

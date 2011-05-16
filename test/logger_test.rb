@@ -14,6 +14,13 @@ class LoggerTest < Test::Unit::TestCase
     assert_raise( ArgumentError ) { logger.terse( "Network Handle", "NET-192-136-136-0-1" ) }
   end
 
+  def test_fake_data_amount
+    logger = ARINr::Logger.new
+    logger.data_out = StringIO.new
+    logger.data_amount = "FAKE"
+    assert_raise( ArgumentError ) { logger.terse( "Network Handle", "NET-192-136-136-0-1" ) }
+  end
+
   def test_log_extra_at_default
     logger = ARINr::Logger.new
     logger.data_out = StringIO.new
@@ -111,6 +118,13 @@ class LoggerTest < Test::Unit::TestCase
     logger = ARINr::Logger.new
     logger.message_out = StringIO.new
     logger.message_level = ARINr::MessageLevel::NO_SUCH_LEVEL
+    assert_raise( ArgumentError ) { logger.mesg( "Network Handle" ) }
+  end
+
+  def test_fake_message_level
+    logger = ARINr::Logger.new
+    logger.message_out = StringIO.new
+    logger.message_level = "FAKE"
     assert_raise( ArgumentError ) { logger.mesg( "Network Handle" ) }
   end
 

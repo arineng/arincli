@@ -21,6 +21,10 @@ module ARINr
       @hash.each { |key,value| yield( key, value ) }
     end
 
+    def Enum.has_value? value
+      @hash.value?( value )
+    end
+
   end
 
 end

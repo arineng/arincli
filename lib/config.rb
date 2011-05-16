@@ -57,31 +57,17 @@ module ARINr
       output = @config[ "output" ]
       return if output == nil
 
-      messages = output[ "messages" ]
-      if( messages != nil )
-        @logger.message_level = nil
-        ARINr::MessageLevel.each { |key,value|
-          if( messages == value )
-            @logger.message_level = key
-          end
-        }
-        raise ArgumentError, "Invalid message level in configuration file" if @logger.message_level == nil
-      end
+      @logger.message_level = output[ "messages" ]
+      @logger.validate_message_level
+
       messages_file = output[ "messages_file" ]
       if( messages_file != nil )
         @logger.message_out = File.open( messages_file, "w+" )
       end
 
-      data = output[ "data" ]
-      if( data != nil )
-        @logger.data_amount=nil
-        ARINr::DataAmount.each { |key,value|
-          if( data == value )
-            @logger.data_amount=key
-          end
-        }
-        raise ArgumentError, "Invalid data amount in configuration file" if @logger.data_amount == nil
-      end
+      @logger.data_amount = output[ "data" ]
+      @logger.validate_data_amount
+
       data_file = output[ "data_file" ]
       if( data_file != nil )
         @logger.data_out= File.open( data_file, "w+" )

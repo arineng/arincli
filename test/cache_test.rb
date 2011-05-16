@@ -56,6 +56,7 @@ NET_XML
 
     dir = File.join( @work_dir, "test_put" )
     c = ARINr::Config.new( dir )
+    c.logger.message_level = "ALL"
     c.setup_workspace
 
     cache = ARINr::Whois::Cache.new c

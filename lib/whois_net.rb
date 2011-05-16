@@ -36,8 +36,8 @@ module ARINr
         logger.extra( "Organization Reference", orgRef.to_s )
         logger.datum( "Registration Date", Time.parse( registrationDate.to_s ).rfc2822 )
         logger.datum( "Last Update Date", Time.parse( updateDate.to_s ).rfc2822 )
-        comment.line.to_ary.each { |commentLine|
-          s = format( "%2d  %s", commentLine.number, commentLine.to_s )
+        comment.line.to_ary.each { |comment_line|
+          s = format( "%2d  %s", comment_line.number, comment_line.to_s )
           logger.datum( "Comment", s )
         } if comment != nil
       end

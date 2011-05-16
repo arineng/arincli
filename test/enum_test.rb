@@ -47,6 +47,14 @@ class EnumTest < Test::Unit::TestCase
 
   end
 
+  def test_has_color_red
+    assert( Color.has_value?( 2 ) )
+  end
+
+  def test_has_color_green
+    assert( !Color.has_value?( 5 ) )
+  end
+
   def test_level_high
 
     my_level = Level::HIGH
@@ -71,6 +79,14 @@ class EnumTest < Test::Unit::TestCase
     assert_equal( true, a.include?( "LOW" ) )
     assert_equal( true, a.include?( "INBETWEEN" ) )
 
+  end
+
+  def test_has_level_high
+    assert( Level.has_value?( "HIGH" ) )
+  end
+
+  def test_has_level_bottom
+    assert( ! Level.has_value?( "BOTTOM" ) )
   end
 
 end

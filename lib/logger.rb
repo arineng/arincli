@@ -48,10 +48,20 @@ module ARINr
 
     end
 
+    def validate_message_level
+      raise ArgumentError, "Message log level not defined" if @message_level == nil
+      raise ArgumentError, "Unknown message log level '" + @message_level.to_s + "'" if ! MessageLevel.has_value?( @message_level )
+    end
+
+    def validate_data_amount
+      raise ArgumentError, "Data log level not defined" if @data_amount == nil
+      raise ArgumentError, "Unknown data log level '" + @data_amount.to_s + "'" if ! DataAmount.has_value?( @data_amount )
+    end
+
     # Outputs at the :SOME_MESSAGES level
     def mesg message
 
-      raise ArgumentError, "Unknown message log level" if @message_level == nil
+      validate_message_level()
 
       if( @message_level != MessageLevel::NO_MESSAGES )
         @message_out.puts( "# " + message.to_s )
@@ -62,7 +72,7 @@ module ARINr
     # Outputs at the :ALL_MESSAGES level
     def trace message
 
-      raise ArgumentError, "Unknown message log level" if @message_level == nil
+      validate_message_level()
 
       if( @message_level != MessageLevel::NO_MESSAGES && @message_level != MessageLevel::SOME_MESSAGES )
         @message_out.puts( "## " + message.to_s )
@@ -73,7 +83,7 @@ module ARINr
     # Outputs a datum at :TERSE_DATA level
     def terse item_name, item_value
 
-      raise ArgumentError, "Unknown data log level" if @data_amount == nil
+      validate_data_amount()
 
       log_data( item_name, item_value )
 
@@ -82,7 +92,7 @@ module ARINr
     # Outputs a data at :NORMAL_DATA level
     def datum item_name, item_value
 
-      raise ArgumentError, "Unknown data log level" if @data_amount == nil
+      validate_data_amount()
 
       if( @data_amount != DataAmount::TERSE_DATA )
         log_data( item_name, item_value )
@@ -92,7 +102,7 @@ module ARINr
 
     def extra item_name, item_value
 
-      raise ArgumentError, "Unknown data log level" if @data_amount == nil
+      validate_data_amount()
 
       if( @data_amount != DataAmount::TERSE_DATA && @data_amount != DataAmount::NORMAL_DATA )
         log_data( item_name, item_value )
