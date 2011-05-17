@@ -4,7 +4,7 @@
 require 'test/unit'
 require 'rexml/document'
 require 'whois_net'
-require 'logger'
+require 'arinr_logger'
 require 'stringio'
 
 # Test the XML parsing of the WhoisNet class

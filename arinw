@@ -2,5 +2,8 @@
 
 $LOAD_PATH << File.join( File.expand_path(File.dirname(__FILE__) ), 'lib' )
 
-Dir["test/*.rb"].each { |file| require file }
+require 'arinw'
+app = ARINr::Whois::Main.new( ARGV )
+app.run()
+
 

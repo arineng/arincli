@@ -1,21 +1,23 @@
 # Copyright (C) 2011 American Registry for Internet Numbers
 
 require 'fileutils'
-require 'logger'
+require 'arinr_logger'
 require 'yaml'
+require 'ostruct'
 
 module ARINr
 
   # Handles configuration of the application
   class Config
 
-    attr_accessor :logger, :config, :whois_cache_dir
+    attr_accessor :logger, :config, :whois_cache_dir, :options
 
     # Intializes the configuration with a place to look for the config file
     # If the file doesn't exist, a default is used.
     # Main routines will do something like ARINr::Config.new( ARINr::Config.formulate_app_data_dir() )
     def initialize app_data
 
+      @options = OpenStruct.new
       @app_data = app_data
       @logger = ARINr::Logger.new
 

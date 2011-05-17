@@ -3,7 +3,7 @@
 require 'rexml/document'
 require 'whois_xml_object'
 require 'time'
-require 'logger'
+require 'arinr_logger'
 
 module ARINr
 

@@ -1,7 +1,7 @@
 # Copyright (C) 2011 American Registry for Internet Numbers
 
 require 'test/unit'
-require 'logger'
+require 'arinr_logger'
 require 'stringio'
 
 # Tests the logger
