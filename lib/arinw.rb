@@ -8,10 +8,20 @@ require 'base_opts'
 require 'config'
 require 'constants'
 require 'cache'
+require 'enum'
+require 'whois_net'
+require 'whois_poc'
 
 module ARINr
 
   module Whois
+
+    class QueryType < ARINr::Enum
+
+      QueryType.add_item :BY_NET_HANDLE, "NET-HANDLE"
+      QueryType.add_item :BY_POC_HANDLE, "POC-HANDLE"
+
+    end
 
     # The main class for the arinw command.
     class Main < ARINr::BaseOpts
@@ -27,7 +37,7 @@ module ARINr
           opts.separator ""
           opts.separator "Query Options:"
 
-          opts.on( "-U", "--url",
+          opts.on( "-U", "--url URL",
             "The base URL of the RESTful Web Service." ) do |url|
             @config.config[ "whois" ][ "url" ] = url
           end
@@ -49,36 +59,14 @@ module ARINr
 
         add_base_opts( @opts, @config )
 
-        @opts.parse!( args )
-        @config.options.argv = args
-
-      end
-
-      def run
-
-        if( @config.options.help )
-          help()
-        elsif( @config.options.argv == nil || @config.options.argv == [] )
-          help()
+        begin
+          @opts.parse!( args )
+        rescue OptionParser::InvalidArgument => e
+          puts e.message
+          puts "use -h for help"
+          exit
         end
-
-        @config.logger.mesg( ARINr::VERSION )
-        @config.setup_workspace
-        @cache = ARINr::Whois::Cache.new( @config )
-
-      end
-
-      def help
-
-        puts ARINr::VERSION
-        puts ARINr::COPYRIGHT
-        puts <<HELP_SUMMARY
-
-This program uses ARIN's Whois-RWS RESTful API to query ARIN's Whois database.
-
-HELP_SUMMARY
-        puts @opts.help
-        exit
+        @config.options.argv = args
 
       end
 
@@ -99,7 +87,7 @@ HELP_SUMMARY
           req = Net::HTTP::Get.new( url )
           req[ "User-Agent" ] = ARINr::VERSION
           uri = URI.parse( url )
-          res = Net::HTTP.start( url.host, url.port ) do |http|
+          res = Net::HTTP.start( uri.host, uri.port ) do |http|
             http.request( req )
           end
 
@@ -117,8 +105,115 @@ HELP_SUMMARY
 
       end
 
+      def run
+
+        if( @config.options.help )
+          help()
+        elsif( @config.options.argv == nil || @config.options.argv == [] )
+          help()
+        end
+
+        @config.logger.mesg( ARINr::VERSION )
+        @config.setup_workspace
+        @cache = ARINr::Whois::Cache.new( @config )
+
+        if( @config.options.query_type == nil )
+          @config.options.query_type = Main.guess_query( @config.options.argv )
+          if( @config.options.query_type == nil )
+            @config.logger.mesg( "Unable to guess type of query. You must specify it." )
+          else
+            @config.logger.trace( "Assuming query is " + @config.options.query_type )
+          end
+        end
+
+        begin
+          data = get( Main.create_query( @config.options.argv, @config.options.query_type ) )
+          root = REXML::Document.new( data ).root
+          evaluate_response( root )
+          @config.logger.end_run
+        rescue Net::HTTPServerException => e
+          case e.response.code
+            when "404"
+              @config.logger.mesg( "Query yielded no results." )
+            when "503"
+              @config.logger.mesg( "ARIN Whois-RWS is unavailable." )
+          end
+          @config.logger.trace( "Server response code was " + e.response.code )
+        end
+
+      end
+
+      def evaluate_response element
+        if( element.namespace == "http://www.arin.net/whoisrws/core/v1" )
+          case element.name
+            when "net"
+              net = ARINr::Whois::WhoisNet.new( element )
+              net.to_log( @config.logger )
+            when "poc"
+              poc = ARINr::Whois::WhoisPoc.new( element )
+              poc.to_log( @config.logger )
+            else
+              @config.logger.mesg "Response contained an answer this program does not implement."
+          end
+        elsif
+          @config.logger.mesg "Response contained an answer this program does not understand."
+        end
+      end
+
+      def help
+
+        puts ARINr::VERSION
+        puts ARINr::COPYRIGHT
+        puts <<HELP_SUMMARY
+
+This program uses ARIN's Whois-RWS RESTful API to query ARIN's Whois database.
+
+HELP_SUMMARY
+        puts @opts.help
+        exit
+
+      end
+
+      # Evaluates the args and guesses at the type of query.
+      # Args is an array of strings, most likely what is left
+      # over after parsing ARGV
+      def self.guess_query( args )
+        retval = nil
+
+        if( args.length() == 1 )
+
+          case args[ 0 ]
+            when ARINr::NET_HANDLE_REGEX
+              retval = QueryType::BY_NET_HANDLE
+            when ARINr::NET6_HANDLE_REGEX
+              retval = QueryType::BY_NET_HANDLE
+            when ARINr::POC_HANDLE_REGEX
+              retval = QueryType::BY_POC_HANDLE
+          end
+
+        end
+
+        return retval
+      end
+
+      # Creates a query type
+      def self.create_query( args, queryType )
+
+        path = ""
+        case queryType
+          when QueryType::BY_NET_HANDLE
+            path << "rest/net/" << args[ 0 ]
+          when QueryType::BY_POC_HANDLE
+            path << "rest/poc/" << args[ 0 ]
+        end
+
+        return path
+      end
+
+
     end
 
   end
 
 end
+

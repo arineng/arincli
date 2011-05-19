@@ -46,16 +46,37 @@ module ARINr
       @item_name_length = 25
       @item_name_rjust = true
 
+      @message_last_written_to = false
+      @data_last_written_to = false
+
     end
 
     def validate_message_level
       raise ArgumentError, "Message log level not defined" if @message_level == nil
-      raise ArgumentError, "Unknown message log level '" + @message_level.to_s + "'" if ! MessageLevel.has_value?( @message_level )
+      raise ArgumentError, "Unknown message log level '" + @message_level.to_s + "'" if ! MessageLevel.has_value?( @message_level.to_s )
     end
 
     def validate_data_amount
       raise ArgumentError, "Data log level not defined" if @data_amount == nil
-      raise ArgumentError, "Unknown data log level '" + @data_amount.to_s + "'" if ! DataAmount.has_value?( @data_amount )
+      raise ArgumentError, "Unknown data log level '" + @data_amount.to_s + "'" if ! DataAmount.has_value?( @data_amount.to_s )
+    end
+
+    def start_data_item
+      if( @data_last_written_to )
+        @data_out.puts
+      elsif( @data_out == $stdout && @message_out == $stderr && @message_last_written_to )
+        @data_out.puts
+      elsif( @data_out == @message_out && @message_last_written_to )
+        @data_out.puts
+      end
+    end
+
+    def end_data_item
+      #do nothing for now
+    end
+
+    def end_run
+      start_data_item
     end
 
     # Outputs at the :SOME_MESSAGES level
@@ -65,6 +86,7 @@ module ARINr
 
       if( @message_level != MessageLevel::NO_MESSAGES )
         @message_out.puts( "# " + message.to_s )
+        @message_last_written_to = true
       end
 
     end
@@ -76,6 +98,7 @@ module ARINr
 
       if( @message_level != MessageLevel::NO_MESSAGES && @message_level != MessageLevel::SOME_MESSAGES )
         @message_out.puts( "## " + message.to_s )
+        @message_last_written_to = true
       end
 
     end
@@ -119,6 +142,7 @@ module ARINr
           format_string = "%-" + @item_name_length.to_s + "s:  %s"
         end
         @data_out.puts( format( format_string, item_name, item_value ) )
+        @data_last_written_to = true
       end
     end
 

@@ -15,12 +15,17 @@ module ARINr
       opts.separator ""
       opts.separator "Output Options:"
 
-      opts.on( "--messages MESSAGE_LEVEL", [ :NONE, :SOME, :ALL ],
+      opts.on( "--messages MESSAGE_LEVEL",
         "Specify the message level",
-        "  NONE - no messages are to be output",
-        "  SOME - some messages but not all",
-        "  ALL  - all messages to be outupt" ) do |m|
-        config.logger.message_level = m
+        "  none - no messages are to be output",
+        "  some - some messages but not all",
+        "  all  - all messages to be outupt" ) do |m|
+        config.logger.message_level = m.to_s.upcase
+        begin
+          config.logger.validate_message_level
+        rescue
+          raise OptionParser::InvalidArgument, m.to_s
+        end
       end
 
       opts.on( "--messages-out FILE",
@@ -28,12 +33,17 @@ module ARINr
         config.logger.messages_out = f
       end
 
-      opts.on( "--data DATA_AMOUNT", [ :TERSE, :NORMAL, :EXTRA ],
+      opts.on( "--data DATA_AMOUNT",
                "Specify the amount of data",
-               "  TERSE  - enough data to identify the object",
-               "  NORMAL - normal view of data on objects",
-               "  EXTRA  - all data about the object" ) do |d|
-        config.logger.data_amount = d
+               "  terse  - enough data to identify the object",
+               "  normal - normal view of data on objects",
+               "  extra  - all data about the object" ) do |d|
+        config.logger.data_amount = d.to_s.upcase
+        begin
+          config.logger.validate_data_amount
+        rescue
+          raise OptionParser::InvalidArgument, d.to_s
+        end
       end
 
       opts.on( "--data-out FILE",

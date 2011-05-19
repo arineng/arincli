@@ -10,10 +10,11 @@ module ARINr
   module Whois
 
     # Represents a Network in Whois-RWS
-    class Net < ARINr::Whois::WhoisXmlObject
+    class WhoisNet < ARINr::Whois::WhoisXmlObject
 
       # Returns a multiline string for long output
       def to_log( logger )
+        logger.start_data_item
         logger.terse( "IP Address Range", startAddress.to_s() + " - " + endAddress.to_s() )
         logger.terse( "Network Handle", handle.to_s() )
         logger.datum( "Network Name", name.to_s() )
@@ -28,18 +29,19 @@ module ARINr
         originASes.originAS.to_ary.each { |oas|
           logger.datum( "Origin AS", oas.to_s )
         } if originASes != nil
-        logger.datum( "Parent Network Handle", parentNetRef.handle )
-        logger.extra( "Parent Network Name", parentNetRef.name )
-        logger.extra( "Parent Network Reference", parentNetRef.to_s )
+        logger.datum( "Parent Network Handle", parentNetRef.handle ) if parentNetRef != nil
+        logger.extra( "Parent Network Name", parentNetRef.name ) if parentNetRef != nil
+        logger.extra( "Parent Network Reference", parentNetRef.to_s ) if parentNetRef != nil
         logger.datum( "Organization Handle", orgRef.handle )
         logger.terse( "Organization Name", orgRef.name )
         logger.extra( "Organization Reference", orgRef.to_s )
-        logger.datum( "Registration Date", Time.parse( registrationDate.to_s ).rfc2822 )
-        logger.datum( "Last Update Date", Time.parse( updateDate.to_s ).rfc2822 )
+        logger.datum( "Registration Date", Time.parse( registrationDate.to_s ).rfc2822 ) if registrationDate != nil
+        logger.datum( "Last Update Date", Time.parse( updateDate.to_s ).rfc2822 ) if updateDate != nil
         comment.line.to_ary.each { |comment_line|
-          s = format( "%2d  %s", comment_line.number, comment_line.to_s )
+          s = format( "%2d  %s", comment_line.number, comment_line.to_s.sub( /&#xD;/, '')  )
           logger.datum( "Comment", s )
         } if comment != nil
+        logger.end_data_item
       end
 
       def to_s

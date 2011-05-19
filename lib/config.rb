@@ -37,7 +37,7 @@ module ARINr
 
       if ! File.exist?( @app_data )
 
-        @logger.mesg "Creating configuration in " + @app_data
+        @logger.trace "Creating configuration in " + @app_data
         Dir.mkdir( @app_data )
         f = File.open( Config.formulate_config_file_name( @app_data ), "w" )
         f.puts @@yaml_config
@@ -48,7 +48,8 @@ module ARINr
 
       else
 
-        @logger.mesg "Using configuration found in " + @app_data
+        @logger.trace "Using configuration found in " + @app_data
+        @whois_cache_dir = File.join( @app_data, "whois_cache" )
 
       end
 

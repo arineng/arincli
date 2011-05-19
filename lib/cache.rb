@@ -27,7 +27,7 @@ module ARINr
         file_name = File.join( @config.whois_cache_dir, safe )
         expiry = Time.now - @config.config[ "whois" ][ "cache_expiry" ]
         if( File.exist?( file_name ) && File.mtime( file_name) > expiry )
-          @config.logger.mesg( "Getting " + url + " from cache." )
+          @config.logger.trace( "Getting " + url + " from cache." )
           f = File.open( file_name, "r" )
           data = ''
           f.each_line do |line|
