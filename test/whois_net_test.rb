@@ -90,14 +90,14 @@ NET_XML
    Organization Reference:  http://whois.arin.net/rest/org/ARIN
         Registration Date:  Wed, 17 Apr 2002 00:00:00 -0400
          Last Update Date:  Sat, 19 Mar 2011 00:00:00 -0400
-                  Comment:   0  This IP address range is not registered in the ARIN database.
-                  Comment:   1  For details, refer to the APNIC Whois Database via
-                  Comment:   2  WHOIS.APNIC.NET or http://wq.apnic.net/apnic-bin/whois.pl
-                  Comment:   3  ** IMPORTANT NOTE: APNIC is the Regional Internet Registry
-                  Comment:   4  for the Asia Pacific region. APNIC does not operate networks
-                  Comment:   5  using this IP address range and is not able to investigate
-                  Comment:   6  spam or abuse reports relating to these addresses. For more
-                  Comment:   7  help, refer to http://www.apnic.net/apnic-info/whois_search2/abuse-and-spamming
+        Comment (line  0):  This IP address range is not registered in the ARIN database.
+        Comment (line  1):  For details, refer to the APNIC Whois Database via
+        Comment (line  2):  WHOIS.APNIC.NET or http://wq.apnic.net/apnic-bin/whois.pl
+        Comment (line  3):  ** IMPORTANT NOTE: APNIC is the Regional Internet Registry
+        Comment (line  4):  for the Asia Pacific region. APNIC does not operate networks
+        Comment (line  5):  using this IP address range and is not able to investigate
+        Comment (line  6):  spam or abuse reports relating to these addresses. For more
+        Comment (line  7):  help, refer to http://www.apnic.net/apnic-info/whois_search2/abuse-and-spamming
 EXPECTED_LOG
 
     assert_equal( expected, logger.data_out.string )

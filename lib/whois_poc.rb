@@ -1,8 +1,6 @@
 # Copyright (C) 2011 American Registry for Internet Numbers
 
-require 'rexml/document'
 require 'whois_xml_object'
-require 'time'
 require 'arinr_logger'
 
 module ARINr
@@ -28,33 +26,7 @@ module ARINr
         # Company Name
         logger.datum( "Company Name", companyName.to_s() ) if companyName != nil
 
-        # Street Address
-        streetAddress.line.to_ary.each { |address_line|
-          s = format( "%2d  %s", address_line.number, address_line.to_s.sub( /&#xD;/, '') )
-          logger.extra( "Street Address", s )
-        } if streetAddress != nil
-
-        # City
-        logger.extra( "City", city.to_s ) if city != nil
-
-        # State/Province/Region
-        iso3166_2_label = "Region"
-        if( iso3166_1 != nil && iso3166_1.code2.to_s == "US" )
-          iso3166_2_label = "State"
-        elsif( iso3166_1 != nil && iso3166_1.code2.to_s == "CA" )
-          iso3166_2_label = "Province"
-        end
-        logger.extra( iso3166_2_label, iso3166_2.to_s ) if iso3166_2 != nil
-
-        # Country
-        logger.extra( "Country", iso3166_1.name.to_s ) if iso3166_1 != nil
-
-        # Postal Code/ Zip Code
-        postal_code_label = "Postal Code"
-        if( iso3166_1 != nil && iso3166_1.code2.to_s == "US" )
-          postal_code_label = "Zip Code"
-        end
-        logger.extra( postal_code_label, postalCode.to_s ) if postalCode != nil
+        log_mailing_address( logger )
 
         # Email
         emails.email.to_ary.each { |email_addr|
@@ -67,17 +39,9 @@ module ARINr
           logger.extra( phone_label, ph.number.to_s )
         } if phones != nil
 
-        # Registration Date
-        logger.datum( "Registration Date", Time.parse( registrationDate.to_s ).rfc2822 ) if registrationDate != nil
+        log_dates( logger )
 
-        # Updated Date
-        logger.datum( "Last Update Date", Time.parse( updateDate.to_s ).rfc2822 ) if updateDate != nil
-
-        # Comments
-        comment.line.to_ary.each { |comment_line|
-          s = format( "%2d  %s", comment_line.number, comment_line.to_s.sub( /&#xD;/, '') )
-          logger.datum( "Comment", s )
-        } if comment != nil
+        log_comments( logger )
 
         logger.end_data_item
       end
@@ -105,3 +69,4 @@ module ARINr
   end
 
 end
+

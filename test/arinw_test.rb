@@ -2,14 +2,18 @@
 
 require 'test/unit'
 require 'arinw'
+require 'arinr_logger'
 
 class ArinwTest < Test::Unit::TestCase
 
   def test_guess_query
+    logger = ARINr::Logger.new
+    logger.message_out = StringIO.new
+    logger.message_level = ARINr::MessageLevel::NO_MESSAGES
 
-    assert_equal( ARINr::Whois::Main.guess_query( [ "NET-192-136-136-1" ] ), "NET-HANDLE" )
-    assert_equal( ARINr::Whois::Main.guess_query( [ "NET6-2001-500-13-1" ] ), "NET-HANDLE" )
-    assert_equal( ARINr::Whois::Main.guess_query( [ "ALN-ARIN" ] ), "POC-HANDLE" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "NET-192-136-136-1" ], logger ), "NET-HANDLE" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "NET6-2001-500-13-1" ], logger ), "NET-HANDLE" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "ALN-ARIN" ], logger ), "POC-HANDLE" )
 
   end
 

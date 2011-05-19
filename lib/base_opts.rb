@@ -51,6 +51,12 @@ module ARINr
         config.logger.data_out = f
       end
 
+      opts.on( "-V",
+               "Equivalent to --messages all and --data extra" ) do |v|
+        config.logger.data_amount = ARINr::DataAmount::EXTRA_DATA
+        config.logger.message_level = ARINr::MessageLevel::ALL_MESSAGES
+      end
+
       opts.separator ""
       opts.separator "General Options:"
 

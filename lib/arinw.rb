@@ -11,6 +11,7 @@ require 'cache'
 require 'enum'
 require 'whois_net'
 require 'whois_poc'
+require 'whois_org'
 
 module ARINr
 
@@ -20,6 +21,7 @@ module ARINr
 
       QueryType.add_item :BY_NET_HANDLE, "NET-HANDLE"
       QueryType.add_item :BY_POC_HANDLE, "POC-HANDLE"
+      QueryType.add_item :BY_ORG_HANDLE, "ORG-HANDLE"
 
     end
 
@@ -118,9 +120,10 @@ module ARINr
         @cache = ARINr::Whois::Cache.new( @config )
 
         if( @config.options.query_type == nil )
-          @config.options.query_type = Main.guess_query( @config.options.argv )
+          @config.options.query_type = Main.guess_query( @config.options.argv, @config.logger  )
           if( @config.options.query_type == nil )
             @config.logger.mesg( "Unable to guess type of query. You must specify it." )
+            exit
           else
             @config.logger.trace( "Assuming query is " + @config.options.query_type )
           end
@@ -152,6 +155,9 @@ module ARINr
             when "poc"
               poc = ARINr::Whois::WhoisPoc.new( element )
               poc.to_log( @config.logger )
+            when "org"
+              org = ARINr::Whois::WhoisOrg.new( element )
+              org.to_log( @config.logger )
             else
               @config.logger.mesg "Response contained an answer this program does not implement."
           end
@@ -177,18 +183,30 @@ HELP_SUMMARY
       # Evaluates the args and guesses at the type of query.
       # Args is an array of strings, most likely what is left
       # over after parsing ARGV
-      def self.guess_query( args )
+      def self.guess_query( args, logger )
         retval = nil
 
         if( args.length() == 1 )
 
           case args[ 0 ]
             when ARINr::NET_HANDLE_REGEX
+              args[ 0 ] = args[ 0 ].upcase
               retval = QueryType::BY_NET_HANDLE
             when ARINr::NET6_HANDLE_REGEX
+              args[ 0 ] = args[ 0 ].upcase
               retval = QueryType::BY_NET_HANDLE
             when ARINr::POC_HANDLE_REGEX
+              args[ 0 ] = args[ 0 ].upcase
               retval = QueryType::BY_POC_HANDLE
+            when ARINr::ORGL_HANDLE_REGEX
+              args[ 0 ] = args[ 0 ].upcase
+              retval = QueryType::BY_ORG_HANDLE
+            when ARINr::ORGS_HANDLE_REGEX
+              old = args[ 0 ]
+              args[ 0 ] = args[ 0 ].sub( /-O$/i, "" )
+              args[ 0 ].upcase!
+              logger.trace( "Interpretting " + old + " as organization handle for " + args[ 0 ] )
+              retval = QueryType::BY_ORG_HANDLE
           end
 
         end
@@ -205,6 +223,8 @@ HELP_SUMMARY
             path << "rest/net/" << args[ 0 ]
           when QueryType::BY_POC_HANDLE
             path << "rest/poc/" << args[ 0 ]
+          when QueryType::BY_ORG_HANDLE
+            path << "rest/org/" << args[ 0 ]
         end
 
         return path

@@ -1,8 +1,6 @@
 # Copyright (C) 2011 American Registry for Internet Numbers
 
-require 'rexml/document'
 require 'whois_xml_object'
-require 'time'
 require 'arinr_logger'
 
 module ARINr
@@ -35,12 +33,8 @@ module ARINr
         logger.datum( "Organization Handle", orgRef.handle )
         logger.terse( "Organization Name", orgRef.name )
         logger.extra( "Organization Reference", orgRef.to_s )
-        logger.datum( "Registration Date", Time.parse( registrationDate.to_s ).rfc2822 ) if registrationDate != nil
-        logger.datum( "Last Update Date", Time.parse( updateDate.to_s ).rfc2822 ) if updateDate != nil
-        comment.line.to_ary.each { |comment_line|
-          s = format( "%2d  %s", comment_line.number, comment_line.to_s.sub( /&#xD;/, '')  )
-          logger.datum( "Comment", s )
-        } if comment != nil
+        log_dates( logger )
+        log_comments( logger )
         logger.end_data_item
       end
 

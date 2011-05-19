@@ -5,6 +5,7 @@
 
 
 require "rexml/document"
+require 'time'
 
 module ARINr
 
@@ -50,10 +51,79 @@ module ARINr
         return REXML::XPath.match(@element, "text()").join.squeeze("\n\t").strip
       end
 
+      def to_str
+        s = to_s();
+        s.sub!( "&amp;", "&" )
+        s.sub!( "&quot;", '"' )
+        s.sub!( "&lt;", ">" )
+        s.sub!( "&gt;", "<" )
+        s.sub!( "&#xD;", "" )
+        s.sub!( "&#xA;", "" )
+        return s
+      end
+
       # Simply returns this object as an array containing itself.
       # This method was added by Andy
       def to_ary
         return [ self ]
+      end
+
+      def log_mailing_address( logger )
+        log_street_address( logger )
+
+        # City
+        logger.extra( "City", city.to_str ) if city != nil
+
+        log_region( logger )
+
+        # Country
+        logger.extra( "Country", iso3166_1.name.to_str ) if iso3166_1 != nil
+
+        log_postal_code( logger )
+      end
+
+      def log_region( logger )
+        # State/Province/Region
+        iso3166_2_label = "Region"
+        if( iso3166_1 != nil && iso3166_1.code2.to_s == "US" )
+          iso3166_2_label = "State"
+        elsif( iso3166_1 != nil && iso3166_1.code2.to_s == "CA" )
+          iso3166_2_label = "Province"
+        end
+        logger.extra( iso3166_2_label, iso3166_2.to_str ) if iso3166_2 != nil
+      end
+
+      def log_postal_code( logger )
+        # Postal Code/ Zip Code
+        postal_code_label = "Postal Code"
+        if( iso3166_1 != nil && iso3166_1.code2.to_s == "US" )
+          postal_code_label = "Zip Code"
+        end
+        logger.extra( postal_code_label, postalCode.to_str ) if postalCode != nil
+      end
+
+      def log_comments( logger )
+        # Comments
+        comment.line.to_ary.each { |comment_line|
+          s = format( "Comment (line %2d)", comment_line.number )
+          logger.datum( s, comment_line.to_str )
+        } if comment != nil
+      end
+
+      def log_street_address( logger )
+        # Street Address
+        streetAddress.line.to_ary.each { |address_line|
+          s = format( "Street Address (line %2d)", address_line.number )
+          logger.extra( s, address_line.to_str )
+        } if streetAddress != nil
+      end
+
+      def log_dates( logger )
+        # Registration Date
+        logger.datum( "Registration Date", Time.parse( registrationDate.to_s ).rfc2822 ) if registrationDate != nil
+
+        # Updated Date
+        logger.datum( "Last Update Date", Time.parse( updateDate.to_s ).rfc2822 ) if updateDate != nil
       end
 
     end
