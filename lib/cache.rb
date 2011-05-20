@@ -13,12 +13,24 @@ module ARINr
         @config = config
       end
 
-      def put url, data
+      # creates or updates an object in the cache
+      def create_or_update url, data
+        return nil if @config.config[ "whois" ][ "use_cache" ] == false
         safe = Cache.make_safe( url )
         @config.logger.trace( "Persisting " + url + " as " + safe )
         f = File.open( File.join( @config.whois_cache_dir, safe ), "w" )
         f.puts data
         f.close
+      end
+
+      # creates an object in the cache.
+      # if the object already exists in the cache, this does nothing.
+      def create url, data
+        safe = Cache.make_safe( url )
+        file_name = File.join( @config.whois_cache_dir, safe )
+        expiry = Time.now - @config.config[ "whois" ][ "cache_expiry" ]
+        return if( File.exist?( file_name ) && File.mtime( file_name) > expiry )
+        create_or_update( url, data )
       end
 
       def get url

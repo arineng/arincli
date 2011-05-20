@@ -52,16 +52,16 @@ NET_XML
 
   end
 
-  def test_put
+  def test_create_or_update
 
-    dir = File.join( @work_dir, "test_put" )
+    dir = File.join( @work_dir, "test_create_or_update" )
     c = ARINr::Config.new( dir )
     c.logger.message_level = "NONE"
     c.setup_workspace
 
     cache = ARINr::Whois::Cache.new c
     url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
-    cache.put( url, @net_xml )
+    cache.create_or_update( url, @net_xml )
 
     safe = ARINr::Whois::Cache.make_safe( url )
     file_name = File.join( c.whois_cache_dir, safe )
@@ -74,6 +74,53 @@ NET_XML
     f.close
     assert_equal( @net_xml, data )
 
+    # do it again
+    new_xml = @net_xml + "\n**Second**Time**\n"
+    cache.create_or_update( url, new_xml )
+    assert( File.exist?( file_name ) )
+    f = File.open( file_name, "r" )
+    data = ''
+    f.each_line do |line|
+      data += line
+    end
+    f.close
+    assert_equal( new_xml, data )
+  end
+
+  def test_create
+
+    dir = File.join( @work_dir, "test_create" )
+    c = ARINr::Config.new( dir )
+    c.logger.message_level = "NONE"
+    c.setup_workspace
+    c.config[ "whois" ][ "cache_expiry" ] = 9000 # really any number above 1 should be good
+
+    cache = ARINr::Whois::Cache.new c
+    url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
+    cache.create_or_update( url, @net_xml )
+
+    safe = ARINr::Whois::Cache.make_safe( url )
+    file_name = File.join( c.whois_cache_dir, safe )
+    assert( File.exist?( file_name ) )
+    f = File.open( file_name, "r" )
+    data = ''
+    f.each_line do |line|
+      data += line
+    end
+    f.close
+    assert_equal( @net_xml, data )
+
+    # do it again, but the data should be the same as the first time when read back out
+    new_xml = @net_xml + "\n**Second**Time**\n"
+    cache.create( url, new_xml )
+    assert( File.exist?( file_name ) )
+    f = File.open( file_name, "r" )
+    data = ''
+    f.each_line do |line|
+      data += line
+    end
+    f.close
+    assert_equal( @net_xml, data )
   end
 
   def test_get_hit
@@ -87,7 +134,7 @@ NET_XML
     c.config[ "whois" ][ "cache_expiry" ] = 9000 # really any number above 1 should be good
     cache = ARINr::Whois::Cache.new c
     url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
-    cache.put( url, @net_xml )
+    cache.create_or_update( url, @net_xml )
 
     data = cache.get( url )
     assert_equal( @net_xml, data )
@@ -105,7 +152,7 @@ NET_XML
     c.config[ "whois" ][ "cache_expiry" ] = 9000 # really any number above 1 should be good
     cache = ARINr::Whois::Cache.new c
     url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
-    cache.put( url, @net_xml )
+    cache.create_or_update( url, @net_xml )
 
     data = cache.get( "http://whois.arin.net/rest/net/NET-192-136-136-0-2" )
     assert_nil( data )
@@ -123,7 +170,7 @@ NET_XML
     c.config[ "whois" ][ "cache_expiry" ] = -19000 # really any number less than -1 should be good
     cache = ARINr::Whois::Cache.new c
     url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
-    cache.put( url, @net_xml )
+    cache.create_or_update( url, @net_xml )
 
     data = cache.get( url )
     assert_nil( data )
@@ -141,7 +188,7 @@ NET_XML
     c.config[ "whois" ][ "cache_expiry" ] = 9000 # really any number above 1 should be good
     cache = ARINr::Whois::Cache.new c
     url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
-    cache.put( url, @net_xml )
+    cache.create_or_update( url, @net_xml )
 
     data = cache.get( url )
     assert_nil( data )
@@ -159,9 +206,9 @@ NET_XML
     c.config[ "whois" ][ "cache_expiry" ] = -19000 # really any number less than -1 should be good
     cache = ARINr::Whois::Cache.new c
     url = "http://whois.arin.net/rest/net/NET-192-136-136-0-"
-    cache.put( url + "1", @net_xml )
-    cache.put( url + "2", @net_xml )
-    cache.put( url + "3", @net_xml )
+    cache.create_or_update( url + "1", @net_xml )
+    cache.create_or_update( url + "2", @net_xml )
+    cache.create_or_update( url + "3", @net_xml )
 
     count = cache.clean
     assert_equal( 3, count )

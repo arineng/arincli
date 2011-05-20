@@ -24,7 +24,7 @@ module ARINr
         logger.extra( "POC Reference", ref.to_s )
 
         # Company Name
-        logger.datum( "Company Name", companyName.to_s() ) if companyName != nil
+        logger.datum( "Company Name", companyName.to_str() ) if companyName != nil
 
         log_mailing_address( logger )
 

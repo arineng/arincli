@@ -15,6 +15,8 @@ module ARINr
     # into Ruby objects.
     class WhoisXmlObject
 
+      attr_reader :element
+
       def initialize element
         @element = element
         @methods = {}

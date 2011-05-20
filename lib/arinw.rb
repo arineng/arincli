@@ -39,6 +39,13 @@ module ARINr
           opts.separator ""
           opts.separator "Query Options:"
 
+          opts.on( "--pft YES|NO|TRUE|FALSE",
+            "Use a PFT style query." ) do |pft|
+            @config.config[ "whois" ][ "pft" ] = false if pft =~ /no|false/i
+            @config.config[ "whois" ][ "pft" ] = true if pft =~ /yes|true/i
+            raise OptionParser::InvalidArgument, pft.to_s unless pft =~ /yes|no|true|false/i
+          end
+
           opts.on( "-U", "--url URL",
             "The base URL of the RESTful Web Service." ) do |url|
             @config.config[ "whois" ][ "url" ] = url
@@ -52,9 +59,11 @@ module ARINr
             @config.config[ "whois" ][ "cache_expiry" ] = s
           end
 
-          opts.on( "--[no]-cache",
+          opts.on( "--cache YES|NO|TRUE|FALSE",
             "Controls if the cache is used or not." ) do |cc|
-            @config.config[ "whois" ][ "use_cache" ] = cc
+            @config.config[ "whois" ][ "use_cache" ] = false if cc =~ /no|false/i
+            @config.config[ "whois" ][ "use_cache" ] = true if cc =~ /yes|true/i
+            raise OptionParser::InvalidArgument, cc.to_s unless cc =~ /yes|no|true|false/i
           end
 
         end
@@ -96,7 +105,7 @@ module ARINr
           case res
             when Net::HTTPSuccess
               data = res.body
-              @cache.put( url, data )
+              @cache.create_or_update( url, data )
             else
               res.error!
           end
@@ -130,7 +139,10 @@ module ARINr
         end
 
         begin
-          data = get( Main.create_query( @config.options.argv, @config.options.query_type ) )
+          data = get( Main.create_query(
+                          @config.options.argv,
+                          @config.options.query_type,
+                          @config.config[ "whois" ][ "pft" ] ) )
           root = REXML::Document.new( data ).root
           evaluate_response( root )
           @config.logger.end_run
@@ -161,7 +173,9 @@ module ARINr
             else
               @config.logger.mesg "Response contained an answer this program does not implement."
           end
-        elsif
+        elsif( element.namespace == "http://www.arin.net/whoisrws/pft/v1" && element.name == "pft" )
+          handle_pft_response element
+        else
           @config.logger.mesg "Response contained an answer this program does not understand."
         end
       end
@@ -215,21 +229,45 @@ HELP_SUMMARY
       end
 
       # Creates a query type
-      def self.create_query( args, queryType )
+      def self.create_query( args, queryType, pft = false )
 
         path = ""
         case queryType
           when QueryType::BY_NET_HANDLE
             path << "rest/net/" << args[ 0 ]
+            path << "/pft" if pft
           when QueryType::BY_POC_HANDLE
             path << "rest/poc/" << args[ 0 ]
+            path << "/pft" if pft
           when QueryType::BY_ORG_HANDLE
             path << "rest/org/" << args[ 0 ]
+            path << "/pft" if pft
         end
 
         return path
       end
 
+      def handle_pft_response root
+        objs = []
+        root.elements.each( "*/ref" ) do |ref|
+          obj = nil
+          case ref.parent.name
+            when "net"
+              obj = ARINr::Whois::WhoisNet.new( ref.parent )
+            when "poc"
+              obj = ARINr::Whois::WhoisPoc.new( ref.parent )
+            when "org"
+              obj = ARINr::Whois::WhoisOrg.new( ref.parent )
+          end
+          if( obj )
+            @cache.create( obj.ref.to_s, obj.element )
+            objs << obj
+          end
+        end
+        objs.each do |obj|
+          obj.to_log( @config.logger )
+        end
+      end
 
     end
 
