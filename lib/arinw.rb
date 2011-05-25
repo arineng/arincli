@@ -22,6 +22,8 @@ module ARINr
       QueryType.add_item :BY_NET_HANDLE, "NET-HANDLE"
       QueryType.add_item :BY_POC_HANDLE, "POC-HANDLE"
       QueryType.add_item :BY_ORG_HANDLE, "ORG-HANDLE"
+      QueryType.add_item :BY_IP4_ADDR,   "IP4-ADDR"
+      QueryType.add_item :BY_IP6_ADDR,   "IP6-ADDR"
 
     end
 
@@ -221,6 +223,12 @@ HELP_SUMMARY
               args[ 0 ].upcase!
               logger.trace( "Interpretting " + old + " as organization handle for " + args[ 0 ] )
               retval = QueryType::BY_ORG_HANDLE
+            when ARINr::IPV4_REGEX
+              retval = QueryType::BY_IP4_ADDR
+            when ARINr::IPV6_REGEX
+              retval = QueryType::BY_IP6_ADDR
+            when ARINr::IPV6_HEXCOMPRESS_REGEX
+              retval = QueryType::BY_IP6_ADDR
           end
 
         end
@@ -238,9 +246,14 @@ HELP_SUMMARY
             path << "/pft" if pft
           when QueryType::BY_POC_HANDLE
             path << "rest/poc/" << args[ 0 ]
-            path << "/pft" if pft
           when QueryType::BY_ORG_HANDLE
             path << "rest/org/" << args[ 0 ]
+            path << "/pft" if pft
+          when QueryType::BY_IP4_ADDR
+            path << "rest/ip/" << args[ 0 ]
+            path << "/pft" if pft
+          when QueryType::BY_IP6_ADDR
+            path << "rest/ip/" << args[ 0 ]
             path << "/pft" if pft
         end
 
