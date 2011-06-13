@@ -12,6 +12,7 @@ require 'enum'
 require 'whois_net'
 require 'whois_poc'
 require 'whois_org'
+require 'whois_asn'
 
 module ARINr
 
@@ -267,7 +268,7 @@ HELP_SUMMARY
             path << "rest/ip/" << args[ 0 ]
             path << "/pft" if pft
           when QueryType::BY_AS_NUMBER
-            path << "rest/asns;q=" << args[ 0 ]
+            path << "rest/asn/" << args[ 0 ]
             path << "/pft" if pft
         end
 
@@ -285,6 +286,8 @@ HELP_SUMMARY
               obj = ARINr::Whois::WhoisPoc.new( ref.parent )
             when "org"
               obj = ARINr::Whois::WhoisOrg.new( ref.parent )
+            when "asn"
+              obj = ARINr::Whois::WhoisAsn.new( ref.parent )
           end
           if( obj )
             @cache.create( obj.ref.to_s, obj.element )
