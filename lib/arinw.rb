@@ -24,6 +24,7 @@ module ARINr
       QueryType.add_item :BY_ORG_HANDLE, "ORG-HANDLE"
       QueryType.add_item :BY_IP4_ADDR,   "IP4-ADDR"
       QueryType.add_item :BY_IP6_ADDR,   "IP6-ADDR"
+      QueryType.add_item :BY_AS_NUMBER,  "AS-NUMBER"
 
     end
 
@@ -172,6 +173,9 @@ module ARINr
             when "org"
               org = ARINr::Whois::WhoisOrg.new( element )
               org.to_log( @config.logger )
+            when "asn"
+              asn = ARINr::Whois::WhoisAsn.new( element )
+              asn.to_log( @config.logger )
             else
               @config.logger.mesg "Response contained an answer this program does not implement."
           end
@@ -229,6 +233,13 @@ HELP_SUMMARY
               retval = QueryType::BY_IP6_ADDR
             when ARINr::IPV6_HEXCOMPRESS_REGEX
               retval = QueryType::BY_IP6_ADDR
+            when ARINr::AS_REGEX
+              retval = QueryType::BY_AS_NUMBER
+            when ARINr::ASN_REGEX
+              old = args[ 0 ]
+              args[ 0 ] = args[ 0 ].sub( /^AS/i, "" )
+              logger.trace( "Interpretting " + old + " as autonomous system number " + args[ 0 ] )
+              retval = QueryType::BY_AS_NUMBER
           end
 
         end
@@ -254,6 +265,9 @@ HELP_SUMMARY
             path << "/pft" if pft
           when QueryType::BY_IP6_ADDR
             path << "rest/ip/" << args[ 0 ]
+            path << "/pft" if pft
+          when QueryType::BY_AS_NUMBER
+            path << "rest/asns;q=" << args[ 0 ]
             path << "/pft" if pft
         end
 

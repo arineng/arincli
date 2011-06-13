@@ -21,6 +21,10 @@ class ArinwTest < Test::Unit::TestCase
     assert_nil( ARINr::Whois::Main.guess_query( [ "256.255.255.255" ], logger ) )
     assert_equal( ARINr::Whois::Main.guess_query( [ "2001:500:13::" ], logger ), "IP6-ADDR" )
     assert_equal( ARINr::Whois::Main.guess_query( [ "2001:500:13:FFFF:FFFF:FFFF:FFFF:FFFF" ], logger ), "IP6-ADDR" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "10745" ], logger ), "AS-NUMBER" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "11110745" ], logger ), "AS-NUMBER" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "AS10745" ], logger ), "AS-NUMBER" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "AS11110745" ], logger ), "AS-NUMBER" )
 
   end
 
