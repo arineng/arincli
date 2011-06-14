@@ -13,6 +13,8 @@ require 'whois_net'
 require 'whois_poc'
 require 'whois_org'
 require 'whois_asn'
+require 'whois_rdns'
+require 'whois_trees'
 
 module ARINr
 
@@ -26,6 +28,7 @@ module ARINr
       QueryType.add_item :BY_IP4_ADDR,   "IP4-ADDR"
       QueryType.add_item :BY_IP6_ADDR,   "IP6-ADDR"
       QueryType.add_item :BY_AS_NUMBER,  "AS-NUMBER"
+      QueryType.add_item :BY_DELEGATION, "DELEGATION"
 
     end
 
@@ -180,6 +183,9 @@ module ARINr
             else
               @config.logger.mesg "Response contained an answer this program does not implement."
           end
+        elsif( element.namespace == "http://www.arin.net/whoisrws/rdns/v1" && element.name == "delegation" )
+          del = ARINr::Whois::WhoisRdns.new( element )
+          del.to_log( @config.logger )
         elsif( element.namespace == "http://www.arin.net/whoisrws/pft/v1" && element.name == "pft" )
           handle_pft_response element
         else
@@ -241,6 +247,10 @@ HELP_SUMMARY
               args[ 0 ] = args[ 0 ].sub( /^AS/i, "" )
               logger.trace( "Interpretting " + old + " as autonomous system number " + args[ 0 ] )
               retval = QueryType::BY_AS_NUMBER
+            when ARINr::IP4_ARPA
+              retval = QueryType::BY_DELEGATION
+            when ARINr::IP6_ARPA
+              retval = QueryType::BY_DELEGATION
           end
 
         end
@@ -270,6 +280,8 @@ HELP_SUMMARY
           when QueryType::BY_AS_NUMBER
             path << "rest/asn/" << args[ 0 ]
             path << "/pft" if pft
+          when QueryType::BY_DELEGATION
+            path << "rest/rdns/" << args[ 0 ]
         end
 
         return path
@@ -294,6 +306,13 @@ HELP_SUMMARY
             objs << obj
           end
         end
+        tree = ARINr::DataTree.new
+        tree_root = ARINr::DataNode.new( objs.first().to_s )
+        tree_root.add_child( ARINr::Whois.make_pocs_tree( objs.first().element ) )
+        tree_root.add_child( ARINr::Whois.make_asns_tree( objs.first().element ) )
+        tree_root.add_child( ARINr::Whois.make_nets_tree( objs.first().element ) )
+        tree.add_root( tree_root )
+        tree.to_normal_log( @config.logger )
         objs.each do |obj|
           obj.to_log( @config.logger )
         end

@@ -25,6 +25,12 @@ class ArinwTest < Test::Unit::TestCase
     assert_equal( ARINr::Whois::Main.guess_query( [ "11110745" ], logger ), "AS-NUMBER" )
     assert_equal( ARINr::Whois::Main.guess_query( [ "AS10745" ], logger ), "AS-NUMBER" )
     assert_equal( ARINr::Whois::Main.guess_query( [ "AS11110745" ], logger ), "AS-NUMBER" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "199.in-addr.arpa" ], logger ), "DELEGATION" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "199.in-addr.arpa." ], logger ), "DELEGATION" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "136.199.in-addr.arpa" ], logger ), "DELEGATION" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "136.199.in-addr.arpa." ], logger ), "DELEGATION" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "8.f.4.0.1.0.0.2.ip6.arpa" ], logger ), "DELEGATION" )
+    assert_equal( ARINr::Whois::Main.guess_query( [ "8.f.4.0.1.0.0.2.ip6.arpa." ], logger ), "DELEGATION" )
 
   end
 
@@ -45,6 +51,12 @@ class ArinwTest < Test::Unit::TestCase
     assert_equal( "rest/ip/2001:500:13::",
                   ARINr::Whois::Main.create_query(
                       [ "2001:500:13::" ], ARINr::Whois::QueryType::BY_IP6_ADDR ) )
+    assert_equal( "rest/rdns/8.f.4.0.1.0.0.2.ip6.arpa",
+                  ARINr::Whois::Main.create_query(
+                      [ "8.f.4.0.1.0.0.2.ip6.arpa" ], ARINr::Whois::QueryType::BY_DELEGATION ) )
+    assert_equal( "rest/rdns/199.in-addr.arpa",
+                  ARINr::Whois::Main.create_query(
+                      [ "199.in-addr.arpa" ], ARINr::Whois::QueryType::BY_DELEGATION ) )
   end
 
 end

@@ -8,7 +8,7 @@ require 'arinr_logger'
 require 'stringio'
 
 # Test the XML parsing of the WhoisNet class
-class WhoisNetText < Test::Unit::TestCase
+class WhoisNetTest < Test::Unit::TestCase
 
   def setup
     net_xml = <<NET_XML

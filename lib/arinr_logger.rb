@@ -133,6 +133,25 @@ module ARINr
 
     end
 
+    def log_tree_item data_amount, tree_item
+
+      validate_data_amount()
+
+      case data_amount
+        when DataAmount::TERSE_DATA
+          log_raw( tree_item )
+        when DataAmount::NORMAL_DATA
+          if( @data_amount != DataAmount::TERSE_DATA )
+            log_raw( tree_item )
+          end
+        when DataAmount::EXTRA_DATA
+          if( @data_amount != DataAmount::TERSE_DATA && @data_amount != DataAmount::NORMAL_DATA )
+            log_raw( tree_item )
+          end
+      end
+
+    end
+
     private
 
     def log_data item_name, item_value
@@ -144,6 +163,11 @@ module ARINr
         @data_out.puts( format( format_string, item_name, item_value ) )
         @data_last_written_to = true
       end
+    end
+
+    def log_raw item_value
+      @data_out.puts( item_value )
+      @data_last_written_to = true
     end
 
   end
