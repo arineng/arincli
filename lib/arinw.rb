@@ -312,7 +312,7 @@ HELP_SUMMARY
         tree_root.add_child( ARINr::Whois.make_asns_tree( objs.first().element ) )
         tree_root.add_child( ARINr::Whois.make_nets_tree( objs.first().element ) )
         tree.add_root( tree_root )
-        tree.to_normal_log( @config.logger )
+        tree.to_normal_log( @config.logger ) if tree_root.children.size > 0
         objs.each do |obj|
           obj.to_log( @config.logger )
         end

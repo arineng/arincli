@@ -12,7 +12,7 @@ module ARINr
     end
 
     def add_child node
-      @children << node
+      @children << node if node
     end
 
     def to_s
@@ -32,7 +32,7 @@ module ARINr
     end
 
     def add_root node
-      @roots << node
+      @roots << node if node
     end
 
     def to_terse_log logger
