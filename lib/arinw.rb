@@ -22,22 +22,36 @@ module ARINr
 
     class QueryType < ARINr::Enum
 
-      QueryType.add_item :BY_NET_HANDLE, "NET-HANDLE"
-      QueryType.add_item :BY_POC_HANDLE, "POC-HANDLE"
-      QueryType.add_item :BY_ORG_HANDLE, "ORG-HANDLE"
-      QueryType.add_item :BY_IP4_ADDR,   "IP4-ADDR"
-      QueryType.add_item :BY_IP6_ADDR,   "IP6-ADDR"
-      QueryType.add_item :BY_AS_NUMBER,  "AS-NUMBER"
+      QueryType.add_item :BY_NET_HANDLE, "NETHANDLE"
+      QueryType.add_item :BY_POC_HANDLE, "POCHANDLE"
+      QueryType.add_item :BY_ORG_HANDLE, "ORGHANDLE"
+      QueryType.add_item :BY_IP4_ADDR,   "IP4ADDR"
+      QueryType.add_item :BY_IP6_ADDR,   "IP6ADDR"
+      QueryType.add_item :BY_AS_NUMBER,  "ASNUMBER"
       QueryType.add_item :BY_DELEGATION, "DELEGATION"
+
+    end
+
+    class RelatedType < ARINr::Enum
+
+      RelatedType.add_item :NETS, "NETS"
+      RelatedType.add_item :DELS, "DELS"
+      RelatedType.add_item :ORGS, "ORGS"
+      RelatedType.add_item :POCS, "POCS"
+      RelatedType.add_item :ASNS, "ASNS"
 
     end
 
     # The main class for the arinw command.
     class Main < ARINr::BaseOpts
 
-      def initialize args
+      def initialize args, config = nil
 
-        @config = ARINr::Config.new( ARINr::Config::formulate_app_data_dir() )
+        if config
+          @config = config
+        else
+          @config = ARINr::Config.new( ARINr::Config::formulate_app_data_dir() )
+        end
 
         @opts = OptionParser.new do |opts|
 
@@ -45,6 +59,32 @@ module ARINr
 
           opts.separator ""
           opts.separator "Query Options:"
+
+          opts.on( "-r", "--related TYPE",
+            "Query for the specified type related to the query value.",
+            "  nets - query for the related networks",
+            "  dels - query for the reverse DNS delegations",
+            "  orgs - query for the related organizations",
+            "  pocs - query for the related points of contact",
+            "  asns - query for the related autonomous system numbers") do |type|
+            uptype = type.upcase
+            raise OptionParser::InvalidArgument, type.to_s unless RelatedType.has_value?( uptype )
+            @config.options.related_type = uptype
+          end
+
+          opts.on( "-t", "--type TYPE",
+            "Specify type of the query value.",
+            "  nethandle  - network handle",
+            "  pochandle  - point of contact handle",
+            "  orghandle  - organization handle",
+            "  ip4addr    - IPv4 address",
+            "  ip6addr    - IPv6 address",
+            "  asnumber   - autonomous system number",
+            "  delegation - reverse DNS delegation" ) do |type|
+            uptype = type.upcase
+            raise OptionParser::InvalidArgument, type.to_s unless QueryType.has_value?( uptype )
+            @config.options.query_type = uptype
+          end
 
           opts.on( "--pft YES|NO|TRUE|FALSE",
             "Use a PFT style query." ) do |pft|
@@ -143,7 +183,7 @@ module ARINr
         @cache = ARINr::Whois::Cache.new( @config )
 
         if( @config.options.query_type == nil )
-          @config.options.query_type = Main.guess_query( @config.options.argv, @config.logger  )
+          @config.options.query_type = guess_query_value_type( @config.options.argv )
           if( @config.options.query_type == nil )
             @config.logger.mesg( "Unable to guess type of query. You must specify it." )
             exit
@@ -153,13 +193,15 @@ module ARINr
         end
 
         begin
-          data = get( Main.create_query(
-                          @config.options.argv,
-                          @config.options.query_type,
-                          @config.config[ "whois" ][ "pft" ] ) )
+          path = create_resource_url( @config.options.argv, @config.options.query_type )
+          path = mod_url( path, @config.options.related_type,
+                          @config.config[ "whois" ][ "pft" ], @config.config[ "whois" ][ "details" ] )
+          data = get( path )
           root = REXML::Document.new( data ).root
           evaluate_response( root )
           @config.logger.end_run
+        rescue ArgumentError => a
+          @config.logger.mesg( a.message )
         rescue Net::HTTPServerException => e
           case e.response.code
             when "404"
@@ -232,7 +274,7 @@ HELP_SUMMARY
       # Evaluates the args and guesses at the type of query.
       # Args is an array of strings, most likely what is left
       # over after parsing ARGV
-      def self.guess_query( args, logger )
+      def guess_query_value_type( args )
         retval = nil
 
         if( args.length() == 1 )
@@ -254,7 +296,7 @@ HELP_SUMMARY
               old = args[ 0 ]
               args[ 0 ] = args[ 0 ].sub( /-O$/i, "" )
               args[ 0 ].upcase!
-              logger.trace( "Interpretting " + old + " as organization handle for " + args[ 0 ] )
+              @config.logger.trace( "Interpretting " + old + " as organization handle for " + args[ 0 ] )
               retval = QueryType::BY_ORG_HANDLE
             when ARINr::IPV4_REGEX
               retval = QueryType::BY_IP4_ADDR
@@ -267,7 +309,7 @@ HELP_SUMMARY
             when ARINr::ASN_REGEX
               old = args[ 0 ]
               args[ 0 ] = args[ 0 ].sub( /^AS/i, "" )
-              logger.trace( "Interpretting " + old + " as autonomous system number " + args[ 0 ] )
+              @config.logger.trace( "Interpretting " + old + " as autonomous system number " + args[ 0 ] )
               retval = QueryType::BY_AS_NUMBER
             when ARINr::IP4_ARPA
               retval = QueryType::BY_DELEGATION
@@ -281,29 +323,106 @@ HELP_SUMMARY
       end
 
       # Creates a query type
-      def self.create_query( args, queryType, pft = false )
+      def create_resource_url( args, queryType )
 
         path = ""
         case queryType
           when QueryType::BY_NET_HANDLE
             path << "rest/net/" << args[ 0 ]
-            path << "/pft" if pft
           when QueryType::BY_POC_HANDLE
             path << "rest/poc/" << args[ 0 ]
           when QueryType::BY_ORG_HANDLE
             path << "rest/org/" << args[ 0 ]
-            path << "/pft" if pft
           when QueryType::BY_IP4_ADDR
             path << "rest/ip/" << args[ 0 ]
-            path << "/pft" if pft
           when QueryType::BY_IP6_ADDR
             path << "rest/ip/" << args[ 0 ]
-            path << "/pft" if pft
           when QueryType::BY_AS_NUMBER
             path << "rest/asn/" << args[ 0 ]
-            path << "/pft" if pft
           when QueryType::BY_DELEGATION
             path << "rest/rdns/" << args[ 0 ]
+          else
+            raise ArgumentError.new( "Unable to create a resource URL for " + queryType )
+        end
+
+        return path
+      end
+
+      def mod_url( path, relatedType, pft, details )
+
+        case path
+          when /rest\/ip\//
+            if relatedType != nil
+              raise ArgumentError.new( "Unable to relate " + relatedType + " to " + path )
+            else
+              if pft
+                path << "/pft"
+              end
+              if details
+                path << "?showDetails=true"
+              end
+            end
+          when /rest\/net\//
+            if relatedType == RelatedType::DELS
+              path << "/rdns"
+            elsif relatedType != nil
+              raise ArgumentError.new( "Unable to relate " + relatedType + " to " + path )
+            else
+              if pft
+                path << "/pft"
+              end
+              if details
+                path << "?showDetails=true"
+              end
+            end
+          when /rest\/rdns\//
+            if relatedType == RelatedType::NETS
+              path << "/nets"
+            elsif relatedType != nil
+              raise ArgumentError.new( "Unable to relate " + relatedType + " to " + path )
+            end
+          when /rest\/asn\//
+            if relatedType != nil
+              raise ArgumentError.new( "Unable to relate " + relatedType + " to " + path )
+            else
+              if details
+                path << "?showDetails=true"
+              end
+            end
+          when /rest\/org\//
+            case relatedType
+              when RelatedType::POCS
+                path << "/pocs"
+              when RelatedType::NETS
+                path << "/nets"
+              when RelatedType::ASNS
+                path << "/asns"
+              else
+                raise ArgumentError.new( "Unable to relate " + relatedType + " to " + path ) if relatedType
+            end
+            if !relatedType and pft
+              path << "/pft"
+            end
+            if details
+              path << "?showDetails=true"
+            end
+          when /rest\/poc\//
+            case relatedType
+              when RelatedType::ORGS
+                path << "/orgs"
+              when RelatedType::NETS
+                path << "/nets"
+              when RelatedType::ASNS
+                path << "/asns"
+              else
+                raise ArgumentError.new( "Unable to relate " + relatedType + " to " + path ) if relatedType
+            end
+            if !relatedType and pft
+              path << "/pft"
+            end
+            if details
+              path << "?showDetails=true"
+            end
         end
 
         return path

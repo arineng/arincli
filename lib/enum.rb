@@ -25,6 +25,10 @@ module ARINr
       @hash.value?( value )
     end
 
+    def Enum.values
+      @hash.values
+    end
+
   end
 
 end

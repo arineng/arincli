@@ -40,7 +40,11 @@ module ARINr
 
     def Whois::make_nets_tree element
       retval = nil
-      nets = REXML::XPath.first(element, "nets")
+      if element.name == "nets"
+        nets = element
+      else
+        nets = REXML::XPath.first(element, "nets")
+      end
       if (nets != nil && nets.has_elements?)
         retval = ARINr::DataNode.new("Networks")
         net_num = 1
