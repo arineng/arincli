@@ -53,6 +53,13 @@ module ARINr
             raise OptionParser::InvalidArgument, pft.to_s unless pft =~ /yes|no|true|false/i
           end
 
+          opts.on( "--details YES|NO|TRUE|FALSE",
+                   "Query for extra details." ) do |details|
+            @config.config[ "whois" ][ "details" ] = false if details =~ /no|false/i
+            @config.config[ "whois" ][ "details" ] = true if details =~ /yes|true/i
+            raise OptionParser::InvalidArgument, details.to_s unless details =~ /yes|no|true|false/i
+          end
+
           opts.on( "-U", "--url URL",
             "The base URL of the RESTful Web Service." ) do |url|
             @config.config[ "whois" ][ "url" ] = url
@@ -180,12 +187,27 @@ module ARINr
             when "asn"
               asn = ARINr::Whois::WhoisAsn.new( element )
               asn.to_log( @config.logger )
+            when "nets"
+              handle_list_response( element )
+            when "orgs"
+              handle_list_response( element )
+            when "pocs"
+              handle_list_response( element )
+            when "asns"
+              handle_list_response( element )
             else
               @config.logger.mesg "Response contained an answer this program does not implement."
           end
-        elsif( element.namespace == "http://www.arin.net/whoisrws/rdns/v1" && element.name == "delegation" )
-          del = ARINr::Whois::WhoisRdns.new( element )
-          del.to_log( @config.logger )
+        elsif( element.namespace == "http://www.arin.net/whoisrws/rdns/v1" )
+          case element.name
+            when "delegation"
+              del = ARINr::Whois::WhoisRdns.new( element )
+              del.to_log( @config.logger )
+            when "delegations"
+              handle_list_response( element )
+            else
+              @config.logger.mesg "Response contained an answer this program does not implement."
+          end
         elsif( element.namespace == "http://www.arin.net/whoisrws/pft/v1" && element.name == "pft" )
           handle_pft_response element
         else
@@ -300,6 +322,8 @@ HELP_SUMMARY
               obj = ARINr::Whois::WhoisOrg.new( ref.parent )
             when "asn"
               obj = ARINr::Whois::WhoisAsn.new( ref.parent )
+            when "delegation"
+              obj = ARINr::Whois::WhoisRdns.new( ref.parent )
           end
           if( obj )
             @cache.create( obj.ref.to_s, obj.element )
@@ -311,10 +335,57 @@ HELP_SUMMARY
         tree_root.add_child( ARINr::Whois.make_pocs_tree( objs.first().element ) )
         tree_root.add_child( ARINr::Whois.make_asns_tree( objs.first().element ) )
         tree_root.add_child( ARINr::Whois.make_nets_tree( objs.first().element ) )
+        tree_root.add_child( ARINr::Whois.make_delegations_tree( objs.first().element ) )
         tree.add_root( tree_root )
-        tree.to_normal_log( @config.logger ) if tree_root.children.size > 0
+        tree.to_normal_log( @config.logger ) if !tree_root.empty?
         objs.each do |obj|
           obj.to_log( @config.logger )
+        end
+      end
+
+      def handle_list_response root
+        objs = []
+        root.elements.each( "*/ref" ) do |ref|
+          obj = nil
+          case ref.parent.name
+            when "net"
+              obj = ARINr::Whois::WhoisNet.new( ref.parent )
+            when "poc"
+              obj = ARINr::Whois::WhoisPoc.new( ref.parent )
+            when "org"
+              obj = ARINr::Whois::WhoisOrg.new( ref.parent )
+            when "asn"
+              obj = ARINr::Whois::WhoisAsn.new( ref.parent )
+            when "delegation"
+              obj = ARINr::Whois::WhoisRdns.new( ref.parent )
+          end
+          if( obj )
+            @cache.create( obj.ref.to_s, obj.element )
+            objs << obj
+          end
+        end
+
+        tree = ARINr::DataTree.new
+        objs.each do |obj|
+          tree_root = ARINr::DataNode.new( obj.to_s )
+          tree_root.add_child( ARINr::Whois.make_pocs_tree( obj.element ) )
+          tree_root.add_child( ARINr::Whois.make_asns_tree( obj.element ) )
+          tree_root.add_child( ARINr::Whois.make_nets_tree( obj.element ) )
+          tree_root.add_child( ARINr::Whois.make_delegations_tree( obj.element ) )
+          tree.add_root( tree_root )
+        end
+
+        tree.add_children_as_root( ARINr::Whois.make_pocs_tree( root ) )
+        tree.add_children_as_root( ARINr::Whois.make_asns_tree( root ) )
+        tree.add_children_as_root( ARINr::Whois.make_nets_tree( root ) )
+        tree.add_children_as_root( ARINr::Whois.make_delegations_tree( root ) )
+
+        tree.to_terse_log( @config.logger ) if !tree.empty?
+        objs.each do |obj|
+          obj.to_log( @config.logger )
+        end
+        if tree.empty? && objs.empty?
+          @config.logger.mesg( "No results found." )
         end
       end
 

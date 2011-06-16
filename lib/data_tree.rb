@@ -23,6 +23,10 @@ module ARINr
       @children
     end
 
+    def empty?
+      @children.empty?
+    end
+
   end
 
   class DataTree
@@ -33,6 +37,20 @@ module ARINr
 
     def add_root node
       @roots << node if node
+    end
+
+    def add_children_as_root node
+      node.children.each do |child|
+        add_root( child )
+      end if node
+    end
+
+    def roots
+      @roots
+    end
+
+    def empty?
+      @roots.empty?
     end
 
     def to_terse_log logger

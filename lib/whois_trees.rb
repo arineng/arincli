@@ -53,6 +53,21 @@ module ARINr
       return retval
     end
 
+    def Whois::make_delegations_tree element
+      retval = nil
+      dels = REXML::XPath.first(element, "ns2:delegations", "ns2"=>"http://www.arin.net/whoisrws/rdns/v1" )
+      if (dels != nil && dels.has_elements?)
+        retval = ARINr::DataNode.new("Reverse DNS Delegations")
+        del_num = 1
+        dels.elements.each( dels.prefix + ":delegationRef" ) do |del|
+          s = format("%3d. %s", del_num, del.attribute( "name" ) )
+          retval.add_child(ARINr::DataNode.new(s))
+          del_num += 1
+        end
+      end
+      return retval
+    end
+
   end
 
 end

@@ -139,6 +139,9 @@ whois:
 
   # Use PFT style queries where appropriate
   pft: true
+
+  # Query for extra details
+  details: false
 YAML_CONFIG
 
   end
