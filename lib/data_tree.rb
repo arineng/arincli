@@ -53,34 +53,45 @@ module ARINr
       @roots.empty?
     end
 
-    def to_terse_log logger
+    def to_terse_log logger, annotate = false
       @logger = logger
       @data_amount = DataAmount::TERSE_DATA
-      to_log()
+      to_log( annotate )
     end
 
-    def to_normal_log logger
+    def to_normal_log logger, annotate = false
       @logger = logger
       @data_amount = DataAmount::NORMAL_DATA
-      to_log()
+      to_log( annotate )
     end
 
-    def to_extra_log logger
+    def to_extra_log logger, annotate = false
       @logger = logger
       @data_amount = DataAmount::EXTRA_DATA
-      to_log()
+      to_log( annotate )
     end
 
     private
 
-    def to_log
+    def to_log annotate
       @logger.start_data_item
+      num_count = 1
       @roots.each do |root|
-        @logger.log_tree_item( @data_amount, root.to_s )
-        prefix = ""
+        if annotate
+          s = format( "%3d. %s", num_count, root.to_s )
+        else
+          s = root.to_s
+        end
+        @logger.log_tree_item( @data_amount, s )
+        if annotate
+          prefix = "    "
+        else
+          prefix = ""
+        end
         root.children.each do |child|
           rprint( root, child, prefix )
         end if root.children() != nil
+        num_count += 1
       end
       @logger.end_data_item
     end

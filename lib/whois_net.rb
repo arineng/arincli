@@ -30,9 +30,12 @@ module ARINr
         logger.datum( "Parent Network Handle", parentNetRef.handle ) if parentNetRef != nil
         logger.extra( "Parent Network Name", parentNetRef.name ) if parentNetRef != nil
         logger.extra( "Parent Network Reference", parentNetRef.to_s ) if parentNetRef != nil
-        logger.datum( "Organization Handle", orgRef.handle )
-        logger.terse( "Organization Name", orgRef.name )
-        logger.extra( "Organization Reference", orgRef.to_s )
+        logger.datum( "Organization Handle", orgRef.handle ) if orgRef
+        logger.terse( "Organization Name", orgRef.name ) if orgRef
+        logger.extra( "Organization Reference", orgRef.to_s ) if orgRef
+        logger.datum( "Customer Handle", customerRef.handle ) if customerRef
+        logger.terse( "Customer Name", customerRef.name ) if customerRef
+        logger.extra( "Customer Reference", customerRef.to_s ) if customerRef
         log_dates( logger )
         log_comments( logger )
         logger.end_data_item

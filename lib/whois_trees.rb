@@ -10,14 +10,15 @@ module ARINr
 
     def Whois::make_asns_tree element
       retval = nil
-      asns = REXML::XPath.first(element, "asns")
-      if (asns != nil && asns.has_elements?)
+      if element.name == "asns"
+        asns = element
+      else
+        asns = REXML::XPath.first(element, "asns")
+      end
+      if (asns != nil && asns.elements[ "asnRef" ])
         retval = ARINr::DataNode.new("Autonomous Systems Blocks")
-        asn_num = 1
         asns.elements.each( "asnRef" ) do |asn|
-          s = format("%3d. %s", asn_num, asn.attribute("handle"))
-          retval.add_child(ARINr::DataNode.new(s))
-          asn_num += 1
+          retval.add_child(ARINr::DataNode.new( asn.attribute("handle" ).to_s ) )
         end
       end
       return retval
@@ -25,14 +26,16 @@ module ARINr
 
     def Whois::make_pocs_tree element
       retval = nil
-      pocs = REXML::XPath.first(element, "pocs")
-      if (pocs != nil && pocs.has_elements?)
+      if element.name == "pocs"
+        pocs = element
+      else
+        pocs = REXML::XPath.first(element, "pocs")
+      end
+      if (pocs != nil && pocs.elements[ "pocLinkRef" ])
         retval = ARINr::DataNode.new("Points of Contact")
-        poc_num = 1
         pocs.elements.each( "pocLinkRef" ) do |poc|
-          s = format("%2d. %s (%s)", poc_num, poc.attribute( "handle" ), poc.attribute( "description" ) )
+          s = format( "%s (%s)", poc.attribute( "handle" ), poc.attribute( "description" ) )
           retval.add_child(ARINr::DataNode.new(s))
-          poc_num += 1
         end
       end
       return retval
@@ -45,13 +48,11 @@ module ARINr
       else
         nets = REXML::XPath.first(element, "nets")
       end
-      if (nets != nil && nets.has_elements?)
+      if (nets != nil && nets.elements[ "netRef" ] )
         retval = ARINr::DataNode.new("Networks")
-        net_num = 1
         nets.elements.each( "netRef" ) do |net|
-          s = format("%3d. %-24s ( %15s - %-15s )", net_num, net.attribute( "handle" ), net.attribute( "startAddress" ), net.attribute( "endAddress" ) )
+          s = format("%-24s ( %15s - %-15s )", net.attribute( "handle" ), net.attribute( "startAddress" ), net.attribute( "endAddress" ) )
           retval.add_child(ARINr::DataNode.new(s))
-          net_num += 1
         end
       end
       return retval
@@ -59,14 +60,15 @@ module ARINr
 
     def Whois::make_delegations_tree element
       retval = nil
-      dels = REXML::XPath.first(element, "ns2:delegations", "ns2"=>"http://www.arin.net/whoisrws/rdns/v1" )
-      if (dels != nil && dels.has_elements?)
+      if element.name == "delegations"
+        dels = element
+      else
+        dels = REXML::XPath.first(element, "ns2:delegations", "ns2"=>"http://www.arin.net/whoisrws/rdns/v1" )
+      end
+      if (dels != nil && dels.elements[ dels.prefix + ":delegationRef" ])
         retval = ARINr::DataNode.new("Reverse DNS Delegations")
-        del_num = 1
         dels.elements.each( dels.prefix + ":delegationRef" ) do |del|
-          s = format("%3d. %s", del_num, del.attribute( "name" ) )
-          retval.add_child(ARINr::DataNode.new(s))
-          del_num += 1
+          retval.add_child(ARINr::DataNode.new( del.attribute( "name" ).to_s ) )
         end
       end
       return retval
