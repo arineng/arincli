@@ -41,7 +41,7 @@ module ARINr
 
       @message_level = MessageLevel::SOME_MESSAGES
       @data_amount = DataAmount::NORMAL_DATA
-      @message_out = $stderr
+      @message_out = $stdout
       @data_out = $stdout
       @item_name_length = 25
       @item_name_rjust = true

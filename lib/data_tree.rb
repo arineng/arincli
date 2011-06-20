@@ -6,9 +6,12 @@ module ARINr
 
   class DataNode
 
-    def initialize name
+    attr_accessor :alert, :data
+
+    def initialize name, data = nil
       @name = name
       @children = []
+      @data = data
     end
 
     def add_child node
@@ -74,33 +77,59 @@ module ARINr
     private
 
     def to_log annotate
-      @logger.start_data_item
       num_count = 1
       @roots.each do |root|
+        @logger.start_data_item
         if annotate
-          s = format( "%3d. %s", num_count, root.to_s )
+          if root.alert
+            s = format( "   # %s", root.to_s )
+          elsif root.data
+            s = format( "%3d= %s", num_count, root.to_s )
+          else
+            s = format( "%3d. %s", num_count, root.to_s )
+          end
         else
           s = root.to_s
         end
         @logger.log_tree_item( @data_amount, s )
         if annotate
-          prefix = "    "
+          prefix = " "
+          child_num = 1
         else
           prefix = ""
+          child_num = 0
         end
         root.children.each do |child|
-          rprint( root, child, prefix )
+          rprint( child_num, root, child, prefix )
+          child_num += 1 if child_num > 0
         end if root.children() != nil
         num_count += 1
+        @logger.end_data_item
       end
-      @logger.end_data_item
     end
 
-    def rprint( parent, node, prefix )
-      prefix = prefix.tr( "`", " ") + "  " + ( node == parent.children.last ? "`" : "|" )
-      @logger.log_tree_item( @data_amount, prefix + "- " + node.to_s )
+    def rprint( num, parent, node, prefix )
+      if( num > 0 )
+        spacer = "    "
+        if node.alert
+          num_str = format( " # ", num )
+        elsif node.data
+          num_str = format( " %d= ", num )
+        else
+          num_str = format( " %d. ", num )
+        end
+        num_str = num_str.rjust( 7, "-" )
+        child_num = 1
+      else
+        spacer = "  "
+        num_str = "- "
+        child_num = 0
+      end
+      prefix = prefix.tr( "`", " ") + spacer + ( node == parent.children.last ? "`" : "|" )
+      @logger.log_tree_item( @data_amount, prefix + num_str + node.to_s )
       node.children.each do |child|
-        rprint( node, child, prefix )
+        rprint( child_num, node, child, prefix )
+        child_num += 1 if child_num > 0
       end if node.children() != nil
     end
 

@@ -456,7 +456,7 @@ HELP_SUMMARY
         tree_root.add_child( ARINr::Whois.make_nets_tree( objs.first().element ) )
         tree_root.add_child( ARINr::Whois.make_delegations_tree( objs.first().element ) )
         tree.add_root( tree_root )
-        tree.to_normal_log( @config.logger ) if !tree_root.empty?
+        tree.to_normal_log( @config.logger, true ) if !tree_root.empty?
         objs.each do |obj|
           obj.to_log( @config.logger )
         end
@@ -486,7 +486,7 @@ HELP_SUMMARY
 
         tree = ARINr::DataTree.new
         objs.each do |obj|
-          tree_root = ARINr::DataNode.new( obj.to_s )
+          tree_root = ARINr::DataNode.new( obj.to_s, obj.ref.to_s )
           tree_root.add_child( ARINr::Whois.make_pocs_tree( obj.element ) )
           tree_root.add_child( ARINr::Whois.make_asns_tree( obj.element ) )
           tree_root.add_child( ARINr::Whois.make_nets_tree( obj.element ) )
@@ -499,13 +499,20 @@ HELP_SUMMARY
         tree.add_children_as_root( ARINr::Whois.make_nets_tree( root ) )
         tree.add_children_as_root( ARINr::Whois.make_delegations_tree( root ) )
 
-        tree.to_terse_log( @config.logger ) if !tree.empty?
+        tree.to_terse_log( @config.logger, true ) if !tree.empty?
         objs.each do |obj|
           obj.to_log( @config.logger )
-        end
+        end if tree.empty?
         if tree.empty? && objs.empty?
           @config.logger.mesg( "No results found." )
+        else
+          limit_element = REXML::XPath.first( root, "limitExceeded")
+          if limit_element and limit_element.text() == "true"
+            limit = limit_element.attribute( "limit" )
+            @config.logger.mesg( "Results limited to " + limit.to_s )
+          end
         end
+
       end
 
     end

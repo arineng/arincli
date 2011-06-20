@@ -18,8 +18,9 @@ module ARINr
       if (asns != nil && asns.elements[ "asnRef" ])
         retval = ARINr::DataNode.new("Autonomous Systems Blocks")
         asns.elements.each( "asnRef" ) do |asn|
-          retval.add_child(ARINr::DataNode.new( asn.attribute("handle" ).to_s ) )
+          retval.add_child(ARINr::DataNode.new( asn.attribute("handle" ).to_s, asn.text() ) )
         end
+        check_limit_exceeded( asns, retval )
       end
       return retval
     end
@@ -35,8 +36,9 @@ module ARINr
         retval = ARINr::DataNode.new("Points of Contact")
         pocs.elements.each( "pocLinkRef" ) do |poc|
           s = format( "%s (%s)", poc.attribute( "handle" ), poc.attribute( "description" ) )
-          retval.add_child(ARINr::DataNode.new(s))
+          retval.add_child(ARINr::DataNode.new(s, poc.text() ))
         end
+        check_limit_exceeded( pocs, retval )
       end
       return retval
     end
@@ -52,8 +54,9 @@ module ARINr
         retval = ARINr::DataNode.new("Networks")
         nets.elements.each( "netRef" ) do |net|
           s = format("%-24s ( %15s - %-15s )", net.attribute( "handle" ), net.attribute( "startAddress" ), net.attribute( "endAddress" ) )
-          retval.add_child(ARINr::DataNode.new(s))
+          retval.add_child(ARINr::DataNode.new(s, net.text() ))
         end
+        check_limit_exceeded( nets, retval )
       end
       return retval
     end
@@ -68,10 +71,21 @@ module ARINr
       if (dels != nil && dels.elements[ dels.prefix + ":delegationRef" ])
         retval = ARINr::DataNode.new("Reverse DNS Delegations")
         dels.elements.each( dels.prefix + ":delegationRef" ) do |del|
-          retval.add_child(ARINr::DataNode.new( del.attribute( "name" ).to_s ) )
+          retval.add_child(ARINr::DataNode.new( del.attribute( "name" ).to_s, del.text() ) )
         end
+        check_limit_exceeded( dels, retval )
       end
       return retval
+    end
+
+    def Whois::check_limit_exceeded list_element, node
+      e = REXML::XPath.first( list_element, "limitExceeded")
+      if e and e.text() == "true"
+        limit = e.attribute( "limit" )
+        alert = ARINr::DataNode.new( "Results limited to " + limit.to_s )
+        alert.alert=true
+        node.add_child( alert )
+      end
     end
 
   end
