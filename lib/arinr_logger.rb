@@ -85,8 +85,7 @@ module ARINr
       validate_message_level()
 
       if( @message_level != MessageLevel::NO_MESSAGES )
-        @message_out.puts( "# " + message.to_s )
-        @message_last_written_to = true
+        log_info( "# " + message.to_s )
       end
 
     end
@@ -97,8 +96,7 @@ module ARINr
       validate_message_level()
 
       if( @message_level != MessageLevel::NO_MESSAGES && @message_level != MessageLevel::SOME_MESSAGES )
-        @message_out.puts( "## " + message.to_s )
-        @message_last_written_to = true
+        log_info( "## " + message.to_s )
       end
 
     end
@@ -154,6 +152,15 @@ module ARINr
 
     private
 
+    def log_info message
+      if @data_last_written_to && @message_out == @data_out
+        @data_out.puts
+      end
+      @message_out.puts( message )
+      @message_last_written_to = true
+      @data_last_written_to = false
+    end
+
     def log_data item_name, item_value
       if( item_value != nil && !item_value.to_s.empty? )
         format_string = "%" + @item_name_length.to_s + "s:  %s"
@@ -162,12 +169,14 @@ module ARINr
         end
         @data_out.puts( format( format_string, item_name, item_value ) )
         @data_last_written_to = true
+        @message_last_written_to = false
       end
     end
 
     def log_raw item_value
       @data_out.puts( item_value )
       @data_last_written_to = true
+      @message_last_written_to = false
     end
 
   end

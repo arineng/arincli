@@ -198,7 +198,11 @@ module ARINr
                           @config.config[ "whois" ][ "pft" ], @config.config[ "whois" ][ "details" ] )
           data = get( path )
           root = REXML::Document.new( data ).root
-          evaluate_response( root )
+          has_results = evaluate_response( root )
+          if has_results
+            @config.logger.trace( "Non-empty result set given." )
+            show_helpful_messages( path )
+          end
           @config.logger.end_run
         rescue ArgumentError => a
           @config.logger.mesg( a.message )
@@ -215,28 +219,33 @@ module ARINr
       end
 
       def evaluate_response element
+        has_results = false
         if( element.namespace == "http://www.arin.net/whoisrws/core/v1" )
           case element.name
             when "net"
               net = ARINr::Whois::WhoisNet.new( element )
               net.to_log( @config.logger )
+              has_results = true
             when "poc"
               poc = ARINr::Whois::WhoisPoc.new( element )
               poc.to_log( @config.logger )
+              has_results = true
             when "org"
               org = ARINr::Whois::WhoisOrg.new( element )
               org.to_log( @config.logger )
+              has_results = true
             when "asn"
               asn = ARINr::Whois::WhoisAsn.new( element )
               asn.to_log( @config.logger )
+              has_results = true
             when "nets"
-              handle_list_response( element )
+              has_results = handle_list_response( element )
             when "orgs"
-              handle_list_response( element )
+              has_results = handle_list_response( element )
             when "pocs"
-              handle_list_response( element )
+              has_results = handle_list_response( element )
             when "asns"
-              handle_list_response( element )
+              has_results = handle_list_response( element )
             else
               @config.logger.mesg "Response contained an answer this program does not implement."
           end
@@ -245,16 +254,18 @@ module ARINr
             when "delegation"
               del = ARINr::Whois::WhoisRdns.new( element )
               del.to_log( @config.logger )
+              has_results = true
             when "delegations"
-              handle_list_response( element )
+              has_results = handle_list_response( element )
             else
               @config.logger.mesg "Response contained an answer this program does not implement."
           end
         elsif( element.namespace == "http://www.arin.net/whoisrws/pft/v1" && element.name == "pft" )
-          handle_pft_response element
+          has_results = handle_pft_response element
         else
           @config.logger.mesg "Response contained an answer this program does not understand."
         end
+        return has_results
       end
 
       def help
@@ -445,21 +456,28 @@ HELP_SUMMARY
               obj = ARINr::Whois::WhoisRdns.new( ref.parent )
           end
           if( obj )
+            copy_namespace_attributes( root, obj.element )
             @cache.create( obj.ref.to_s, obj.element )
             objs << obj
           end
         end
         tree = ARINr::DataTree.new
-        tree_root = ARINr::DataNode.new( objs.first().to_s )
-        tree_root.add_child( ARINr::Whois.make_pocs_tree( objs.first().element ) )
-        tree_root.add_child( ARINr::Whois.make_asns_tree( objs.first().element ) )
-        tree_root.add_child( ARINr::Whois.make_nets_tree( objs.first().element ) )
-        tree_root.add_child( ARINr::Whois.make_delegations_tree( objs.first().element ) )
-        tree.add_root( tree_root )
+        if( !objs.empty? )
+          first = objs.first()
+          tree_root = ARINr::DataNode.new( first.to_s, first.ref.to_s )
+          tree_root.add_child( ARINr::Whois.make_pocs_tree( first.element ) )
+          tree_root.add_child( ARINr::Whois.make_asns_tree( first.element ) )
+          tree_root.add_child( ARINr::Whois.make_nets_tree( first.element ) )
+          tree_root.add_child( ARINr::Whois.make_delegations_tree( first.element ) )
+          tree.add_root( tree_root )
+        end
         tree.to_normal_log( @config.logger, true ) if !tree_root.empty?
         objs.each do |obj|
           obj.to_log( @config.logger )
         end
+        return true if !objs.empty? && !tree.empty?
+        #else
+        return false
       end
 
       def handle_list_response root
@@ -479,6 +497,7 @@ HELP_SUMMARY
               obj = ARINr::Whois::WhoisRdns.new( ref.parent )
           end
           if( obj )
+            copy_namespace_attributes( root, obj.element )
             @cache.create( obj.ref.to_s, obj.element )
             objs << obj
           end
@@ -505,14 +524,53 @@ HELP_SUMMARY
         end if tree.empty?
         if tree.empty? && objs.empty?
           @config.logger.mesg( "No results found." )
+          has_results = false
         else
+          has_results = true
           limit_element = REXML::XPath.first( root, "limitExceeded")
           if limit_element and limit_element.text() == "true"
             limit = limit_element.attribute( "limit" )
             @config.logger.mesg( "Results limited to " + limit.to_s )
           end
         end
+        return has_results
+      end
 
+      def copy_namespace_attributes( source, dest )
+        source.attributes.each() do |name,value|
+          if name.start_with?( "xmlns" )
+            if !dest.attributes.get_attribute( name )
+              dest.add_attribute( name, value )
+            end
+          end
+        end
+      end
+
+      def show_helpful_messages path
+        show_default_help = true
+        case path
+          when /rest\/net\/(.*)/
+            net = $+
+            if( net.match(/\/rdns/) == nil )
+              @config.logger.mesg( 'Use "arinw -r dels ' + net + '" to see reverse DNS information.' );
+              show_default_help = false
+            end
+          when /rest\/org\/(.*)/
+            org = $+
+            if( org.match( /\/pft/ ) == nil )
+              @config.logger.mesg( 'Use "arinw --pft true ' + org + '-o" to see other relevant information.' );
+              show_default_help = false
+            end
+          when /rest\/ip\/(.*)/
+            ip = $+
+            if( ip.match( /\/pft/ ) == nil )
+              @config.logger.mesg( 'Use "arinw --pft true ' + ip + '" to see other relevant information.' );
+              show_default_help = false
+            end
+        end
+        if show_default_help
+          @config.logger.mesg( 'Use "arinw -h" for help.' )
+        end
       end
 
     end

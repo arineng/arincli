@@ -33,7 +33,7 @@ module ARINr
       end
 
       def to_s
-        s = handle.to_s << " ( " << name.to_s << " )"
+        s = handle.to_s << " ( " << name.to_str << " )"
         return s
       end
 
