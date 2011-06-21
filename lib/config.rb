@@ -55,6 +55,19 @@ module ARINr
 
     end
 
+    def save_as_yaml name, obj
+      data_file = File.open( File.join( @app_data, name ), "w" )
+      data_file.puts YAML::dump(obj)
+      data_file.close
+    end
+
+    def load_as_yaml name
+      data_file = File.open( File.join( @app_data, name ), "r" )
+      retval = YAML::load( data_file )
+      data_file.close
+      return retval
+    end
+
     # Configures the logger
     def configure_logger
       output = @config[ "output" ]

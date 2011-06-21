@@ -198,4 +198,61 @@ EXPECTED_LOG
 =end
 
   end
+
+  def test_find_data
+
+    #do a tree
+    tree = ARINr::DataTree.new
+
+    #create the first root
+    root1 = ARINr::DataNode.new( "first root", "data:root1" )
+    root1.add_child( ARINr::DataNode.new( "first child of first root", "data:root1child1" ) )
+    root1.add_child( ARINr::DataNode.new( "second child of first root", "data:root1child2" ) )
+
+    #create the second root
+    root2 = ARINr::DataNode.new( "second root", "data:root2" )
+    r2c1 = ARINr::DataNode.new( "first child of second root", "data:root2child1" )
+    r2c1.add_child( ARINr::DataNode.new("first child of first child of second root" ) )
+    r2c1.add_child( ARINr::DataNode.new("second child of first child of second root" ) )
+    root2.add_child( r2c1 )
+    root2.add_child( ARINr::DataNode.new( "second child of second root", "data:root2child2" ) )
+    r2c3 = ARINr::DataNode.new( "third child of second root" )
+    r2c3c1 = ARINr::DataNode.new( "first child of third child of second root" )
+    r2c3c1.add_child( ARINr::DataNode.new("first child of first child of third child of second root" ) )
+    r2c3c1.add_child( ARINr::DataNode.new("second child of first child of third child of second root" ) )
+    r2c3c1.add_child( ARINr::DataNode.new("third child of first child of third child of second root" ) )
+    r2c3.add_child( r2c3c1 )
+    r2c3.add_child( ARINr::DataNode.new("second child of third child of second root" ) )
+    r2c3.add_child( ARINr::DataNode.new("third child of third child of second root" ) )
+    root2.add_child( r2c3 )
+    r2c4 = ARINr::DataNode.new( "fourth child of second root", "data:root2child4" )
+    r2c4.add_child( ARINr::DataNode.new("first child of fourth child of second root", "data:root2child4child1" ) )
+    r2c4.add_child( ARINr::DataNode.new("second child of fourth child of second root", "data:root2child4child2" ) )
+    r2c4.add_child( ARINr::DataNode.new("third child of fourth child of second root", "data:root2child4child3" ) )
+    root2.add_child( r2c4 )
+
+    #create the third root
+    root3 = ARINr::DataNode.new( "third root", "data:root3" )
+    root3.add_child( ARINr::DataNode.new( "first child of third root", "data:root3child1" ) )
+    root3.add_child( ARINr::DataNode.new( "second child of third root", "data:root3child2" ) )
+
+    tree.add_root( root1 )
+    tree.add_root( root2 )
+    tree.add_root( root3 )
+
+    assert_equal( "data:root1", tree.find_data( "1=" ) )
+    assert_equal( "data:root1child1", tree.find_data( "1.1=" ) )
+    assert_equal( "data:root1child2", tree.find_data( "1=2=" ) )
+    assert_equal( "data:root2", tree.find_data( "2=" ) )
+    assert_equal( "data:root2child1", tree.find_data( "2.1=" ) )
+    assert_equal( "data:root2child4", tree.find_data( "2.4=" ) )
+    assert_equal( "data:root2child4child1", tree.find_data( "2.4=1=" ) )
+    assert_equal( "data:root2child4child2", tree.find_data( "2.4=2=" ) )
+    assert_equal( "data:root2child4child3", tree.find_data( "2.4.3=" ) )
+    assert_equal( "data:root3", tree.find_data( "3=" ) )
+    assert_equal( "data:root3child1", tree.find_data( "3.1=" ) )
+    assert_equal( "data:root3child2", tree.find_data( "3.2=" ) )
+
+  end
+
 end

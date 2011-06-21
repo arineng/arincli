@@ -29,6 +29,7 @@ module ARINr
       QueryType.add_item :BY_IP6_ADDR,   "IP6ADDR"
       QueryType.add_item :BY_AS_NUMBER,  "ASNUMBER"
       QueryType.add_item :BY_DELEGATION, "DELEGATION"
+      QueryType.add_item :BY_RESULT,     "RESULT"
 
     end
 
@@ -80,7 +81,8 @@ module ARINr
             "  ip4addr    - IPv4 address",
             "  ip6addr    - IPv6 address",
             "  asnumber   - autonomous system number",
-            "  delegation - reverse DNS delegation" ) do |type|
+            "  delegation - reverse DNS delegation",
+            "  result     - result from a previous query") do |type|
             uptype = type.upcase
             raise OptionParser::InvalidArgument, type.to_s unless QueryType.has_value?( uptype )
             @config.options.query_type = uptype
@@ -139,11 +141,15 @@ module ARINr
       # The base URL is taken from the config
       def get path
 
-        url = @config.config[ "whois" ][ "url" ]
-        if( ! url.end_with?( "/" ) )
-          url << "/"
+        if path.start_with?( "http://" )
+          url = path
+        else
+          url = @config.config[ "whois" ][ "url" ]
+          if( ! url.end_with?( "/" ) )
+            url << "/"
+          end
+          url << path
         end
-        url << path
 
         data = @cache.get( url )
         if( data == nil )
@@ -326,6 +332,8 @@ HELP_SUMMARY
               retval = QueryType::BY_DELEGATION
             when ARINr::IP6_ARPA
               retval = QueryType::BY_DELEGATION
+            when /\d=$/
+              retval = QueryType::BY_RESULT
           end
 
         end
@@ -352,6 +360,10 @@ HELP_SUMMARY
             path << "rest/asn/" << args[ 0 ]
           when QueryType::BY_DELEGATION
             path << "rest/rdns/" << args[ 0 ]
+          when QueryType::BY_RESULT
+            tree = @config.load_as_yaml( "arinw-lasttree.yaml" )
+            path = tree.find_data( args[ 0 ] )
+            raise ArgumentError.new( "Unable to find result for " + args[ 0 ] ) unless path
           else
             raise ArgumentError.new( "Unable to create a resource URL for " + queryType )
         end
@@ -471,7 +483,10 @@ HELP_SUMMARY
           tree_root.add_child( ARINr::Whois.make_delegations_tree( first.element ) )
           tree.add_root( tree_root )
         end
-        tree.to_normal_log( @config.logger, true ) if !tree_root.empty?
+        if !tree_root.empty?
+          tree.to_normal_log( @config.logger, true )
+          @config.save_as_yaml( "arinw-lasttree.yaml", tree )
+        end
         objs.each do |obj|
           obj.to_log( @config.logger )
         end
@@ -518,7 +533,10 @@ HELP_SUMMARY
         tree.add_children_as_root( ARINr::Whois.make_nets_tree( root ) )
         tree.add_children_as_root( ARINr::Whois.make_delegations_tree( root ) )
 
-        tree.to_terse_log( @config.logger, true ) if !tree.empty?
+        if !tree.empty?
+          tree.to_terse_log( @config.logger, true )
+          @config.save_as_yaml( "arinw-lasttree.yaml", tree )
+        end
         objs.each do |obj|
           obj.to_log( @config.logger )
         end if tree.empty?
@@ -557,7 +575,7 @@ HELP_SUMMARY
             end
           when /rest\/org\/(.*)/
             org = $+
-            if( org.match( /\/pft/ ) == nil )
+            if( ! org.include?( "/" ) )
               @config.logger.mesg( 'Use "arinw --pft true ' + org + '-o" to see other relevant information.' );
               show_default_help = false
             end

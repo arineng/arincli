@@ -15,3 +15,10 @@ arinw --no-cache --cache-expiry=300 --type=POC|NET|ORG|ASN|DEL
 ARINr Control
 
 arinc --list-cache --clean-cache --empty-cache --cache-eviction=300
+
+todo in whois
+- common name data files for guessing if person name search
+- cidr queries
+- pager support
+- org name queries
+- sorting of trees

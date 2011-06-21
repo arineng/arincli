@@ -1,12 +1,13 @@
 # Copyright (C) 2011 American Registry for Internet Numbers
 
+require 'yaml'
 require 'arinr_logger'
 
 module ARINr
 
   class DataNode
 
-    attr_accessor :alert, :data
+    attr_accessor :alert, :data, :children
 
     def initialize name, data = nil
       @name = name
@@ -20,10 +21,6 @@ module ARINr
 
     def to_s
       @name
-    end
-
-    def children
-      @children
     end
 
     def empty?
@@ -54,6 +51,20 @@ module ARINr
 
     def empty?
       @roots.empty?
+    end
+
+    def find_data data_address
+      node = ARINr::DataNode.new( "fakeroot" )
+      node.children=roots
+      data_address.split( /\D/ ).each do |index_str|
+        index = index_str.to_i - 1
+        node = node.children[ index ]
+      end
+      if node != nil
+        return node.data
+      end
+      #else
+      return nil
     end
 
     def to_terse_log logger, annotate = false
