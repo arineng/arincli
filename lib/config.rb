@@ -155,6 +155,10 @@ whois:
 
   # Query for extra details
   details: false
+
+  # CIDR query matching
+  # values are EXACT, LESS, and MORE
+  cidr: LESS
 YAML_CONFIG
 
   end

@@ -27,6 +27,8 @@ module ARINr
       QueryType.add_item :BY_ORG_HANDLE, "ORGHANDLE"
       QueryType.add_item :BY_IP4_ADDR,   "IP4ADDR"
       QueryType.add_item :BY_IP6_ADDR,   "IP6ADDR"
+      QueryType.add_item :BY_IP4_CIDR,   "IP4CIDR"
+      QueryType.add_item :BY_IP6_CIDR,   "IP6CIDR"
       QueryType.add_item :BY_AS_NUMBER,  "ASNUMBER"
       QueryType.add_item :BY_DELEGATION, "DELEGATION"
       QueryType.add_item :BY_RESULT,     "RESULT"
@@ -40,6 +42,14 @@ module ARINr
       RelatedType.add_item :ORGS, "ORGS"
       RelatedType.add_item :POCS, "POCS"
       RelatedType.add_item :ASNS, "ASNS"
+
+    end
+
+    class CidrMatching < ARINr::Enum
+
+      CidrMatching.add_item :EXACT, "EXACT"
+      CidrMatching.add_item :LESS,  "LESS"
+      CidrMatching.add_item :MORE,  "MORE"
 
     end
 
@@ -80,6 +90,8 @@ module ARINr
             "  orghandle  - organization handle",
             "  ip4addr    - IPv4 address",
             "  ip6addr    - IPv6 address",
+            "  ip4cidr    - IPv4 cidr block",
+            "  ip6cidr    - IPv6 cidr block",
             "  asnumber   - autonomous system number",
             "  delegation - reverse DNS delegation",
             "  result     - result from a previous query") do |type|
@@ -93,6 +105,13 @@ module ARINr
             @config.config[ "whois" ][ "pft" ] = false if pft =~ /no|false/i
             @config.config[ "whois" ][ "pft" ] = true if pft =~ /yes|true/i
             raise OptionParser::InvalidArgument, pft.to_s unless pft =~ /yes|no|true|false/i
+          end
+
+          opts.on( "--cidr LESS|EXACT|MORE",
+                   "Type of matching to use for CIDR queries." ) do |cidr|
+            upcidr = cidr.upcase
+            raise OptionParser::InvalidArgument, cidr.to_s unless CidrMatching.has_value?( upcidr )
+            @config.config[ "whois" ][ "cidr" ] = upcidr
           end
 
           opts.on( "--details YES|NO|TRUE|FALSE",
@@ -332,6 +351,13 @@ HELP_SUMMARY
               retval = QueryType::BY_DELEGATION
             when ARINr::IP6_ARPA
               retval = QueryType::BY_DELEGATION
+            when /(.*)\/\d/
+              ip = $+
+              if ip =~ ARINr::IPV4_REGEX
+                retval = QueryType::BY_IP4_CIDR
+              elsif ip =~ ARINr::IPV6_REGEX || ip =~ ARINr::IPV6_HEXCOMPRESS_REGEX
+                retval = QueryType::BY_IP6_CIDR
+              end
             when /\d=$/
               retval = QueryType::BY_RESULT
           end
@@ -356,6 +382,10 @@ HELP_SUMMARY
             path << "rest/ip/" << args[ 0 ]
           when QueryType::BY_IP6_ADDR
             path << "rest/ip/" << args[ 0 ]
+          when QueryType::BY_IP4_CIDR
+            path << "rest/cidr/" << args[ 0 ]
+          when QueryType::BY_IP6_CIDR
+            path << "rest/cidr/" << args[ 0 ]
           when QueryType::BY_AS_NUMBER
             path << "rest/asn/" << args[ 0 ]
           when QueryType::BY_DELEGATION
@@ -383,6 +413,17 @@ HELP_SUMMARY
               end
               if details
                 path << "?showDetails=true"
+              end
+            end
+          when /rest\/cidr\//
+            if relatedType != nil
+              raise ArgumentError.new( "Unable to relate " + relatedType + " to " + path )
+            else
+              cidr = @config.config[ "whois" ][ "cidr" ]
+              if cidr == CidrMatching::LESS
+                path << "/less"
+              elsif cidr == CidrMatching::MORE
+                path << "/more"
               end
             end
           when /rest\/net\//
@@ -439,9 +480,6 @@ HELP_SUMMARY
                 path << "/asns"
               else
                 raise ArgumentError.new( "Unable to relate " + relatedType + " to " + path ) if relatedType
-            end
-            if !relatedType and pft
-              path << "/pft"
             end
             if details
               path << "?showDetails=true"
