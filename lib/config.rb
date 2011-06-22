@@ -159,6 +159,9 @@ whois:
   # CIDR query matching
   # values are EXACT, LESS, and MORE
   cidr: LESS
+
+  # Substring matching
+  substring: true
 YAML_CONFIG
 
   end

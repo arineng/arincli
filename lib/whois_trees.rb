@@ -32,10 +32,14 @@ module ARINr
       else
         pocs = REXML::XPath.first(element, "pocs")
       end
-      if (pocs != nil && pocs.elements[ "pocLinkRef" ])
+      if (pocs != nil && REXML::XPath.first( pocs, "pocLinkRef|pocRef" ) )
         retval = ARINr::DataNode.new("Points of Contact")
-        pocs.elements.each( "pocLinkRef" ) do |poc|
-          s = format( "%s (%s)", poc.attribute( "handle" ), poc.attribute( "description" ) )
+        pocs.elements.each( "pocLinkRef|pocRef" ) do |poc|
+          if poc.name == "pocLinkRef"
+            s = format( "%s (%s)", poc.attribute( "handle" ), poc.attribute( "description" ) )
+          else
+            s = format( "%s (%s)", poc.attribute( "name" ), poc.attribute( "handle" ) )
+          end
           retval.add_child(ARINr::DataNode.new(s, poc.text() ))
         end
         check_limit_exceeded( pocs, retval )

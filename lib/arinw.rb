@@ -15,6 +15,7 @@ require 'whois_org'
 require 'whois_asn'
 require 'whois_rdns'
 require 'whois_trees'
+require 'common_names'
 
 module ARINr
 
@@ -32,6 +33,8 @@ module ARINr
       QueryType.add_item :BY_AS_NUMBER,  "ASNUMBER"
       QueryType.add_item :BY_DELEGATION, "DELEGATION"
       QueryType.add_item :BY_RESULT,     "RESULT"
+      QueryType.add_item :BY_POC_NAME,   "POCNAME"
+      QueryType.add_item :BY_ORG_NAME,   "ORGNAME"
 
     end
 
@@ -94,6 +97,8 @@ module ARINr
             "  ip6cidr    - IPv6 cidr block",
             "  asnumber   - autonomous system number",
             "  delegation - reverse DNS delegation",
+            "  pocname    - name of a point of contact",
+            "  orgname    - name of an organization",
             "  result     - result from a previous query") do |type|
             uptype = type.upcase
             raise OptionParser::InvalidArgument, type.to_s unless QueryType.has_value?( uptype )
@@ -112,6 +117,13 @@ module ARINr
             upcidr = cidr.upcase
             raise OptionParser::InvalidArgument, cidr.to_s unless CidrMatching.has_value?( upcidr )
             @config.config[ "whois" ][ "cidr" ] = upcidr
+          end
+
+          opts.on( "--substring YES|NO|TRUE|FALSE",
+                   "Use substring matching for name searchs." ) do |substring|
+            @config.config[ "whois" ][ "substring" ] = false if substring =~ /no|false/i
+            @config.config[ "whois" ][ "substring" ] = true if substring =~ /yes|true/i
+            raise OptionParser::InvalidArgument, substring.to_s unless substring =~ /yes|no|true|false/i
           end
 
           opts.on( "--details YES|NO|TRUE|FALSE",
@@ -360,6 +372,16 @@ HELP_SUMMARY
               end
             when /\d=$/
               retval = QueryType::BY_RESULT
+            else
+              if ARINr::is_last_name( args[ 0 ].upcase )
+                retval = QueryType::BY_POC_NAME
+              end
+          end
+
+        elsif( args.length() == 2 )
+
+          if ARINr::is_last_name( args[ 1 ].upcase ) && ( ARINr::is_male_name( args[ 0 ].upcase ) || ARINr::is_female_name( args[ 0 ].upcase ) )
+            retval = QueryType::BY_POC_NAME
           end
 
         end
@@ -394,6 +416,20 @@ HELP_SUMMARY
             tree = @config.load_as_yaml( "arinw-lasttree.yaml" )
             path = tree.find_data( args[ 0 ] )
             raise ArgumentError.new( "Unable to find result for " + args[ 0 ] ) unless path
+          when QueryType::BY_POC_NAME
+            substring = @config.config[ "whois" ][ "substring" ] ? "*" : ""
+            path << "rest/pocs"
+            case args.length
+              when 1
+                path << ";last=" << args[ 0 ] << substring
+              when 2
+                path << ";last=" << args[ 1 ] << substring << ";first=" << args[ 0 ] << substring
+              when 3
+                path << ";last=" << args[ 3 ] << substring << ";first=" << args[ 0 ] << substring << ";middle=" << args[ 1 ] << substring
+              else
+                path << ";q=" << args[ 0 ] << substring
+            end
+
           else
             raise ArgumentError.new( "Unable to create a resource URL for " + queryType )
         end
