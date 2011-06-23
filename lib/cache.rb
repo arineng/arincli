@@ -58,13 +58,13 @@ module ARINr
         eviction_count = 0
         cache_files.each do |file|
           full_file_name = File.join( @config.whois_cache_dir, file )
-          if !file.start_with?( "." ) && File::mtime( full_file_name ) > eviction
+          if !file.start_with?( "." ) && ( File.mtime( full_file_name ) < eviction )
             @config.logger.trace( "Evicting " + full_file_name )
             File::unlink( full_file_name )
             eviction_count += 1
           end
         end
-        @config.logger.mesg( "Evicted " + eviction_count.to_s + " files from the cache" )
+        @config.logger.trace( "Evicted " + eviction_count.to_s + " files from the cache" )
         return eviction_count
       end
 

@@ -219,6 +219,7 @@ module ARINr
         @config.logger.mesg( ARINr::VERSION )
         @config.setup_workspace
         @cache = ARINr::Whois::Cache.new( @config )
+        @cache.clean if @config.config[ "whois" ][ "clean_cache" ]
 
         if( @config.options.query_type == nil )
           @config.options.query_type = guess_query_value_type( @config.options.argv )

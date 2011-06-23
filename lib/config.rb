@@ -155,6 +155,9 @@ whois:
   # Values are true or false
   use_cache: true
 
+  # Automatically clean the cache.
+  clean_cache: true
+
   # Use PFT style queries where appropriate
   pft: true
 
