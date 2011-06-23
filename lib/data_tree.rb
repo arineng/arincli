@@ -92,9 +92,14 @@ module ARINr
     private
 
     def to_log annotate
-      num_count = 1
+      double_space_roots = false
       @roots.each do |root|
-        @logger.start_data_item
+        double_space_roots = true unless root.children.empty?
+      end
+      num_count = 1
+      @logger.start_data_item unless double_space_roots
+      @roots.each do |root|
+        @logger.start_data_item if double_space_roots
         if annotate
           if root.alert
             s = format( "   # %s", root.to_s )
@@ -119,8 +124,9 @@ module ARINr
           child_num += 1 if child_num > 0
         end if root.children() != nil
         num_count += 1
-        @logger.end_data_item
+        @logger.end_data_item if double_space_roots
       end
+      @logger.end_data_item unless double_space_roots
     end
 
     def rprint( num, parent, node, prefix )
