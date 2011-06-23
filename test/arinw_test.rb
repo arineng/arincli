@@ -41,8 +41,8 @@ class ArinwTest < Test::Unit::TestCase
     assert_equal( arinw.guess_query_value_type( [ "1.0.0.0" ] ), "IP4ADDR" )
     assert_equal( arinw.guess_query_value_type( [ "199.0.0.0" ] ), "IP4ADDR" )
     assert_equal( arinw.guess_query_value_type( [ "255.255.255.255" ] ), "IP4ADDR" )
-    assert_nil( arinw.guess_query_value_type( [ "255.255.255.256" ] ) )
-    assert_nil( arinw.guess_query_value_type( [ "256.255.255.255" ] ) )
+    assert_equal( arinw.guess_query_value_type( [ "255.255.255.256" ] ), "ORGNAME" )
+    assert_equal( arinw.guess_query_value_type( [ "256.255.255.255" ] ), "ORGNAME" )
     assert_equal( arinw.guess_query_value_type( [ "2001:500:13::" ] ), "IP6ADDR" )
     assert_equal( arinw.guess_query_value_type( [ "2001:500:13:FFFF:FFFF:FFFF:FFFF:FFFF" ] ), "IP6ADDR" )
     assert_equal( arinw.guess_query_value_type( [ "10745" ] ), "ASNUMBER" )
@@ -213,11 +213,11 @@ class ArinwTest < Test::Unit::TestCase
     p = arinw.mod_url( "/rest/poc/ARIN", ARINr::Whois::RelatedType::ORGS, true, true )
     assert_equal( "/rest/poc/ARIN/orgs?showDetails=true", p )
     p = arinw.mod_url( "/rest/poc/ARIN", nil, true, false )
-    assert_equal( "/rest/poc/ARIN/pft", p )
+    assert_equal( "/rest/poc/ARIN", p )
     p = arinw.mod_url( "/rest/poc/ARIN", nil, false, true )
     assert_equal( "/rest/poc/ARIN?showDetails=true", p )
     p = arinw.mod_url( "/rest/poc/ARIN", nil, true, true )
-    assert_equal( "/rest/poc/ARIN/pft?showDetails=true", p )
+    assert_equal( "/rest/poc/ARIN?showDetails=true", p )
   end
 
 end
