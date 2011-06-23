@@ -22,3 +22,5 @@ todo in whois
 - pager support
 - org name queries
 - sorting of trees
+- cache auto cleaning
+- arinc

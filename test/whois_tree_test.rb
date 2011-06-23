@@ -76,4 +76,25 @@ POCREF_XML
 
   end
 
+  def test_sort_asns
+    arry = [ "AS0", "AS1", "AS12", "AS200", "AS21", "AS10745", "AS393220", "AS393225", "AS53535" ]
+    assert_equal( [ "AS0", "AS1","AS10745", "AS12", "AS200", "AS21", "AS393220", "AS393225", "AS53535" ], arry.sort )
+    assert_equal( [ "AS0", "AS1", "AS12", "AS200", "AS21", "AS10745", "AS393220", "AS393225", "AS53535" ], arry )
+
+    new_arry = ARINr::Whois::sort_asns arry
+    assert_equal( [ "AS0", "AS1", "AS12", "AS21", "AS200", "AS10745","AS53535", "AS393220", "AS393225" ], new_arry )
+  end
+
+  def test_sort_nets
+    arry = [ "NET6-2001-1800-0","NET6-2001-400-0","NET6-2001-4800-0", "NET-208-0-0-0-0","NET-209-0-0-0-0","NET-216-0-0-0-0","NET-23-0-0-0-0","NET-24-0-0-0-0" ]
+    new_arry = ARINr::Whois::sort_nets arry
+    assert_equal( [ "NET-23-0-0-0-0","NET-24-0-0-0-0","NET-208-0-0-0-0","NET-209-0-0-0-0","NET-216-0-0-0-0","NET6-2001-400-0","NET6-2001-1800-0","NET6-2001-4800-0"], new_arry )
+  end
+
+  def test_sort_dels
+    arry = ["189.184.in-addr.arpa.","176.184.in-addr.arpa.","181.184.in-addr.arpa.","183.184.in-addr.arpa.","185.184.in-addr.arpa.","187.184.in-addr.arpa."]
+    new_arry = ARINr::Whois::sort_dels arry
+    assert_equal( ["176.184.in-addr.arpa.","181.184.in-addr.arpa.","183.184.in-addr.arpa.","185.184.in-addr.arpa.","187.184.in-addr.arpa.","189.184.in-addr.arpa."], new_arry)
+  end
+
 end

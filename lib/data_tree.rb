@@ -27,6 +27,10 @@ module ARINr
       @children.empty?
     end
 
+    def <=> x
+      @name <=> x.to_s
+    end
+
   end
 
   class DataTree
@@ -58,7 +62,7 @@ module ARINr
       node.children=roots
       data_address.split( /\D/ ).each do |index_str|
         index = index_str.to_i - 1
-        node = node.children[ index ]
+        node = node.children[ index ] if node
       end
       if node != nil
         return node.data

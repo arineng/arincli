@@ -225,7 +225,7 @@ module ARINr
             @config.logger.mesg( "Unable to guess type of query. You must specify it." )
             exit
           else
-            @config.logger.trace( "Assuming query is " + @config.options.query_type )
+            @config.logger.mesg( "Assuming query value is " + @config.options.query_type )
           end
         end
 
@@ -375,6 +375,8 @@ HELP_SUMMARY
             else
               if ARINr::is_last_name( args[ 0 ].upcase )
                 retval = QueryType::BY_POC_NAME
+              else
+                retval = QueryType::BY_ORG_NAME
               end
           end
 
@@ -382,7 +384,20 @@ HELP_SUMMARY
 
           if ARINr::is_last_name( args[ 1 ].upcase ) && ( ARINr::is_male_name( args[ 0 ].upcase ) || ARINr::is_female_name( args[ 0 ].upcase ) )
             retval = QueryType::BY_POC_NAME
+          else
+            retval = QueryType::BY_ORG_NAME
           end
+
+        elsif( args.length() == 3 )
+
+          if ARINr::is_last_name( args[ 2 ].upcase ) && ( ARINr::is_male_name( args[ 0 ].upcase ) || ARINr::is_female_name( args[ 0 ].upcase ) )
+            retval = QueryType::BY_POC_NAME
+          else
+            retval = QueryType::BY_ORG_NAME
+          end
+
+        else
+          retval = QueryType::BY_ORG_NAME
 
         end
 
@@ -421,15 +436,17 @@ HELP_SUMMARY
             path << "rest/pocs"
             case args.length
               when 1
-                path << ";last=" << args[ 0 ] << substring
+                path << ";last=" << URI.escape( args[ 0 ] ) << substring
               when 2
-                path << ";last=" << args[ 1 ] << substring << ";first=" << args[ 0 ] << substring
+                path << ";last=" << URI.escape( args[ 1 ] ) << substring << ";first=" << URI.escape( args[ 0 ] ) << substring
               when 3
-                path << ";last=" << args[ 3 ] << substring << ";first=" << args[ 0 ] << substring << ";middle=" << args[ 1 ] << substring
+                path << ";last=" << URI.escape( args[ 2 ] ) << substring << ";first=" << URI.escape( args[ 0 ] ) << substring << ";middle=" << URI.escape( args[ 1 ] ) << substring
               else
-                path << ";q=" << args[ 0 ] << substring
+                path << ";q=" << URI.escape( args.join( " " ) ) << substring
             end
-
+          when QueryType::BY_ORG_NAME
+            substring = @config.config[ "whois" ][ "substring" ] ? "*" : ""
+            path << "rest/orgs;q=" << URI.escape( args.join( " " ) ) << substring
           else
             raise ArgumentError.new( "Unable to create a resource URL for " + queryType )
         end
@@ -551,6 +568,7 @@ HELP_SUMMARY
         if( !objs.empty? )
           first = objs.first()
           tree_root = ARINr::DataNode.new( first.to_s, first.ref.to_s )
+          tree_root.add_child( ARINr::Whois.make_orgs_tree( first.element ) )
           tree_root.add_child( ARINr::Whois.make_pocs_tree( first.element ) )
           tree_root.add_child( ARINr::Whois.make_asns_tree( first.element ) )
           tree_root.add_child( ARINr::Whois.make_nets_tree( first.element ) )
@@ -595,6 +613,7 @@ HELP_SUMMARY
         tree = ARINr::DataTree.new
         objs.each do |obj|
           tree_root = ARINr::DataNode.new( obj.to_s, obj.ref.to_s )
+          tree_root.add_child( ARINr::Whois.make_orgs_tree( obj.element ) )
           tree_root.add_child( ARINr::Whois.make_pocs_tree( obj.element ) )
           tree_root.add_child( ARINr::Whois.make_asns_tree( obj.element ) )
           tree_root.add_child( ARINr::Whois.make_nets_tree( obj.element ) )
@@ -602,6 +621,7 @@ HELP_SUMMARY
           tree.add_root( tree_root )
         end
 
+        tree.add_children_as_root( ARINr::Whois.make_orgs_tree( root ) )
         tree.add_children_as_root( ARINr::Whois.make_pocs_tree( root ) )
         tree.add_children_as_root( ARINr::Whois.make_asns_tree( root ) )
         tree.add_children_as_root( ARINr::Whois.make_nets_tree( root ) )
@@ -643,8 +663,14 @@ HELP_SUMMARY
         case path
           when /rest\/net\/(.*)/
             net = $+
-            if( net.match(/\/rdns/) == nil )
-              @config.logger.mesg( 'Use "arinw -r dels ' + net + '" to see reverse DNS information.' );
+            if( ! net.include?( "/rdns" ) )
+              new_net = net.sub( "/pft", "" )
+              @config.logger.mesg( 'Use "arinw -r dels ' + new_net + '" to see reverse DNS information.' );
+              show_default_help = false
+            end
+            if( ! net.include?( "/pft" ) )
+              new_net = net.sub( "/rdns", "" )
+              @config.logger.mesg( 'Use "arinw --pft true ' + new_net + '" to see reverse DNS information.' );
               show_default_help = false
             end
           when /rest\/org\/(.*)/
