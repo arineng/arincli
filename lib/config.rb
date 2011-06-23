@@ -88,6 +88,8 @@ module ARINr
       if( data_file != nil )
         @logger.data_out= File.open( data_file, "w+" )
       end
+
+      @logger.pager=output[ "pager" ]
     end
 
     def self.clean
@@ -131,6 +133,9 @@ output:
   # If specified, data goest to this file
   # otherwise, leave it commented out to go to stdout
   #data_file: /tmp/ARINr.data
+
+  # Page output with system pager when appropriate.
+  pager: true
 
 whois:
 

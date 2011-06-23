@@ -215,6 +215,7 @@ module ARINr
           help()
         end
 
+        @config.logger.run_pager
         @config.logger.mesg( ARINr::VERSION )
         @config.setup_workspace
         @cache = ARINr::Whois::Cache.new( @config )

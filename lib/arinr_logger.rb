@@ -1,5 +1,8 @@
 # Copyright (C) 2011 American Registry for Internet Numbers
 
+# The run_pager code came from http://nex-3.com/posts/73-git-style-automatic-paging-in-ruby
+# and is credited to Nathan Weizenbaum
+
 require 'enum'
 
 module ARINr
@@ -8,13 +11,13 @@ module ARINr
   class MessageLevel < ARINr::Enum
 
     # no messages
-    MessageLevel.add_item( :NO_MESSAGES, "NONE" )
+    MessageLevel.add_item(:NO_MESSAGES, "NONE")
 
     # some messages
-    MessageLevel.add_item( :SOME_MESSAGES, "SOME" )
+    MessageLevel.add_item(:SOME_MESSAGES, "SOME")
 
     # all messages
-    MessageLevel.add_item( :ALL_MESSAGES, "ALL" )
+    MessageLevel.add_item(:ALL_MESSAGES, "ALL")
 
   end
 
@@ -22,20 +25,20 @@ module ARINr
   class DataAmount < ARINr::Enum
 
     # a terse amount of data
-    DataAmount.add_item( :TERSE_DATA, "TERSE" )
+    DataAmount.add_item(:TERSE_DATA, "TERSE")
 
     # a normal amount of data
-    DataAmount.add_item( :NORMAL_DATA, "NORMAL" )
+    DataAmount.add_item(:NORMAL_DATA, "NORMAL")
 
     # an extra amount of data
-    DataAmount.add_item( :EXTRA_DATA, "EXTRA" )
+    DataAmount.add_item(:EXTRA_DATA, "EXTRA")
 
   end
 
   # A logger for this application.
   class Logger
 
-    attr_accessor :message_level, :data_amount, :message_out, :data_out, :item_name_length, :item_name_rjust
+    attr_accessor :message_level, :data_amount, :message_out, :data_out, :item_name_length, :item_name_rjust, :pager
 
     def initialize
 
@@ -53,20 +56,20 @@ module ARINr
 
     def validate_message_level
       raise ArgumentError, "Message log level not defined" if @message_level == nil
-      raise ArgumentError, "Unknown message log level '" + @message_level.to_s + "'" if ! MessageLevel.has_value?( @message_level.to_s )
+      raise ArgumentError, "Unknown message log level '" + @message_level.to_s + "'" if !MessageLevel.has_value?(@message_level.to_s)
     end
 
     def validate_data_amount
       raise ArgumentError, "Data log level not defined" if @data_amount == nil
-      raise ArgumentError, "Unknown data log level '" + @data_amount.to_s + "'" if ! DataAmount.has_value?( @data_amount.to_s )
+      raise ArgumentError, "Unknown data log level '" + @data_amount.to_s + "'" if !DataAmount.has_value?(@data_amount.to_s)
     end
 
     def start_data_item
-      if( @data_last_written_to )
+      if (@data_last_written_to)
         @data_out.puts
-      elsif( @data_out == $stdout && @message_out == $stderr && @message_last_written_to )
+      elsif (@data_out == $stdout && @message_out == $stderr && @message_last_written_to)
         @data_out.puts
-      elsif( @data_out == @message_out && @message_last_written_to )
+      elsif (@data_out == @message_out && @message_last_written_to)
         @data_out.puts
       end
     end
@@ -84,8 +87,8 @@ module ARINr
 
       validate_message_level()
 
-      if( @message_level != MessageLevel::NO_MESSAGES )
-        log_info( "# " + message.to_s )
+      if (@message_level != MessageLevel::NO_MESSAGES)
+        log_info("# " + message.to_s)
       end
 
     end
@@ -95,8 +98,8 @@ module ARINr
 
       validate_message_level()
 
-      if( @message_level != MessageLevel::NO_MESSAGES && @message_level != MessageLevel::SOME_MESSAGES )
-        log_info( "## " + message.to_s )
+      if (@message_level != MessageLevel::NO_MESSAGES && @message_level != MessageLevel::SOME_MESSAGES)
+        log_info("## " + message.to_s)
       end
 
     end
@@ -106,7 +109,7 @@ module ARINr
 
       validate_data_amount()
 
-      log_data( item_name, item_value )
+      log_data(item_name, item_value)
 
     end
 
@@ -115,8 +118,8 @@ module ARINr
 
       validate_data_amount()
 
-      if( @data_amount != DataAmount::TERSE_DATA )
-        log_data( item_name, item_value )
+      if (@data_amount != DataAmount::TERSE_DATA)
+        log_data(item_name, item_value)
       end
 
     end
@@ -125,8 +128,8 @@ module ARINr
 
       validate_data_amount()
 
-      if( @data_amount != DataAmount::TERSE_DATA && @data_amount != DataAmount::NORMAL_DATA )
-        log_data( item_name, item_value )
+      if (@data_amount != DataAmount::TERSE_DATA && @data_amount != DataAmount::NORMAL_DATA)
+        log_data(item_name, item_value)
       end
 
     end
@@ -137,17 +140,45 @@ module ARINr
 
       case data_amount
         when DataAmount::TERSE_DATA
-          log_raw( tree_item )
+          log_raw(tree_item)
         when DataAmount::NORMAL_DATA
-          if( @data_amount != DataAmount::TERSE_DATA )
-            log_raw( tree_item )
+          if (@data_amount != DataAmount::TERSE_DATA)
+            log_raw(tree_item)
           end
         when DataAmount::EXTRA_DATA
-          if( @data_amount != DataAmount::TERSE_DATA && @data_amount != DataAmount::NORMAL_DATA )
-            log_raw( tree_item )
+          if (@data_amount != DataAmount::TERSE_DATA && @data_amount != DataAmount::NORMAL_DATA)
+            log_raw(tree_item)
           end
       end
 
+    end
+
+    # This code came from http://nex-3.com/posts/73-git-style-automatic-paging-in-ruby
+    def run_pager
+      return unless @pager
+      return if PLATFORM =~ /win32/
+      return unless STDOUT.tty?
+
+      read, write = IO.pipe
+
+      unless Kernel.fork # Child process
+        STDOUT.reopen(write)
+        STDERR.reopen(write) if STDERR.tty?
+        read.close
+        write.close
+        return
+      end
+
+      # Parent process, become pager
+      STDIN.reopen(read)
+      read.close
+      write.close
+
+      ENV['LESS'] = 'FSRX' # Don't page if the input is short enough
+
+      Kernel.select [STDIN] # Wait until we have input before we start the pager
+      pager = ENV['PAGER'] || 'less'
+      exec pager rescue exec "/bin/sh", "-c", pager
     end
 
     private
@@ -156,25 +187,25 @@ module ARINr
       if @data_last_written_to && @message_out == @data_out
         @data_out.puts
       end
-      @message_out.puts( message )
+      @message_out.puts(message)
       @message_last_written_to = true
       @data_last_written_to = false
     end
 
     def log_data item_name, item_value
-      if( item_value != nil && !item_value.to_s.empty? )
+      if (item_value != nil && !item_value.to_s.empty?)
         format_string = "%" + @item_name_length.to_s + "s:  %s"
-        if( ! @item_name_rjust )
+        if (!@item_name_rjust)
           format_string = "%-" + @item_name_length.to_s + "s:  %s"
         end
-        @data_out.puts( format( format_string, item_name, item_value ) )
+        @data_out.puts(format(format_string, item_name, item_value))
         @data_last_written_to = true
         @message_last_written_to = false
       end
     end
 
     def log_raw item_value
-      @data_out.puts( item_value )
+      @data_out.puts(item_value)
       @data_last_written_to = true
       @message_last_written_to = false
     end
