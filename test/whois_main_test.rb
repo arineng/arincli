@@ -4,10 +4,10 @@ require 'tmpdir'
 require 'fileutils'
 require 'config'
 require 'test/unit'
-require 'arinw'
+require 'whois_main'
 require 'arinr_logger'
 
-class ArinwTest < Test::Unit::TestCase
+class WhoisMainTest < Test::Unit::TestCase
 
   @work_dir = nil
 
