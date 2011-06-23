@@ -203,7 +203,7 @@ NET_XML
     c.setup_workspace
 
     c.config[ "whois" ][ "use_cache" ] = true
-    c.config[ "whois" ][ "cache_expiry" ] = -19000 # really any number less than -1 should be good
+    c.config[ "whois" ][ "cache_eviction" ] = -19000 # really any number less than -1 should be good
     cache = ARINr::Whois::Cache.new c
     url = "http://whois.arin.net/rest/net/NET-192-136-136-0-"
     cache.create_or_update( url + "1", @net_xml )
