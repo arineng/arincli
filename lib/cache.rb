@@ -68,6 +68,47 @@ module ARINr
         return eviction_count
       end
 
+      def count
+        count = 0
+        cache_files = Dir::entries( @config.whois_cache_dir )
+        cache_files.each do |file|
+          if !file.start_with?( "." )
+            count += 1
+          end
+        end
+        return count
+      end
+
+      def get_last
+        cache_files = Dir::entries( @config.whois_cache_dir )
+        last_file = nil
+        last_file_mtime = nil
+        cache_files.each do |file|
+          full_file_name = File.join( @config.whois_cache_dir, file )
+          if !file.start_with?( "." )
+            mtime = File.mtime( full_file_name )
+            if last_file == nil
+              last_file = full_file_name
+              last_file_mtime = mtime
+            elsif mtime > last_file_mtime
+              last_file = full_file_name
+              last_file_mtime = mtime
+            end
+          end
+        end
+        if last_file
+          f = File.open( last_file, "r" )
+          data = ''
+          f.each_line do |line|
+            data += line
+          end
+          f.close
+          return [ last_file, last_file_mtime, data ]
+        end
+        #else
+        return nil
+      end
+
       def self.make_safe( url )
         safe = URI.escape( url )
         safe = URI.escape( safe, "!*'();:@&=+$,/?#[]" )

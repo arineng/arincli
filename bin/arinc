@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.join( File.dirname( File.expand_path(File.dirname(__FILE__) ) ), 'lib' )
+
+require 'control_main'
+app = ARINr::Control.new
+app.run( ARGV )
+
+
