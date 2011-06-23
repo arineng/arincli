@@ -320,6 +320,11 @@ but the QUERY_VALUE type maybe explicitly set using the -t option. Queries for d
 related to the QUERY_VALUE may be specified using the -r option (i.e. the reverse DNS
 delegations related to a network).
 
+In certain cases, Organization handles (orghandle), also knows as organization ids,
+can be properly determined. This occurs when the Organization handle ends with '-z'
+or with '-xxx' where xxx is a number. As a shortcut for Organization handles that do
+not match these cases, a '-o' can be appended to signify that it is an Organization handle.
+
 HELP_SUMMARY
         puts @opts.help
         exit
@@ -345,6 +350,9 @@ HELP_SUMMARY
               args[ 0 ] = args[ 0 ].upcase
               retval = QueryType::BY_POC_HANDLE
             when ARINr::ORGL_HANDLE_REGEX
+              args[ 0 ] = args[ 0 ].upcase
+              retval = QueryType::BY_ORG_HANDLE
+            when ARINr::ORGN_HANDLE_REGEX
               args[ 0 ] = args[ 0 ].upcase
               retval = QueryType::BY_ORG_HANDLE
             when ARINr::ORGS_HANDLE_REGEX

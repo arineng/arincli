@@ -35,6 +35,9 @@ class WhoisMainTest < Test::Unit::TestCase
 
     arinw = ARINr::Whois::Main.new( [], config )
 
+    assert_equal( arinw.guess_query_value_type( [ "AXA-27" ] ), "ORGHANDLE" )
+    assert_equal( arinw.guess_query_value_type( [ "AXA-Z" ] ), "ORGHANDLE" )
+    assert_equal( arinw.guess_query_value_type( [ "AXA-O" ] ), "ORGHANDLE" )
     assert_equal( arinw.guess_query_value_type( [ "NET-192-136-136-1" ] ), "NETHANDLE" )
     assert_equal( arinw.guess_query_value_type( [ "NET6-2001-500-13-1" ] ), "NETHANDLE" )
     assert_equal( arinw.guess_query_value_type( [ "ALN-ARIN" ] ), "POCHANDLE" )

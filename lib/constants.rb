@@ -14,6 +14,7 @@ module ARINr
   POC_HANDLE_REGEX = /.*-ARIN$/i
   ORGL_HANDLE_REGEX = /.*-Z$/i
   ORGS_HANDLE_REGEX = /.*-O$/i
+  ORGN_HANDLE_REGEX = /\w+\-\d+/
   AS_REGEX = /^[0-9]{1,10}$/
   ASN_REGEX = /^AS[0-9]{1,20}$/i
   IP4_ARPA = /\.in-addr\.arpa[\.]?/i
