@@ -314,6 +314,11 @@ module ARINr
         puts <<HELP_SUMMARY
 
 This program uses ARIN's Whois-RWS RESTful API to query ARIN's Whois database.
+The general usage is "arinw QUERY_VALUE" where the type of QUERY_VALUE influences the
+type of query performed. This program will attempt to guess the type of QUERY_VALUE,
+but the QUERY_VALUE type maybe explicitly set using the -t option. Queries for data
+related to the QUERY_VALUE may be specified using the -r option (i.e. the reverse DNS
+delegations related to a network).
 
 HELP_SUMMARY
         puts @opts.help
