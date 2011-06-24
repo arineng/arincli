@@ -6,7 +6,7 @@ require 'yaml'
 
 module ARINr
 
-  class Control
+  class Utility
 
     def run args
 
@@ -26,7 +26,7 @@ module ARINr
         when "config"
           config
         else
-          puts "Unknown command input for arinc."
+          puts "Unknown command input for arinu."
           puts
           help
       end
@@ -39,7 +39,7 @@ module ARINr
 
 This program is for maintenance of the ARINr program files.
 
-Usage is "arinc COMMAND" where COMMAND is one of the following:
+Usage is "arinu COMMAND" where COMMAND is one of the following:
 
   help        - shows this help
   clean_cache - forces a cleaning of the arinw cache
