@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.join( File.dirname( File.expand_path(File.dirname(__FILE__) ) ), 'lib' )
+
+require 'poc_main'
+app = ARINr::Registration::PocMain.new( ARGV )
+app.run()
+
+

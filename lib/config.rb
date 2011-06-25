@@ -170,6 +170,12 @@ whois:
 
   # Substring matching
   substring: true
+
+registration:
+
+  # The editor to use for editing values.
+  # If left blank, an attempt will be used to find a system default
+  # editor: vi
 YAML_CONFIG
 
   end
