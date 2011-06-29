@@ -1,0 +1,44 @@
+# Point of Contact Template
+#
+# NOTE: This is a YAML file. You must follow YAML syntax. See the example at the end.
+
+
+<% if handle %>
+handle: <%= handle %>
+<% end %>
+# possible values are "person" and "role"
+type: <%= type %>
+last name: <%= last_name %>
+first name: <%= first_name %>
+middle name: <%= middle_name %>
+company name: <%= company_name %>
+
+address:
+<% street_address.each do |address| %>
+  - <%= address %>
+<% end %>
+
+city: <%= city %>
+state or province: <%= state %>
+country: <%= country %>
+postal or zip code: <%= postal_code %>
+
+phones:
+<% phones.each do |k,v| %>
+  <%= k %>:
+    - <%= v[ 0 ] %>
+  <% if v[ 1] %>  - <%= v[ 1 ] %> <% end %>
+<% end %>
+
+email addresses:
+<% emails.each do |email| %>
+  - <%= email %>
+<% end %>
+
+public comments:
+<% comments.each do |comment| %>
+  - <%= comment %>
+<% end %>
+
+# Example
+
