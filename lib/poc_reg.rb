@@ -18,6 +18,16 @@ module ARINr
       def get_binding
         return binding
       end
+
+      def ==(another_poc)
+        return false unless another_poc.instance_of?( ARINr::Registration::Poc )
+        instance_variables.each do |var|
+          a = instance_variable_get( var )
+          b = another_poc.instance_variable_get( var )
+          return false unless a == b
+        end
+        return true
+      end
     end
 
     # Takes a POC and returns a string full of YAML goodness
@@ -58,7 +68,7 @@ module ARINr
     def Registration::poc_to_element poc
       element = REXML::Element.new( "poc" )
       element.add_namespace( "http://www.arin.net/regrws/core/v1" )
-      element.add_attribute( ARINr::new_element_with_text( "iso3166-2", poc.state.to_s ) )
+      element.add_element( ARINr::new_element_with_text( "iso3166-2", poc.state.to_s ) )
       iso3166_1 = REXML::Element.new( "iso3166-1" )
       iso3166_1.add_element( ARINr::new_element_with_text( "code2", poc.country.to_s ) )
       element.add_element( iso3166_1 )
@@ -87,7 +97,7 @@ module ARINr
         end
         phone.add_element( type )
         phone.add_element( ARINr::new_element_with_text( "number", v[ 0 ] ) )
-        phone.add_element( ARINr::new_element_with_text( "extension", v[ 0 ] ) ) if v[ 1 ]
+        phone.add_element( ARINr::new_element_with_text( "extension", v[ 1 ] ) ) if v[ 1 ]
         phones.add_element( phone )
       end
       element.add_element( ARINr::new_element_with_text( "handle", poc.handle ) )
@@ -96,33 +106,33 @@ module ARINr
 
     def Registration::element_to_poc element
       poc = ARINr::Registration::Poc.new
-      poc.state=element.elements[ "iso3166-2" ][ 0 ].text
-      poc.country=element.elements[ "iso3166-1/code2" ][ 0 ].text
+      poc.state=element.elements[ "iso3166-2" ].text if element.elements[ "iso3166-2" ]
+      poc.country=element.elements.to_a( "iso3166-1/code2" )[ 0 ].text
       poc.emails=[]
-      element.elements[ "emails/email" ].each do |email|
+      element.elements.each( "emails/email" ) do |email|
         poc.emails << email.text
       end
       poc.street_address=[]
-      element.elements[ "streetAddress/line" ].each do |line|
+      element.elements.each( "streetAddress/line" ) do |line|
         poc.street_address << line.text
       end
-      poc.city=element.elements[ "city" ][ 0 ].text
-      poc.postal_code=element.elements[ "postalCode" ][ 0 ].text
+      poc.city=element.elements[ "city" ].text if element.elements[ "city" ]
+      poc.postal_code=element.elements[ "postalCode" ].text if element.elements[ "postalCode" ]
       poc.comments=[]
-      element.elements[ "comment/line" ].each do |line|
-        poc.comments << line
+      element.elements.each( "comment/line" ) do |line|
+        poc.comments << line.text
       end
-      poc.type=element.elements[ "contactType" ][ 0 ].text
-      poc.company_name=element.elements[ "companyName" ][ 0 ].text
-      poc.first_name=element.elements[ "firstName" ][ 0 ].text
-      poc.last_name=element.elements[ "lastName" ][ 0 ].text
-      poc.middle_name=element.elements[ "middle_name" ][ 0 ].text
+      poc.type=element.elements[ "contactType" ].text
+      poc.company_name=element.elements[ "companyName" ].text if element.elements[ "companyName" ]
+      poc.first_name=element.elements[ "firstName" ].text if element.elements[ "firstName" ]
+      poc.last_name=element.elements[ "lastName" ].text
+      poc.middle_name=element.elements[ "middleName" ].text if element.elements[ "middleName" ]
       poc.phones={}
-      element.elements[ "phones/phone" ].each do |phone|
+      element.elements.each( "phones/phone" ) do |phone|
         number = []
         number << phone.elements[ "number" ].text
         number << phone.elements[ "extension" ].text if phone.elements[ "extension" ]
-        type = phone.elements[ "type" ]
+        type = phone.elements.to_a( "type/code" )[ 0 ]
         case type.text
           when "O"
             poc.phones[ "office" ] = number
@@ -132,6 +142,7 @@ module ARINr
             poc.phones[ "fax" ] = number
         end
       end
+      poc.handle=element.elements[ "handle" ].text
       return poc
     end
 
