@@ -14,14 +14,14 @@ module ARINr
     end
 
     def get url
-      uri = URI.parse( url )
+      uri = URI.parse( url.to_s )
       http = make_http( uri )
       resp,data = http.get( uri.path + uri.query )
       return resp, data
     end
 
     def post url, send_data
-      uri = URI.parse( url )
+      uri = URI.parse( url.to_s )
       http = make_http( uri )
       headers = {'Content-Type'=> 'text/xml'}
       resp,data = http.post( uri.path + uri.query, send_data, headers )
@@ -29,7 +29,7 @@ module ARINr
     end
 
     def put url, send_data
-      uri = URI.parse( url )
+      uri = URI.parse( url.to_s )
       http = make_http( uri )
       headers = {'Content-Type'=> 'text/xml'}
       resp,data = http.put( uri.path + uri.query, send_data, headers )
@@ -37,7 +37,7 @@ module ARINr
     end
 
     def delete url
-      uri = URI.parse( url )
+      uri = URI.parse( url.to_s )
       http = make_http( uri )
       resp = http.delete( uri.path + uri.query, headers )
       return resp
