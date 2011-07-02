@@ -134,7 +134,7 @@ module ARINr
           end
 
           opts.on( "-U", "--url URL",
-            "The base URL of the RESTful Web Service." ) do |url|
+            "The base URL of the Whois RESTful Web Service." ) do |url|
             @config.config[ "whois" ][ "url" ] = url
           end
 

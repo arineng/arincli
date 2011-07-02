@@ -55,10 +55,24 @@ module ARINr
 
     end
 
+
+    def save name, data
+      data_file = File.open( File.join( @app_data, name ), "w" )
+      data_file.write data
+      data_file.close
+    end
+
     def save_as_yaml name, obj
       data_file = File.open( File.join( @app_data, name ), "w" )
       data_file.puts YAML::dump(obj)
       data_file.close
+    end
+
+    def load name
+      data_file = File.open( File.join( @app_data, name ), "r" )
+      retval = data_file.read
+      data_file.close
+      return retval
     end
 
     def load_as_yaml name
