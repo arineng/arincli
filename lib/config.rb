@@ -82,6 +82,10 @@ module ARINr
       return retval
     end
 
+    def make_file_name name
+      File.join( @app_data, name )
+    end
+
     # Configures the logger
     def configure_logger
       output = @config[ "output" ]

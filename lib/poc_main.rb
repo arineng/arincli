@@ -6,6 +6,8 @@ require 'base_opts'
 require 'config'
 require 'constants'
 require 'reg_rws'
+require 'poc_reg'
+require 'editor'
 
 module ARINr
 
@@ -114,6 +116,26 @@ module ARINr
 
       end
 
+      def modify_poc
+        if !@config.options.data_file
+          @config.options.data_file = @config.make_file_name("arinp_modify_poc")
+          if make_yaml_template(@config.options.data_file, args[0])
+            editor = ARINr::Editor.new(@config)
+            edited = editor.edit(@config.options.data_file)
+            if ! edited
+              @config.logger.mesg( "No changes were made to POC data file. Aborting." )
+              return
+            end
+          end
+        end
+        reg = ARINr::Registration::RegistrationService.new(@config)
+        file = File.new(@config.options.data_file, "r")
+        data = file.read
+        file.close
+        poc = ARINr::Registration.yaml_to_poc( data )
+        reg.modify_poc(args[0], ARINr::Registration.poc_to_element( poc ).write )
+      end
+
       def run
 
         if( @config.options.help )
@@ -124,6 +146,20 @@ module ARINr
 
         @config.logger.mesg( ARINr::VERSION )
         @config.setup_workspace
+
+        if @config.options.make_template
+          make_yaml_template( @config.make_file_name( @config.options.template_file ), args[ 0 ] )
+        elsif @config.options.modify_poc
+          modify_poc()
+        elsif @config.options.delete_poc
+          reg = ARINr::Registration::RegistrationService.new( @config )
+          element = reg.delete_poc( args[ 0 ] )
+          @config.logger.mesg( args[ 0 ] + " deleted." ) if element
+        elsif @config.options.create_poc
+          create_poc()
+        else
+          @config.logger.mesg( "Action or feature is not implemented." )
+        end
 
       end
 
@@ -144,12 +180,61 @@ HELP_SUMMARY
 
       end
 
-      def make_template file_name, poc_handle
-
+      def make_yaml_template file_name, poc_handle
+        success = false
         reg = ARINr::Registration::RegistrationService.new @config
-
-
+        element = reg.get_poc( poc_handle )
+        if element
+          poc = ARINr::Registration.element_to_poc( element )
+          file = File.new( file_name, "w" )
+          file.puts( ARINr::Registration.poc_to_template( poc ) )
+          file.close
+          success = true
+        end
+        return success
       end
+
+      def create_poc
+        if ! @config.options.data_file
+          poc = ARINr::Registration::Poc.new
+          poc.first_name="PUT FIRST NAME HERE"
+          poc.middle_name="PUT MIDDLE NAME HERE"
+          poc.last_name="PUT LAST NAME HERE"
+          poc.company_name="PUT COMPANY NAME HERE"
+          poc.type="PERSON"
+          poc.street_address=["FIRST STREET ADDRESS LINE HERE", "SECOND STREET ADDRESS LINE HERE"]
+          poc.city="PUT CITY HERE"
+          poc.state="PUT STATE, PROVINCE, OR REGION HERE"
+          poc.country="PUT COUNTRY HERE"
+          poc.postal_code="PUT POSTAL OR ZIP CODE HERE"
+          poc.emails=["YOUR_EMAIL_ADDRESS_HERE@SOME_COMPANY.NET"]
+          poc.phones={ "office" => ["1-XXX-XXX-XXXX", "x123"]}
+          poc.comments=["PUT FIRST LINE OF COMMENTS HEERE", "PUT SECOND LINE OF COMMENTS HERE"]
+          @config.options.data_file = @config.make_file_name("arinp_create_poc")
+          file = File.new( @config.options.data_file, "w" )
+          file.puts( ARINr::Registration.poc_to_template( poc ) )
+          file.close
+          editor = ARINr::Editor.new( @config )
+          edited = editor.edit( @config.option.data_file )
+          if ! edited
+            @config.logger.mesg( "No modifications made to POC data file. Aborting." )
+            return
+          end
+        end
+        reg = ARINr::Registration::RegistrationService.new(@config)
+        file = File.new(@config.options.data_file, "r")
+        data = file.read
+        file.close
+        poc = ARINr::Registration.yaml_to_poc( data )
+        element = reg.create_poc( ARINr::Registration.poc_to_element( poc ).write )
+        if element
+          new_poc = ARINr::Registration.element_to_poc( element )
+          @config.logger( "New point of contact created with handle " + new_poc.handle )
+        else
+          @config.logger( "Point of contact was not created." )
+        end
+      end
+
     end
 
   end

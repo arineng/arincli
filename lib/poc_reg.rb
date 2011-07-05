@@ -68,39 +68,43 @@ module ARINr
     def Registration::poc_to_element poc
       element = REXML::Element.new( "poc" )
       element.add_namespace( "http://www.arin.net/regrws/core/v1" )
-      element.add_element( ARINr::new_element_with_text( "iso3166-2", poc.state.to_s ) )
-      iso3166_1 = REXML::Element.new( "iso3166-1" )
-      iso3166_1.add_element( ARINr::new_element_with_text( "code2", poc.country.to_s ) )
-      element.add_element( iso3166_1 )
-      element.add_element( ARINr::new_wrapped_element( "emails", "email", poc.emails ) )
-      element.add_element( ARINr::new_number_wrapped_element( "streetAddress", poc.street_address ) )
-      element.add_element( ARINr::new_element_with_text( "city", poc.city ) )
-      element.add_element( ARINr::new_element_with_text( "postalCode", poc.postal_code ) )
-      element.add_element( ARINr::new_number_wrapped_element( "comment", poc.comments ) )
-      element.add_element( ARINr::new_element_with_text( "contactType", poc.type ) )
-      element.add_element( ARINr::new_element_with_text( "companyName", poc.company_name ) )
-      element.add_element( ARINr::new_element_with_text( "firstName", poc.first_name ) )
-      element.add_element( ARINr::new_element_with_text( "middleName", poc.middle_name ) )
-      element.add_element( ARINr::new_element_with_text( "lastName", poc.last_name ) )
-      phones = REXML::Element.new( "phones" )
-      element.add_element( phones )
-      poc.phones.each do |k,v|
-        phone = REXML::Element.new( "phone" )
-        type = REXML::Element.new( "type" )
-        case k
-          when /office/i
-            type.add_element( ARINr::new_element_with_text( "code", "O" ) )
-          when /mobile/i
-            type.add_element( ARINr::new_element_with_text( "code", "M" ) )
-          when /fax/i
-            type.add_element( ARINr::new_element_with_text( "code", "F" ) )
-        end
-        phone.add_element( type )
-        phone.add_element( ARINr::new_element_with_text( "number", v[ 0 ] ) )
-        phone.add_element( ARINr::new_element_with_text( "extension", v[ 1 ] ) ) if v[ 1 ]
-        phones.add_element( phone )
+      element.add_element( ARINr::new_element_with_text( "iso3166-2", poc.state.to_s ) ) if poc.state
+      if poc.country
+        iso3166_1 = REXML::Element.new( "iso3166-1" )
+        iso3166_1.add_element( ARINr::new_element_with_text( "code2", poc.country.to_s ) )
+        element.add_element( iso3166_1 )
       end
-      element.add_element( ARINr::new_element_with_text( "handle", poc.handle ) )
+      element.add_element( ARINr::new_wrapped_element( "emails", "email", poc.emails ) ) if poc.emails
+      element.add_element( ARINr::new_number_wrapped_element( "streetAddress", poc.street_address ) ) if poc.street_address
+      element.add_element( ARINr::new_element_with_text( "city", poc.city ) ) if poc.city
+      element.add_element( ARINr::new_element_with_text( "postalCode", poc.postal_code ) ) if poc.postal_code
+      element.add_element( ARINr::new_number_wrapped_element( "comment", poc.comments ) ) if poc.comments
+      element.add_element( ARINr::new_element_with_text( "contactType", poc.type ) )
+      element.add_element( ARINr::new_element_with_text( "companyName", poc.company_name ) ) if poc.company_name
+      element.add_element( ARINr::new_element_with_text( "firstName", poc.first_name ) ) if poc.first_name
+      element.add_element( ARINr::new_element_with_text( "middleName", poc.middle_name ) ) if poc.middle_name
+      element.add_element( ARINr::new_element_with_text( "lastName", poc.last_name ) )
+      if poc.phones
+        phones = REXML::Element.new( "phones" )
+        element.add_element( phones )
+        poc.phones.each do |k,v|
+          phone = REXML::Element.new( "phone" )
+          type = REXML::Element.new( "type" )
+          case k
+            when /office/i
+              type.add_element( ARINr::new_element_with_text( "code", "O" ) )
+            when /mobile/i
+              type.add_element( ARINr::new_element_with_text( "code", "M" ) )
+            when /fax/i
+              type.add_element( ARINr::new_element_with_text( "code", "F" ) )
+          end
+          phone.add_element( type )
+          phone.add_element( ARINr::new_element_with_text( "number", v[ 0 ] ) )
+          phone.add_element( ARINr::new_element_with_text( "extension", v[ 1 ] ) ) if v[ 1 ]
+          phones.add_element( phone )
+        end
+      end
+      element.add_element( ARINr::new_element_with_text( "handle", poc.handle ) ) if poc.handle
       return element
     end
 
