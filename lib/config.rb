@@ -192,7 +192,7 @@ whois:
 registration:
 
   # The API-KEY to use for Reg-RWS requests
-  apikey=API-1234-5678-9012-3456
+  apikey: API-1234-5678-9012-3456
 
   # the base URL for the Reg-RWS service
   url: https://www.arin.net

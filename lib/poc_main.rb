@@ -148,13 +148,13 @@ module ARINr
         @config.setup_workspace
 
         if @config.options.make_template
-          make_yaml_template( @config.make_file_name( @config.options.template_file ), args[ 0 ] )
+          make_yaml_template( @config.options.template_file, @config.options.argv[ 0 ] )
         elsif @config.options.modify_poc
           modify_poc()
         elsif @config.options.delete_poc
           reg = ARINr::Registration::RegistrationService.new( @config )
-          element = reg.delete_poc( args[ 0 ] )
-          @config.logger.mesg( args[ 0 ] + " deleted." ) if element
+          element = reg.delete_poc( @config.options.argv[ 0 ] )
+          @config.logger.mesg( @config.options.argv[ 0 ] + " deleted." ) if element
         elsif @config.options.create_poc
           create_poc()
         else
@@ -190,6 +190,7 @@ HELP_SUMMARY
           file.puts( ARINr::Registration.poc_to_template( poc ) )
           file.close
           success = true
+          @config.logger.trace( poc_handle + " saved to " + file_name )
         end
         return success
       end

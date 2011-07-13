@@ -12,7 +12,7 @@ module ARINr
     class RegistrationService < ARINr::RestService
 
       def initialize config
-        super
+        super()
         @config = config
       end
 
@@ -47,7 +47,11 @@ module ARINr
       end
 
       def add_api_key uri
-        uri.query << "&" unless uri.query
+        if uri.query
+          uri.query << "&"
+        else
+          uri.query = ""
+        end
         uri.query << "apikey=" + @config.config[ "registration" ][ "apikey" ]
         return uri
       end
@@ -68,11 +72,11 @@ module ARINr
           else
             return element
           end
-        elsif resp.code = "404"
+        elsif resp.code == "404"
           @config.logger.mesg( "NOT FOUND: Service returned " + resp.code + " error for " + uri.to_s + "." )
           element = get_root_element( resp )
           is_in_error( element ) if element
-        elsif resp.code = "503"
+        elsif resp.code == "503"
           @config.logger.mesg( "SERVICE UNAVAILABLE: Service returned " + resp.code + " error for " + uri.to_s + "." )
           element = get_root_element( resp )
           is_in_error( element ) if element

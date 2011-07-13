@@ -10,34 +10,34 @@ module ARINr
   class RestService
 
     def initialize
-      @headers = { "User-Agent" => ARINr::VERSION, "Content-Type" => "text/xml" }
+      @headers = { "User-Agent" => ARINr::VERSION, "Content-Type" => "application/xml" }
     end
 
     def get url
       uri = URI.parse( url.to_s )
       http = make_http( uri )
-      resp = http.get( uri.path + uri.query, @headers )
+      resp = http.get( uri.to_s, @headers )
       return resp
     end
 
     def post url, send_data
       uri = URI.parse( url.to_s )
       http = make_http( uri )
-      resp = http.post( uri.path + uri.query, send_data, @headers )
+      resp = http.post( uri.to_s, send_data, @headers )
       return resp
     end
 
     def put url, send_data
       uri = URI.parse( url.to_s )
       http = make_http( uri )
-      resp = http.put( uri.path + uri.query, send_data, @headers )
+      resp = http.put( uri.to_s, send_data, @headers )
       return resp
     end
 
     def delete url
       uri = URI.parse( url.to_s )
       http = make_http( uri )
-      resp = http.delete( uri.path + uri.query, @headers )
+      resp = http.delete( uri.to_s, @headers )
       return resp
     end
 

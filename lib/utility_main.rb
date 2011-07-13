@@ -2,6 +2,7 @@
 
 require 'cache'
 require 'config'
+require 'constants'
 require 'yaml'
 
 module ARINr
@@ -10,6 +11,7 @@ module ARINr
 
     def run args
 
+      puts ARINr::VERSION
       puts "ARINr Control Program"
 
       case args[ 0 ]
@@ -34,6 +36,9 @@ module ARINr
     end
 
     def help
+
+      puts ARINr::VERSION
+      puts ARINr::COPYRIGHT
 
       help_summary = <<HELP_SUMMARY
 
