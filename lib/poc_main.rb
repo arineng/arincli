@@ -15,6 +15,10 @@ module ARINr
 
     class PocMain < ARINr::BaseOpts
 
+      ARINP_LOG_SUFFIX = 'arinp'
+      ARINP_CREATE_POC_FILE = 'arinp_create_poc'
+      ARINP_MODIFY_POC_FILE = 'arinp_modify_poc'
+
       def initialize args, config = nil
 
         if config
@@ -83,6 +87,7 @@ module ARINr
           opts.on( "-f", "--file FILE",
                    "The template to be read for the action taken." ) do |file|
             @config.options.data_file = file
+            @config.options.data_file_specified = true
           end
         end
 
@@ -118,8 +123,9 @@ module ARINr
 
       def modify_poc
         if !@config.options.data_file
-          @config.options.data_file = @config.make_file_name("arinp_modify_poc")
-          if make_yaml_template(@config.options.data_file, args[0])
+          @config.options.data_file = @config.make_file_name( ARINP_MODIFY_POC_FILE )
+          data_to_send = make_yaml_template(@config.options.data_file, @config.options.argv[0])
+          if data_to_send
             editor = ARINr::Editor.new(@config)
             edited = editor.edit(@config.options.data_file)
             if ! edited
@@ -127,13 +133,29 @@ module ARINr
               return
             end
           end
+        else
+          data_to_send = true
         end
-        reg = ARINr::Registration::RegistrationService.new(@config)
-        file = File.new(@config.options.data_file, "r")
-        data = file.read
-        file.close
-        poc = ARINr::Registration.yaml_to_poc( data )
-        reg.modify_poc(args[0], ARINr::Registration.poc_to_element( poc ).write )
+        if data_to_send
+          reg = ARINr::Registration::RegistrationService.new(@config, ARINP_LOG_SUFFIX)
+          file = File.new(@config.options.data_file, "r")
+          data = file.read
+          file.close
+          poc = ARINr::Registration.yaml_to_poc(data)
+          poc_element = ARINr::Registration.poc_to_element(poc)
+          return_data = ARINr::pretty_print_xml_to_s(poc_element)
+          if reg.modify_poc(poc.handle, return_data)
+            @config.logger.mesg(@config.options.argv[0] + " has been modified.")
+          else
+            if !@config.options.data_file_specified
+              @config.logger.mesg( 'Use "arinp" to re-edit and resubmit.' )
+            else
+              @config.logger.mesg( 'Edit file then use "arinp -f ' + @config.options.data_file + ' --modify" to resubmit.')
+            end
+          end
+        else
+          @config.logger.mesg( "No modification source specified." )
+        end
       end
 
       def run
@@ -141,7 +163,15 @@ module ARINr
         if( @config.options.help )
           help()
         elsif( @config.options.argv == nil || @config.options.argv == [] )
-          help()
+          if File.exists?( @config.make_file_name( ARINP_MODIFY_POC_FILE ) )
+            @config.options.modify_poc = true
+            @config.options.data_file = @config.make_file_name( ARINP_MODIFY_POC_FILE )
+          elsif File.exists?( @config.make_file_name( ARINP_CREATE_POC_FILE ) ) && !@config.options.create_poc
+            @config.options.create_poc = true
+            @config.options.data_file = @config.make_file_name( ARINP_CREATE_POC_FILE )
+          elsif ! @config.options.create_poc
+              help()
+          end
         end
 
         @config.logger.mesg( ARINr::VERSION )
@@ -182,7 +212,7 @@ HELP_SUMMARY
 
       def make_yaml_template file_name, poc_handle
         success = false
-        reg = ARINr::Registration::RegistrationService.new @config
+        reg = ARINr::Registration::RegistrationService.new @config, ARINP_LOG_SUFFIX
         element = reg.get_poc( poc_handle )
         if element
           poc = ARINr::Registration.element_to_poc( element )
@@ -211,28 +241,40 @@ HELP_SUMMARY
           poc.emails=["YOUR_EMAIL_ADDRESS_HERE@SOME_COMPANY.NET"]
           poc.phones={ "office" => ["1-XXX-XXX-XXXX", "x123"]}
           poc.comments=["PUT FIRST LINE OF COMMENTS HEERE", "PUT SECOND LINE OF COMMENTS HERE"]
-          @config.options.data_file = @config.make_file_name("arinp_create_poc")
+          @config.options.data_file = @config.make_file_name( ARINP_CREATE_POC_FILE )
           file = File.new( @config.options.data_file, "w" )
           file.puts( ARINr::Registration.poc_to_template( poc ) )
           file.close
+        end
+        if ! @config.options.data_file_specified
           editor = ARINr::Editor.new( @config )
-          edited = editor.edit( @config.option.data_file )
+          edited = editor.edit( @config.options.data_file )
           if ! edited
             @config.logger.mesg( "No modifications made to POC data file. Aborting." )
             return
           end
         end
-        reg = ARINr::Registration::RegistrationService.new(@config)
+        reg = ARINr::Registration::RegistrationService.new(@config,ARINP_LOG_SUFFIX)
         file = File.new(@config.options.data_file, "r")
         data = file.read
         file.close
         poc = ARINr::Registration.yaml_to_poc( data )
-        element = reg.create_poc( ARINr::Registration.poc_to_element( poc ).write )
+        poc_element = ARINr::Registration.poc_to_element(poc)
+        send_data = ARINr::pretty_print_xml_to_s(poc_element)
+        element = reg.create_poc( send_data )
         if element
           new_poc = ARINr::Registration.element_to_poc( element )
-          @config.logger( "New point of contact created with handle " + new_poc.handle )
+          @config.logger.mesg( "New point of contact created with handle " + new_poc.handle )
+          @config.logger.mesg( 'Use "arinp ' + new_poc.handle + '" to modify this point of contact.')
         else
-          @config.logger( "Point of contact was not created." )
+          @config.logger.mesg( "Point of contact was not created." )
+          if !@config.options.data_file_specified
+            df = @config.make_file_name( ARINP_MODIFY_POC_FILE )
+            File.delete( df ) if File.exists?( df )
+            @config.logger.mesg( 'Use "arinp" to re-edit and resubmit.' )
+          else
+            @config.logger.mesg( 'Edit file then use "arinp -f ' + @config.options.data_file + ' --create" to resubmit.')
+          end
         end
       end
 

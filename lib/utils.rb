@@ -1,6 +1,8 @@
 # Copyright (C) 2011 American Registry for Internet Numbers
 
 require 'rexml/document'
+require 'stringio'
+require 'rexml/formatters/transitive'
 
 module ARINr
 
@@ -28,6 +30,14 @@ module ARINr
       line_no += 1
     end
     return e
+  end
+
+  def ARINr::pretty_print_xml_to_s( node )
+    sio = StringIO.new
+    output = REXML::Output.new sio
+    formatter = REXML::Formatters::Transitive.new
+    formatter.write( node, output )
+    return sio.string
   end
 
 end

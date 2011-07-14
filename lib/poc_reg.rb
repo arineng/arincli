@@ -13,7 +13,7 @@ module ARINr
     class Poc
       attr_accessor :handle, :type, :last_name, :first_name, :middle_name, :company_name
       attr_accessor :street_address, :city, :state, :country, :postal_code
-      attr_accessor :phones, :emails, :comments
+      attr_accessor :phones, :emails, :comments, :registration_date
 
       def get_binding
         return binding
@@ -61,6 +61,7 @@ module ARINr
       poc.phones=struct[ "phones" ]
       poc.emails=struct[ "email addresses" ]
       poc.comments=struct[ "public comments" ]
+      poc.registration_date=struct[ "registration date" ]
       return poc
     end
 
@@ -105,6 +106,7 @@ module ARINr
         end
       end
       element.add_element( ARINr::new_element_with_text( "handle", poc.handle ) ) if poc.handle
+      element.add_element( ARINr::new_element_with_text( "registrationDate", poc.registration_date ) ) if poc.registration_date
       return element
     end
 
@@ -147,6 +149,7 @@ module ARINr
         end
       end
       poc.handle=element.elements[ "handle" ].text
+      poc.registration_date=element.elements[ "registrationDate" ].text
       return poc
     end
 

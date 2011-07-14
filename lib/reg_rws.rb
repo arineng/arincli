@@ -4,6 +4,7 @@ require 'rest_service'
 require 'config'
 require 'uri'
 require 'rexml/document'
+require 'utils'
 
 module ARINr
 
@@ -11,21 +12,24 @@ module ARINr
 
     class RegistrationService < ARINr::RestService
 
-      def initialize config
+      def initialize config, log_suffix=nil
         super()
         @config = config
+        @log_suffix = log_suffix
       end
 
       def get_poc poc_handle
         uri = poc_service_uri
         uri.path << poc_handle
         uri = add_api_key( uri )
+        begin_log "GET", uri
         handle_resp( get( uri ), uri )
       end
 
       def create_poc data
         uri = poc_service_uri
         uri = add_api_key( uri )
+        begin_log "POST", uri, data
         resp = post( uri, data )
         handle_resp( resp, uri )
       end
@@ -34,6 +38,7 @@ module ARINr
         uri = poc_service_uri
         uri.path << poc_handle
         uri = add_api_key( uri )
+        begin_log "PUT", uri, data
         resp = put( uri, data )
         handle_resp( resp, uri )
       end
@@ -42,8 +47,44 @@ module ARINr
         uri = poc_service_uri
         uri.path << poc_handle
         uri = add_api_key( uri )
+        begin_log "DELETE", uri
         resp = delete( uri )
         handle_resp( resp, uri )
+      end
+
+      def begin_log verb, uri, data=nil
+        if @log_suffix
+          file_name = @config.make_file_name( @log_suffix + "_tx.log" )
+          @log_file = File.new( file_name, "w" )
+          @log_file.puts verb + " : " + uri.to_s
+          if( data )
+            @log_file.puts
+            @log_file.puts "===BEGIN SEND DATA===="
+            @log_file.puts data
+            @log_file.puts "===END SEND DATA===="
+          else
+            @log_file.puts
+            @log_file.puts "===NO SEND DATA===="
+          end
+        end
+      end
+
+      def end_log data=nil
+        if @log_suffix
+          if data
+            if data.kind_of?( REXML::Node)
+              data = ARINr::pretty_print_xml_to_s( data )
+            end
+            @log_file.puts
+            @log_file.puts "===BEGIN RETURN DATA===="
+            @log_file.puts data
+            @log_file.puts "===END RETURN DATA===="
+          else
+            @log_file.puts
+            @log_file.puts "===NO RETURN DATA===="
+          end
+          @log_file.close
+        end
       end
 
       def add_api_key uri
@@ -63,25 +104,36 @@ module ARINr
       end
 
       def handle_resp resp, uri
-        if resp.code == "200"
-          element = get_root_element( resp )
-          if ! element
-            @config.logger.mesg( "ERROR: Received empty response entity for " + uri.to_s + "." )
-          elsif is_in_error( element )
-            @config.logger.mesg( "Error returned for " + uri.to_s + "." )
+        case resp.code
+          when "200"
+            retval = handle_expected( "200 OK", resp, uri )
+          when "404"
+            retval = handle_expected( "404 NOT FOUND", resp, uri )
+          when "503"
+            retval = handle_expected( "503 SERVICE UNAVAILABLE", resp, uri )
+          when "400"
+            retval = handle_expected( "400 BAD REQUEST", resp, uri )
           else
-            return element
-          end
-        elsif resp.code == "404"
-          @config.logger.mesg( "NOT FOUND: Service returned " + resp.code + " error for " + uri.to_s + "." )
-          element = get_root_element( resp )
-          is_in_error( element ) if element
-        elsif resp.code == "503"
-          @config.logger.mesg( "SERVICE UNAVAILABLE: Service returned " + resp.code + " error for " + uri.to_s + "." )
-          element = get_root_element( resp )
-          is_in_error( element ) if element
+            end_log resp.entity
+            @config.logger.mesg( "ERROR: Service returned " + resp.code + " error for " + uri.to_s + "." )
+            retval = nil
+        end
+        return retval
+      end
+
+      def handle_expected error, resp, uri
+        element = get_root_element( resp )
+        if element
+          end_log element
         else
-          @config.logger.mesg( "ERROR: Service returned " + resp.code + " error for " + uri.to_s + "." )
+          end_log resp.entity
+        end
+        if ! element
+          @config.logger.mesg( error + ": Received empty response entity for " + uri.to_s + "." )
+        elsif is_in_error( element )
+          @config.logger.mesg( error + ": Service returned " + resp.code + " error for " + uri.to_s + "." )
+        else
+          return element
         end
         return nil
       end
