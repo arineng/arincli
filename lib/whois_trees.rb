@@ -18,7 +18,9 @@ module ARINr
       if (asns != nil && asns.elements[ "asnRef" ])
         retval = ARINr::DataNode.new("Autonomous Systems Blocks")
         asns.elements.each( "asnRef" ) do |asn|
-          retval.add_child(ARINr::DataNode.new( asn.attribute("handle" ).to_s, asn.text() ) )
+          handle = asn.attribute( "handle" ).to_s
+          rest_ref = asn.text()
+          retval.add_child(ARINr::DataNode.new( handle, handle, rest_ref, nil ) )
         end
         new_children = sort_asns( retval.children )
         retval.children=new_children
@@ -37,14 +39,18 @@ module ARINr
       if (pocs != nil && REXML::XPath.first( pocs, "pocLinkRef|pocRef" ) )
         retval = ARINr::DataNode.new("Points of Contact")
         pocs.elements.each( "pocLinkRef|pocRef" ) do |poc|
+          handle = poc.attribute( "handle" ).to_s
+          rest_ref = poc.text()
+          description = poc.attribute( "description" ).to_s
+          name = poc.attribute( "name" ).to_s
           if poc.name == "pocLinkRef"
-            s = format( "%s (%s)", poc.attribute( "handle" ), poc.attribute( "description" ) )
+            s = format( "%s (%s)", handle, description )
           else
-            s = format( "%s (%s)", poc.attribute( "name" ), poc.attribute( "handle" ) )
+            s = format( "%s (%s)", name, handle )
           end
-          retval.children.sort!
-          retval.add_child(ARINr::DataNode.new(s, poc.text() ))
+          retval.add_child(ARINr::DataNode.new(s, handle, rest_ref, nil ))
         end
+        retval.children.sort!
         check_limit_exceeded( pocs, retval )
       end
       return retval
@@ -60,8 +66,11 @@ module ARINr
       if (orgs != nil && REXML::XPath.first( orgs, "orgRef" ) )
         retval = ARINr::DataNode.new("Organizations")
         orgs.elements.each( "orgRef" ) do |org|
-          s = format( "%s (%s)", org.attribute( "name" ), org.attribute( "handle" ) )
-          retval.add_child(ARINr::DataNode.new(s, org.text() ))
+          handle = org.attribute( "handle" ).to_s
+          name = org.attribute( "name" ).to_s
+          rest_ref = org.text()
+          s = format( "%s (%s)", name, handle )
+          retval.add_child(ARINr::DataNode.new(s, handle, rest_ref, nil))
         end
         retval.children.sort!
         check_limit_exceeded( orgs, retval )
@@ -79,8 +88,12 @@ module ARINr
       if (nets != nil && nets.elements[ "netRef" ] )
         retval = ARINr::DataNode.new("Networks")
         nets.elements.each( "netRef" ) do |net|
-          s = format("%-24s ( %15s - %-15s )", net.attribute( "handle" ), net.attribute( "startAddress" ), net.attribute( "endAddress" ) )
-          retval.add_child(ARINr::DataNode.new(s, net.text() ))
+          handle = net.attribute( "handle" ).to_s
+          start_address = net.attribute( "startAddress" ).to_s
+          end_address = net.attribute( "endAddress" ).to_s
+          rest_ref = net.text()
+          s = format("%-24s ( %15s - %-15s )", handle, start_address, end_address )
+          retval.add_child(ARINr::DataNode.new(s, handle, rest_ref, nil ))
         end
         new_children = sort_nets( retval.children )
         retval.children=new_children
@@ -99,7 +112,9 @@ module ARINr
       if (dels != nil && dels.elements[ dels.prefix + ":delegationRef" ])
         retval = ARINr::DataNode.new("Reverse DNS Delegations")
         dels.elements.each( dels.prefix + ":delegationRef" ) do |del|
-          retval.add_child(ARINr::DataNode.new( del.attribute( "name" ).to_s, del.text() ) )
+          handle = del.attribute( "name" ).to_s
+          rest_ref = del.text();
+          retval.add_child(ARINr::DataNode.new( handle, handle, rest_ref, nil ) )
         end
         new_children = sort_dels( retval.children )
         retval.children=new_children
@@ -126,8 +141,20 @@ module ARINr
 
     def Whois::sort_nets nets
       nets.sort_by do |net_node|
-        net_node.to_s.split( "-" ).map do |v|
-          v =~ /^\d+/ ? v.to_i : v
+        handle = net_node.to_s.split( " " )[0]
+        handle.split( "-" ).map do |v|
+          if v == "NET6"
+            is_net6 = true
+            r = 1
+          elsif v == "NET"
+            is_net6 = false
+            r = 0
+          elsif is_net6
+            r = v.to_i( 16 )
+          else
+            r = v.to_i
+          end
+          r
         end
       end
     end
@@ -135,7 +162,20 @@ module ARINr
     def Whois::sort_dels dels
       dels.sort_by do |del_node|
         del_node.to_s.split( "." ).reverse.map do |v|
-          v =~ /^\d+/ ? v.to_i : v
+          if v == "arpa"
+            r = v
+          elsif v == "in-addr"
+            is_ip6 = false
+            r = 1
+          elsif v == "ip6"
+            is_ip6 = true
+            r = 0
+          elsif is_ip6
+            r = v.to_i( 16 )
+          else
+            r = v.to_i
+          end
+          r
         end
       end
     end

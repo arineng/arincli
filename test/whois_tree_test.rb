@@ -91,6 +91,12 @@ POCREF_XML
     assert_equal( [ "NET-23-0-0-0-0","NET-24-0-0-0-0","NET-208-0-0-0-0","NET-209-0-0-0-0","NET-216-0-0-0-0","NET6-2001-400-0","NET6-2001-1800-0","NET6-2001-4800-0"], new_arry )
   end
 
+  def test_sort_nets2
+    arry = [ "NET6-2001-1800-0","NET-208-0-0-0-0", "NET6-2001-400-0","NET6-2001-4800-0", "NET-209-0-0-0-0","NET-216-0-0-0-0","NET-23-0-0-0-0","NET-24-0-0-0-0" ]
+    new_arry = ARINr::Whois::sort_nets arry
+    assert_equal( [ "NET-23-0-0-0-0","NET-24-0-0-0-0","NET-208-0-0-0-0","NET-209-0-0-0-0","NET-216-0-0-0-0","NET6-2001-400-0","NET6-2001-1800-0","NET6-2001-4800-0"], new_arry )
+  end
+
   def test_sort_dels
     arry = ["189.184.in-addr.arpa.","176.184.in-addr.arpa.","181.184.in-addr.arpa.","183.184.in-addr.arpa.","185.184.in-addr.arpa.","187.184.in-addr.arpa."]
     new_arry = ARINr::Whois::sort_dels arry

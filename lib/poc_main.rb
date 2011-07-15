@@ -8,6 +8,7 @@ require 'constants'
 require 'reg_rws'
 require 'poc_reg'
 require 'editor'
+require 'data_tree'
 
 module ARINr
 
@@ -99,18 +100,24 @@ module ARINr
             if ( ! @config.options.delete_poc ) && ( ! @config.options.create_poc ) && ( ! @config.options.make_template )
               @config.options.modify_poc = true
             end
-            if ! args[ 0 ] && @config.options.delete_poc
-              raise OptionParser::InvalidArgument, "You must specify a POC Handle to delete a POC."
-            end
-            if ! args[ 0 ] && @config.options.modify_poc
-              raise OptionParser::InvalidArgument, "You must specify a POC Handle to modify a POC."
-            end
-            if ! args[ 0 ] && @config.options.make_template
-              raise OptionParser::InvalidArgument, "You must specify a POC Handle to template."
+            if args[ 0 ] =~ ARINr::DATA_TREE_ADDR_REGEX
+              tree = @config.load_as_yaml( "arinw-lasttree.yaml" )
+              handle = tree.find_handle( args[ 0 ] )
+              raise ArgumentError.new( "Unable to find handle for " + args[ 0 ] ) unless handle
+              args[ 0 ] = handle
             end
             if ! args[ 0 ] =~ ARINr::POC_HANDLE_REGEX
               raise OptionParser::InvalidArgument, args[ 0 ] + " does not look like a POC Handle."
             end
+          end
+          if ! args[ 0 ] && @config.options.delete_poc
+            raise OptionParser::InvalidArgument, "You must specify a POC Handle to delete a POC."
+          end
+          if ! args[ 0 ] && @config.options.modify_poc
+            raise OptionParser::InvalidArgument, "You must specify a POC Handle to modify a POC."
+          end
+          if ! args[ 0 ] && @config.options.make_template
+            raise OptionParser::InvalidArgument, "You must specify a POC Handle to template."
           end
         rescue OptionParser::InvalidArgument => e
           puts e.message
@@ -125,16 +132,16 @@ module ARINr
         if !@config.options.data_file
           @config.options.data_file = @config.make_file_name( ARINP_MODIFY_POC_FILE )
           data_to_send = make_yaml_template(@config.options.data_file, @config.options.argv[0])
-          if data_to_send
-            editor = ARINr::Editor.new(@config)
-            edited = editor.edit(@config.options.data_file)
-            if ! edited
-              @config.logger.mesg( "No changes were made to POC data file. Aborting." )
-              return
-            end
-          end
         else
           data_to_send = true
+        end
+        if ! @config.options.data_file_specified && data_to_send
+          editor = ARINr::Editor.new(@config)
+          edited = editor.edit(@config.options.data_file)
+          if ! edited
+            @config.logger.mesg( "No changes were made to POC data file. Aborting." )
+            return
+          end
         end
         if data_to_send
           reg = ARINr::Registration::RegistrationService.new(@config, ARINP_LOG_SUFFIX)
@@ -145,7 +152,7 @@ module ARINr
           poc_element = ARINr::Registration.poc_to_element(poc)
           return_data = ARINr::pretty_print_xml_to_s(poc_element)
           if reg.modify_poc(poc.handle, return_data)
-            @config.logger.mesg(@config.options.argv[0] + " has been modified.")
+            @config.logger.mesg(poc.handle + " has been modified.")
           else
             if !@config.options.data_file_specified
               @config.logger.mesg( 'Use "arinp" to re-edit and resubmit.' )

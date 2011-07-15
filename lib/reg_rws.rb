@@ -131,7 +131,7 @@ module ARINr
         if ! element
           @config.logger.mesg( error + ": Received empty response entity for " + uri.to_s + "." )
         elsif is_in_error( element )
-          @config.logger.mesg( error + ": Service returned " + resp.code + " error for " + uri.to_s + "." )
+          @config.logger.trace( error + ": Service returned " + resp.code + " error for " + uri.to_s + "." )
         else
           return element
         end

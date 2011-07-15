@@ -385,7 +385,7 @@ HELP_SUMMARY
               elsif ip =~ ARINr::IPV6_REGEX || ip =~ ARINr::IPV6_HEXCOMPRESS_REGEX
                 retval = QueryType::BY_IP6_CIDR
               end
-            when /\d=$/
+            when ARINr::DATA_TREE_ADDR_REGEX
               retval = QueryType::BY_RESULT
             else
               if ARINr::is_last_name( args[ 0 ].upcase )
@@ -444,7 +444,7 @@ HELP_SUMMARY
             path << "rest/rdns/" << args[ 0 ]
           when QueryType::BY_RESULT
             tree = @config.load_as_yaml( "arinw-lasttree.yaml" )
-            path = tree.find_data( args[ 0 ] )
+            path = tree.find_rest_ref( args[ 0 ] )
             raise ArgumentError.new( "Unable to find result for " + args[ 0 ] ) unless path
           when QueryType::BY_POC_NAME
             substring = @config.config[ "whois" ][ "substring" ] ? "*" : ""

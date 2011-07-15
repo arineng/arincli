@@ -19,6 +19,7 @@ module ARINr
   ASN_REGEX = /^AS[0-9]{1,20}$/i
   IP4_ARPA = /\.in-addr\.arpa[\.]?/i
   IP6_ARPA = /\.ip6\.arpa[\.]?/i
+  DATA_TREE_ADDR_REGEX = /\d=$/
 
   # IPv4 and IPv6 regular expressions are credited to Mike Poulson and are found here:
   #   http://blogs.msdn.com/b/mpoulson/archive/2005/01/10/350037.aspx

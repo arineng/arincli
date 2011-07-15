@@ -7,12 +7,14 @@ module ARINr
 
   class DataNode
 
-    attr_accessor :alert, :data, :children
+    attr_accessor :alert, :handle, :rest_ref, :data, :children
 
-    def initialize name, data = nil
+    def initialize name, handle = nil, rest_ref = nil, data = nil
       @name = name
       @children = []
       @data = data
+      @handle = handle
+      @rest_ref = rest_ref
     end
 
     def add_child node
@@ -29,6 +31,13 @@ module ARINr
 
     def <=> x
       @name <=> x.to_s
+    end
+
+    def has_meta_info
+      return true if @handle
+      return true if @rest_ref
+      return true if @data
+      return false
     end
 
   end
@@ -58,6 +67,24 @@ module ARINr
     end
 
     def find_data data_address
+      node = find_node data_address
+      return node.data if node
+      return nil
+    end
+
+    def find_handle data_address
+      node = find_node data_address
+      return node.handle if node
+      return nil
+    end
+
+    def find_rest_ref data_address
+      node = find_node data_address
+      return node.rest_ref if node
+      return nil
+    end
+
+    def find_node data_address
       node = ARINr::DataNode.new( "fakeroot" )
       node.children=roots
       data_address.split( /\D/ ).each do |index_str|
@@ -65,7 +92,7 @@ module ARINr
         node = node.children[ index ] if node
       end
       if node != nil
-        return node.data
+        return node
       end
       #else
       return nil
@@ -103,7 +130,7 @@ module ARINr
         if annotate
           if root.alert
             s = format( "   # %s", root.to_s )
-          elsif root.data
+          elsif root.has_meta_info
             s = format( "%3d= %s", num_count, root.to_s )
           else
             s = format( "%3d. %s", num_count, root.to_s )
@@ -134,7 +161,7 @@ module ARINr
         spacer = "    "
         if node.alert
           num_str = format( " # ", num )
-        elsif node.data
+        elsif node.has_meta_info
           num_str = format( " %d= ", num )
         else
           num_str = format( " %d. ", num )

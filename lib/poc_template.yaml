@@ -69,6 +69,7 @@ registration date: !str <%= registration_date %>
 #
 #  office:
 #    - +1-202-555-1212
+#    - x123
 #
 #
 #email addresses:
