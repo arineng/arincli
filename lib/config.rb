@@ -10,7 +10,7 @@ module ARINr
   # Handles configuration of the application
   class Config
 
-    attr_accessor :logger, :config, :whois_cache_dir, :options
+    attr_accessor :logger, :config, :whois_cache_dir, :options, :tickets_dir
 
     # Intializes the configuration with a place to look for the config file
     # If the file doesn't exist, a default is used.
@@ -46,10 +46,14 @@ module ARINr
         @whois_cache_dir = File.join( @app_data, "whois_cache" )
         Dir.mkdir( @whois_cache_dir )
 
+        @tickets_dir = File.join( @app_data, "tickets" )
+        Dir.mkdir( @tickets_dir )
+
       else
 
         @logger.trace "Using configuration found in " + @app_data
         @whois_cache_dir = File.join( @app_data, "whois_cache" )
+        @tickets_dir = File.join( @app_data, "tickets" )
 
       end
 
