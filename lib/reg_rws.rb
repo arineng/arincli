@@ -113,8 +113,8 @@ module ARINr
       def ticket_summary_uri ticket_no = nil
         uri = URI.parse @config.config[ "registration" ][ "url" ]
         uri.path <<= "/rest/ticket/"
-        uri.path <<= ticket_no + "/" if ticket_no
-        uri.path <<= "summary"
+        uri.path << ticket_no + "/" if ticket_no
+        uri.path << "summary"
         return uri
       end
 

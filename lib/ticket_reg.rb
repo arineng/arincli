@@ -1,6 +1,7 @@
 # Copyright (C) 2011 American Registry for Internet Numbers
 
 require 'rexml/document'
+require 'rexml/streamlistener'
 require "utils"
 require "config"
 
@@ -74,7 +75,11 @@ module ARINr
       end
 
       def get_ticket_summary ticket_no
-        file_name = File.join( @config.tickets_dir, ticket_no + SUMMARY_FILE_SUFFIX )
+        if( ticket_no.is_a?( ARINr::Registration::TicketSummary ) )
+          ticket_no = ticket_no.ticket_no
+        end
+        base_name = ticket_no + SUMMARY_FILE_SUFFIX
+        file_name = File.join( @config.tickets_dir, base_name )
         if File.exist?( file_name )
           @config.logger.trace( "Reading stored ticket summary from " + file_name );
           f = File.open( file_name, "r" )
@@ -99,14 +104,12 @@ module ARINr
         f.close
       end
 
+
       def put_ticket_message ticket_no, ticket_message
         if( ticket_no.is_a?( ARINr::Registration::TicketSummary ) )
           ticket_no = ticket_no.ticket_no
         end
-        ticket_area = File.join( @config.tickets_dir, ticket_no )
-        if ! File.exist?( ticket_area )
-          Dir.mkdir( ticket_area )
-        end
+        prepare_ticket_area(ticket_no)
         file_name =
           File.join( @config.tickets_dir,
                      ticket_no, ARINr::make_safe( ticket_message.subject + ".xml" ) )
@@ -116,6 +119,101 @@ module ARINr
         f = File.open( file_name, "w" )
         f.puts xml_as_s
         f.close
+      end
+
+      def prepare_file_attachment ticket_no, ticket_message, attachment_name
+        if( ticket_no.is_a?( ARINr::Registration::TicketSummary ) )
+          ticket_no = ticket_no.ticket_no
+        end
+        prepare_ticket_area(ticket_no)
+        file_name =
+            File.join( @config.tickets_dir,
+                       ticket_no, ARINr::make_safe( ticket_message.subject ) )
+        Dir.mkdir( file_name )
+        return File.join( file_name, attachment_name )
+      end
+
+      private
+
+      def prepare_ticket_area(ticket_no)
+        ticket_area = File.join(@config.tickets_dir, ticket_no)
+        if !File.exist?(ticket_area)
+          Dir.mkdir(ticket_area)
+        end
+        return ticket_area
+      end
+    end
+
+    class TicketStreamListener
+
+      @text_accumulators = [ "ticketNo", "createdDate", "updatedDate", "resolvedDate",
+        "closedDate", "webTicketStatus", "webTicketResolution", "webTicketType", "subject",
+        "line", "category", "filename" ]
+
+      def tag_start name, attrs
+        if name == "ticket"
+          @ticket = ARINr::Registration::TicketSummary.new
+        elsif name == "message"
+          @message = ARINr::Registration::TicketMessage.new
+        elsif @text_accumulators.index( name )
+          @accumulate_text = true
+          @text_accumulator = ""
+        end
+      end
+      def tag_end name
+        case name
+          when "ticketNo"
+            @ticket.ticket_no=@text_accumulator
+          when "createdDate"
+            @ticket.created_date=@text_accumulator
+          when "updatedDate"
+            @ticket.updated_date=@text_accumulator
+          when "resolvedDate"
+            @ticket.resolved_date=@text_accumulator
+          when "closedDate"
+            @ticket.closed_date=@text_accumulator
+          when "webTicketStatus"
+            @ticket.ticket_status=@text_accumulator
+          when "webTicketResolution"
+            @ticket.ticket_resolution=@text_accumulator
+          when "webTicketType"
+            @ticket.ticket_type=@text_accumulator
+          when "subject"
+            @message.subject=@text_accumulator
+          when "line"
+            @message.text << @text_accumulator
+          when "category"
+            @message.category=@text_accumulator
+          when "filename"
+            @filename=@text_accumulator
+        end
+      end
+      def text text
+        if @accumulate_text
+          @text_accumulator << text
+        end
+      end
+      def instruction name, instruction
+      end
+      def comment comment
+      end
+      def doctype name, pub_sys, long_name, uri
+      end
+      def doctype_end
+      end
+      def attlistdecl element_name, attributes, raw_content
+      end
+      def elementdecl content
+      end
+      def entitydecl content
+      end
+      def notationdecl content
+      end
+      def entity content
+      end
+      def cdata content
+      end
+      def xmldecl version, encoding, standalone
       end
 
     end

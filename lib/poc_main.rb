@@ -198,6 +198,8 @@ module ARINr
           @config.logger.mesg( "Action or feature is not implemented." )
         end
 
+        @config.logger.end_run
+
       end
 
       def help
