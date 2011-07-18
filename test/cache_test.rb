@@ -45,10 +45,11 @@ NET_XML
 
   def test_make_safe
 
-    assert_equal( ARINr::Whois::Cache.make_safe( "http://" ), "http%3A%2F%2F" )
-    assert_equal( ARINr::Whois::Cache.make_safe(
+    assert_equal( ARINr::make_safe( "http://" ), "http%3A%2F%2F" )
+    assert_equal( ARINr::make_safe(
                           "http://whois.arin.net/rest/nets;q=192.136.136.1?showDetails=true&showARIN=false" ),
                   "http%3A%2F%2Fwhois.arin.net%2Frest%2Fnets%3Bq%3D192.136.136.1%3FshowDetails%3Dtrue%26showARIN%3Dfalse")
+    assert_equal( ARINr::make_safe( "marry had a little lamb!" ), "marry%20had%20a%20little%20lamb%21" )
 
   end
 
@@ -63,7 +64,7 @@ NET_XML
     url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
     cache.create_or_update( url, @net_xml )
 
-    safe = ARINr::Whois::Cache.make_safe( url )
+    safe = ARINr::make_safe( url )
     file_name = File.join( c.whois_cache_dir, safe )
     assert( File.exist?( file_name ) )
     f = File.open( file_name, "r" )
@@ -99,7 +100,7 @@ NET_XML
     url = "http://whois.arin.net/rest/net/NET-192-136-136-0-1"
     cache.create_or_update( url, @net_xml )
 
-    safe = ARINr::Whois::Cache.make_safe( url )
+    safe = ARINr::make_safe( url )
     file_name = File.join( c.whois_cache_dir, safe )
     assert( File.exist?( file_name ) )
     f = File.open( file_name, "r" )

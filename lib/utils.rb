@@ -3,6 +3,7 @@
 require 'rexml/document'
 require 'stringio'
 require 'rexml/formatters/transitive'
+require 'uri'
 
 module ARINr
 
@@ -40,4 +41,9 @@ module ARINr
     return sio.string
   end
 
+  def ARINr.make_safe( url )
+    safe = URI.escape( url )
+    safe = URI.escape( safe, "!*'();:@&=+$,/?#[]" )
+    return safe
+  end
 end
