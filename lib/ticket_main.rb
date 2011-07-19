@@ -11,6 +11,7 @@ require 'editor'
 require 'data_tree'
 require 'time'
 require 'tempfile'
+require 'uri'
 
 module ARINr
 
@@ -44,6 +45,11 @@ module ARINr
           opts.on( "-u", "--update",
                    "Downloads a given ticket if updated or all updated tickets." ) do |check|
             @config.options.update_ticket = true
+          end
+
+          opts.on( "-s", "--show",
+                   "Shows information on a given ticket or summary of all tickets." ) do |check|
+            @config.options.show_ticket = true
           end
 
           opts.separator ""
@@ -89,8 +95,12 @@ module ARINr
           check_tickets()
         elsif @config.options.update_ticket
           update_tickets()
+        elsif @config.options.show_ticket
+          @config.logger.run_pager
+          show_tickets()
         else
-          check_tickets()
+          @config.logger.run_pager
+          show_tickets()
         end
 
         @config.logger.end_run
@@ -176,6 +186,61 @@ HELP_SUMMARY
             @config.logger.mesg( "Error getting " + ticket_no )
           end
         end
+      end
+
+      def show_tickets
+        mgr = ARINr::Registration::TicketStorageManager.new @config
+        if @config.options.argv[ 0 ]
+          ticket = mgr.get_ticket_summary @config.options.argv[ 0 ]
+          if ! ticket
+            @config.logger.mesg( "Ticket " + @config.options.argv[ 0 ] + " cannot be found." )
+            return nil
+          end
+          @config.logger.start_data_item
+          @config.logger.terse( "Ticket Number", ticket.ticket_no )
+          @config.logger.terse( "Status", ticket.ticket_status )
+          @config.logger.terse( "Resolution", ticket.ticket_resolution ) if ticket.ticket_resolution
+          @config.logger.datum( "Type", ticket.ticket_type )
+          @config.logger.extra( "Created", Time.parse( ticket.created_date ).rfc2822 ) if ticket.created_date
+          @config.logger.extra( "Resolved", Time.parse( ticket.resolved_date ).rfc2822 ) if ticket.resolved_date
+          @config.logger.datum( "Closed", Time.parse( ticket.closed_date ).rfc2822 ) if ticket.closed_date
+          @config.logger.datum( "Updated", Time.parse( ticket.updated_date ).rfc2822 ) if ticket.updated_date
+          message_entries = mgr.get_ticket_message_entries ticket
+          @config.logger.extra( "Message Count", message_entries.size ) if message_entries
+          @config.logger.end_data_item
+          message_entries.each do |entry|
+            message = mgr.get_ticket_message entry
+            @config.logger.start_data_item
+            log_banner "SUBJECT"
+            if message.subject
+              @config.logger.raw ARINr::DataAmount::TERSE_DATA, message.subject
+            else
+              @config.logger.raw ARINr::DataAmount::TERSE_DATA, "( NO SUBJECT )"
+            end
+            @config.logger.raw ARINr::DataAmount::EXTRA_DATA, message.category if message.category
+            log_banner "BEGIN MESSAGE"
+            message.text.each do |line|
+              @config.logger.raw ARINr::DataAmount::TERSE_DATA, line
+            end if message.text
+            attachments = mgr.get_attachment_entries entry
+            if attachments
+              log_banner "ATTACHMENTS"
+              attachments.each do |attachment|
+                fn = URI.decode( File.basename( attachment ) )
+                @config.logger.raw ARINr::DataAmount::TERSE_DATA, fn
+              end
+            end
+            log_banner "END MESSAGE"
+            @config.logger.end_data_item
+          end if message_entries
+        else
+        end
+      end
+
+      def log_banner banner
+        s = "== " + banner + " "
+        (s.length..80).each {|x| s << "="}
+        @config.logger.raw ARINr::DataAmount::TERSE_DATA, s
       end
 
     end

@@ -167,6 +167,17 @@ module ARINr
         return retval
       end
 
+      def get_ticket_message message_entry
+        f = File.open( message_entry, "r" )
+        data = ''
+        f.each_line do |line|
+          data += line
+        end
+        f.close
+        doc = REXML::Document.new( data )
+        return ARINr::Registration::element_to_ticket_message( doc.root )
+      end
+
       def prepare_file_attachment ticket_no, ticket_message, attachment_name
         if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
           ticket_no = ticket_no.ticket_no

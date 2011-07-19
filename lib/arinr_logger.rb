@@ -134,6 +134,25 @@ module ARINr
 
     end
 
+    def raw data_amount, raw_data
+
+      validate_data_amount()
+
+      case data_amount
+        when DataAmount::TERSE_DATA
+          log_raw(raw_data)
+        when DataAmount::NORMAL_DATA
+          if (@data_amount != DataAmount::TERSE_DATA)
+            log_raw(raw_data)
+          end
+        when DataAmount::EXTRA_DATA
+          if (@data_amount != DataAmount::TERSE_DATA && @data_amount != DataAmount::NORMAL_DATA)
+            log_raw(raw_data)
+          end
+      end
+
+    end
+
     def log_tree_item data_amount, tree_item
 
       validate_data_amount()
