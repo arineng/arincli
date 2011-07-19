@@ -10,6 +10,7 @@ require 'ticket_reg'
 require 'editor'
 require 'data_tree'
 require 'time'
+require 'tempfile'
 
 module ARINr
 
@@ -35,9 +36,14 @@ module ARINr
           opts.separator ""
           opts.separator "Actions:"
 
-          opts.on( "-C", "--check",
-                   "Checks to see if a ticket has been updated." ) do |check|
+          opts.on( "-c", "--check",
+                   "Checks to see if a given ticket or all tickets have been updated." ) do |check|
             @config.options.check_ticket = true
+          end
+
+          opts.on( "-u", "--update",
+                   "Downloads a given ticket if updated or all updated tickets." ) do |check|
+            @config.options.update_ticket = true
           end
 
           opts.separator ""
@@ -79,7 +85,10 @@ module ARINr
         @config.setup_workspace
 
         if( @config.options.check_ticket )
+          @config.logger.run_pager
           check_tickets()
+        elsif @config.options.update_ticket
+          update_tickets()
         else
           check_tickets()
         end
@@ -129,7 +138,7 @@ HELP_SUMMARY
         else
           @config.logger.mesg( "No tickets have been updated." )
         end
-
+        return updated
       end
 
       def check_ticket( element, updated, mgr )
@@ -144,6 +153,27 @@ HELP_SUMMARY
           stored_ticket_time = Time.parse( stored_ticket.updated_date )
           if stored_ticket_time < ticket_time
             updated.add_root( ticket_node )
+          end
+        end
+      end
+
+      def update_tickets
+        updated = check_tickets
+        reg = ARINr::Registration::RegistrationService.new @config
+        updated.roots.each do |ticket|
+          ticket_no = ticket.handle
+          @config.logger.mesg( "Getting " + ticket_no )
+          ticket_file = Tempfile.new "ticket_" + ticket_no
+          resp = reg.get_ticket ticket_no, ticket_file
+          ticket_file.close
+          if resp.code == "200"
+            @config.logger.mesg( "Processing " + ticket_no )
+            listener = ARINr::Registration::TicketStreamListener.new @config
+            source = File.new( ticket_file.path, "r" )
+            REXML::Document::parse_stream( source, listener )
+            source.close
+          else
+            @config.logger.mesg( "Error getting " + ticket_no )
           end
         end
       end

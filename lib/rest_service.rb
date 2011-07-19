@@ -20,6 +20,15 @@ module ARINr
       return resp
     end
 
+    def get_stream url, io
+      uri = URI.parse( url.to_s )
+      http = make_http( uri )
+      resp = http.get( uri.to_s, @headers ) do |str|
+        io.write str
+      end
+      return resp
+    end
+
     def post url, send_data
       uri = URI.parse( url.to_s )
       http = make_http( uri )

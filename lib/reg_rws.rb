@@ -59,6 +59,12 @@ module ARINr
         handle_resp( get( uri), uri )
       end
 
+      def get_ticket ticket_no, io
+        uri = ticket_uri ticket_no
+        uri = add_api_key( uri )
+        get_stream( uri, io )
+      end
+
       def begin_log verb, uri, data=nil
         if @log_suffix
           file_name = @config.make_file_name( @log_suffix + "_tx.log" )
@@ -115,6 +121,13 @@ module ARINr
         uri.path <<= "/rest/ticket/"
         uri.path << ticket_no + "/" if ticket_no
         uri.path << "summary"
+        return uri
+      end
+
+      def ticket_uri ticket_no
+        uri = URI.parse @config.config[ "registration" ][ "url" ]
+        uri.path <<= "/rest/ticket/"
+        uri.path << ticket_no
         return uri
       end
 

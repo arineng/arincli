@@ -89,7 +89,15 @@ module ARINr
       return element
     end
 
-    # Handles storage of the tickets
+    # Handles storage of the tickets.
+    # The directory structure is thusly:
+    # config_dir
+    #  |-- tickets
+    #       |-- message1_summary.xml
+    #       |-- message2_summary.xml
+    #       |-- message2
+    #            |-- attachment1
+    #            |-- attachment2
     class TicketStorageManager
 
       SUMMARY_FILE_SUFFIX = "_summary.xml"
