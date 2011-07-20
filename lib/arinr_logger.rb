@@ -84,92 +84,90 @@ module ARINr
 
     # Outputs at the :SOME_MESSAGES level
     def mesg message
-
       validate_message_level()
-
       if (@message_level != MessageLevel::NO_MESSAGES)
         log_info("# " + message.to_s)
+        return true
       end
-
+      return false
     end
 
     # Outputs at the :ALL_MESSAGES level
     def trace message
-
       validate_message_level()
-
       if (@message_level != MessageLevel::NO_MESSAGES && @message_level != MessageLevel::SOME_MESSAGES)
         log_info("## " + message.to_s)
+        return true
       end
-
+      return false
     end
 
     # Outputs a datum at :TERSE_DATA level
     def terse item_name, item_value
-
       validate_data_amount()
-
       log_data(item_name, item_value)
-
+      return true
     end
 
     # Outputs a data at :NORMAL_DATA level
     def datum item_name, item_value
-
       validate_data_amount()
-
       if (@data_amount != DataAmount::TERSE_DATA)
         log_data(item_name, item_value)
+        return true
       end
-
+      return false
     end
 
     def extra item_name, item_value
-
       validate_data_amount()
-
       if (@data_amount != DataAmount::TERSE_DATA && @data_amount != DataAmount::NORMAL_DATA)
         log_data(item_name, item_value)
+        return true
       end
-
+      return false
     end
 
     def raw data_amount, raw_data
-
+      retval = false
       validate_data_amount()
-
       case data_amount
         when DataAmount::TERSE_DATA
           log_raw(raw_data)
+          retval = true
         when DataAmount::NORMAL_DATA
           if (@data_amount != DataAmount::TERSE_DATA)
             log_raw(raw_data)
+            retval = true
           end
         when DataAmount::EXTRA_DATA
           if (@data_amount != DataAmount::TERSE_DATA && @data_amount != DataAmount::NORMAL_DATA)
             log_raw(raw_data)
+            retval = true
           end
       end
-
+      return retval
     end
 
     def log_tree_item data_amount, tree_item
-
+      retval = false
       validate_data_amount()
-
       case data_amount
         when DataAmount::TERSE_DATA
           log_raw(tree_item)
+          retval = true
         when DataAmount::NORMAL_DATA
           if (@data_amount != DataAmount::TERSE_DATA)
             log_raw(tree_item)
+            retval = true
           end
         when DataAmount::EXTRA_DATA
           if (@data_amount != DataAmount::TERSE_DATA && @data_amount != DataAmount::NORMAL_DATA)
             log_raw(tree_item)
+            retval = true
           end
       end
-
+      return retval
     end
 
     # This code came from http://nex-3.com/posts/73-git-style-automatic-paging-in-ruby

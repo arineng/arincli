@@ -159,6 +159,10 @@ output:
   # Page output with system pager when appropriate.
   pager: true
 
+  # Automatically wrap text when possible.
+  # Comment out to disable auto-wrapping.
+  auto_wrap: 80
+
 whois:
 
   # the base URL for the Whois-RWS service

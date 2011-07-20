@@ -119,6 +119,7 @@ module ARINr
     private
 
     def to_log annotate
+      retval = false
       double_space_roots = false
       @roots.each do |root|
         double_space_roots = true unless root.children.empty?
@@ -138,7 +139,7 @@ module ARINr
         else
           s = root.to_s
         end
-        @logger.log_tree_item( @data_amount, s )
+        retval = @logger.log_tree_item( @data_amount, s )
         if annotate
           prefix = " "
           child_num = 1
@@ -154,6 +155,7 @@ module ARINr
         @logger.end_data_item if double_space_roots
       end
       @logger.end_data_item unless double_space_roots
+      return retval
     end
 
     def rprint( num, parent, node, prefix )

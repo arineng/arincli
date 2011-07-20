@@ -20,7 +20,7 @@ module ARINr
     class TicketMain < ARINr::BaseOpts
 
       ARINT_LOG_SUFFIX = 'arint_summary'
-      ARINT_UPDATED_TICKETS = 'arint_updated_tickets.yaml'
+      ARINT_TICKETS = 'arint_tickets.yaml'
 
       def initialize args, config = nil
 
@@ -45,6 +45,12 @@ module ARINr
           opts.on( "-u", "--update",
                    "Downloads a given ticket if updated or all updated tickets." ) do |check|
             @config.options.update_ticket = true
+          end
+
+          opts.on( "--force-update",
+                   "Forces a download of a given ticket or all tickets." ) do |check|
+            @config.options.update_ticket = true
+            @config.options.force_update = true
           end
 
           opts.on( "-s", "--show",
@@ -89,6 +95,12 @@ module ARINr
 
         @config.logger.mesg( ARINr::VERSION )
         @config.setup_workspace
+
+        if @config.options.argv[ 0 ] && @config.options.argv[ 0 ] =~ ARINr::DATA_TREE_ADDR_REGEX
+          tree = @config.load_as_yaml( ARINT_TICKETS )
+          v = tree.find_handle @config.options.argv[ 0 ]
+          @config.options.argv[ 0 ] = v if v
+        end
 
         if( @config.options.check_ticket )
           @config.logger.run_pager
@@ -144,7 +156,7 @@ HELP_SUMMARY
 
         if !updated.empty?
           updated.to_terse_log( @config.logger, true )
-          @config.save_as_yaml( ARINT_UPDATED_TICKETS, updated )
+          @config.save_as_yaml( ARINT_TICKETS, updated )
         else
           @config.logger.mesg( "No tickets have been updated." )
         end
@@ -156,7 +168,7 @@ HELP_SUMMARY
         s = format( "%-20s %-15s %-15s", ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
         ticket_node = ARINr::DataNode.new( s, ticket.ticket_no )
         stored_ticket = mgr.get_ticket_summary ticket
-        if ! stored_ticket
+        if ! stored_ticket || @config.options.force_update
           updated.add_root( ticket_node )
         else
           ticket_time = Time.parse( ticket.updated_date )
@@ -196,13 +208,18 @@ HELP_SUMMARY
             @config.logger.mesg( "Ticket " + @config.options.argv[ 0 ] + " cannot be found." )
             return nil
           end
+          tree = ARINr::DataTree.new
+          tree.add_root( get_ticket_node( mgr, ticket ) )
+          if( tree.to_normal_log( @config.logger, true ) )
+            @config.save_as_yaml( ARINT_TICKETS, tree )
+          end
           @config.logger.start_data_item
           @config.logger.terse( "Ticket Number", ticket.ticket_no )
           @config.logger.terse( "Status", ticket.ticket_status )
           @config.logger.terse( "Resolution", ticket.ticket_resolution ) if ticket.ticket_resolution
           @config.logger.datum( "Type", ticket.ticket_type )
-          @config.logger.extra( "Created", Time.parse( ticket.created_date ).rfc2822 ) if ticket.created_date
-          @config.logger.extra( "Resolved", Time.parse( ticket.resolved_date ).rfc2822 ) if ticket.resolved_date
+          @config.logger.terse( "Created", Time.parse( ticket.created_date ).rfc2822 ) if ticket.created_date
+          @config.logger.datum( "Resolved", Time.parse( ticket.resolved_date ).rfc2822 ) if ticket.resolved_date
           @config.logger.datum( "Closed", Time.parse( ticket.closed_date ).rfc2822 ) if ticket.closed_date
           @config.logger.datum( "Updated", Time.parse( ticket.updated_date ).rfc2822 ) if ticket.updated_date
           message_entries = mgr.get_ticket_message_entries ticket
@@ -211,17 +228,28 @@ HELP_SUMMARY
           message_entries.each do |entry|
             message = mgr.get_ticket_message entry
             @config.logger.start_data_item
-            log_banner "SUBJECT"
-            if message.subject
-              @config.logger.raw ARINr::DataAmount::TERSE_DATA, message.subject
-            else
-              @config.logger.raw ARINr::DataAmount::TERSE_DATA, "( NO SUBJECT )"
-            end
-            @config.logger.raw ARINr::DataAmount::EXTRA_DATA, message.category if message.category
             log_banner "BEGIN MESSAGE"
+            subject = "Subject:  " + message.subject if message.subject
+            subject = "Subject:  ( NO SUBJECT GIVEN )" if !message.subject
+            @config.logger.raw ARINr::DataAmount::TERSE_DATA, subject
+            @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Category: " + message.category if message.category
+            @config.logger.raw ARINr::DataAmount::TERSE_DATA, ""
             message.text.each do |line|
-              @config.logger.raw ARINr::DataAmount::TERSE_DATA, line
+              line = "" if !line
+              auto_wrap = @config.config[ "output" ][ "auto_wrap" ]
+              if auto_wrap && line.length > auto_wrap
+                while line.length > auto_wrap
+                  cutoff = line.rindex( " ", auto_wrap )
+                  cutoff = auto_wrap if cutoff == 0
+                  @config.logger.raw ARINr::DataAmount::TERSE_DATA, line[0..cutoff]
+                  line = line[(cutoff+1)..-1]
+                end
+                @config.logger.raw ARINr::DataAmount::TERSE_DATA, line
+              else
+                @config.logger.raw ARINr::DataAmount::TERSE_DATA, line
+              end
             end if message.text
+            @config.logger.raw ARINr::DataAmount::TERSE_DATA, ""
             attachments = mgr.get_attachment_entries entry
             if attachments
               log_banner "ATTACHMENTS"
@@ -234,13 +262,44 @@ HELP_SUMMARY
             @config.logger.end_data_item
           end if message_entries
         else
+          tickets = mgr.get_ticket_summaries
+          tree = ARINr::DataTree.new
+          tickets.each do |ticket|
+            root = get_ticket_node mgr, ticket
+            tree.add_root( root )
+          end
+          if tree.empty?
+            @config.logger.mesg( "No tickets found." )
+          else
+            tree.to_terse_log( @config.logger, true )
+            @config.save_as_yaml( ARINT_TICKETS, tree )
+          end
         end
       end
 
-      def log_banner banner
-        s = "== " + banner + " "
-        (s.length..80).each {|x| s << "="}
+      def log_banner banner, fill_char = "-"
+        s = fill_char + fill_char + " " + banner + " "
+        (s.length..80).each {|x| s << fill_char}
         @config.logger.raw ARINr::DataAmount::TERSE_DATA, s
+      end
+
+      def get_ticket_node mgr, ticket
+        s = format( "%s (%s, %s)",ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
+        root = ARINr::DataNode.new( s, ticket.ticket_no )
+        message_entries = mgr.get_ticket_message_entries ticket
+        message_entries.each do |entry|
+          message = mgr.get_ticket_message entry
+          subject = message.subject ? message.subject : "( NO SUBJECT GIVEN )"
+          message_node = ARINr::DataNode.new( subject )
+          root.add_child( message_node )
+          attachments = mgr.get_attachment_entries entry
+          attachments.each do |attachment|
+            fn = URI.decode( File.basename( attachment ) )
+            attachment_node = ARINr::DataNode.new( fn, attachment )
+            message_node.add_child( attachment_node )
+          end if attachments
+        end if message_entries
+        return root
       end
 
     end

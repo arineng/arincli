@@ -136,6 +136,25 @@ module ARINr
         f.close
       end
 
+      def get_ticket_summary_entries
+        retval = []
+        dir = Dir.new( @config.tickets_dir )
+        dir.each do |file_name|
+          retval << File.join( @config.tickets_dir, file_name ) if file_name.end_with?( SUMMARY_FILE_SUFFIX )
+        end
+        return retval
+      end
+
+      def get_ticket_summaries
+        entries = get_ticket_summary_entries
+        retval = []
+        entries.each do |entry|
+          ticket_no = File.basename( entry ).sub( SUMMARY_FILE_SUFFIX, "" )
+          ticket = get_ticket_summary ticket_no
+          retval << ticket if ticket
+        end
+        return retval
+      end
 
       def put_ticket_message ticket_no, ticket_message
         if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
@@ -185,7 +204,7 @@ module ARINr
         prepare_ticket_area(ticket_no)
         file_name =
             File.join( @config.tickets_dir, ticket_no, ticket_message.get_id_safe_s )
-        Dir.mkdir( file_name )
+        Dir.mkdir( file_name ) if ! File.exist?( file_name )
         return File.join( file_name, ARINr::make_safe( attachment_name ) )
       end
 
