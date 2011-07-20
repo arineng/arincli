@@ -12,7 +12,7 @@ module ARINr
     def run args
 
       puts ARINr::VERSION
-      puts "ARINr Control Program"
+      puts "ARINr Utility Program"
 
       case args[ 0 ]
         when "-h"
