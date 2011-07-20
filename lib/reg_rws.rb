@@ -27,7 +27,8 @@ module ARINr
       end
 
       def create_poc data
-        uri = poc_service_uri
+        uri = URI.parse @config.config[ "registration" ][ "url" ]
+        uri.path <<= "/rest/poc;makeLink=true"
         uri = add_api_key( uri )
         begin_log "POST", uri, data
         resp = post( uri, data )
@@ -141,6 +142,8 @@ module ARINr
             retval = handle_expected( "503 SERVICE UNAVAILABLE", resp, uri )
           when "400"
             retval = handle_expected( "400 BAD REQUEST", resp, uri )
+          when "401"
+            retval = handle_expected( "400 UNAUTHORIZED", resp, uri )
           else
             end_log resp.entity
             @config.logger.mesg( "ERROR: Service returned " + resp.code + " error for " + uri.to_s + "." )
