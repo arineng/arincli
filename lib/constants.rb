@@ -27,4 +27,7 @@ module ARINr
   IPV6_REGEX = /\A(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\z/
   IPV6_HEXCOMPRESS_REGEX = /\A((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)::((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)\z/
 
+  #File Name Constants
+  ARINW_LASTTREE_YAML = "arinw-lasttree.yaml"
+
 end

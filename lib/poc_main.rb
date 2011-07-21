@@ -96,28 +96,11 @@ module ARINr
 
         begin
           @opts.parse!( args )
-          if !@config.options.help && args != nil && args != []
-            if ( ! @config.options.delete_poc ) && ( ! @config.options.create_poc ) && ( ! @config.options.make_template )
-              @config.options.modify_poc = true
-            end
-            if args[ 0 ] =~ ARINr::DATA_TREE_ADDR_REGEX
-              tree = @config.load_as_yaml( "arinw-lasttree.yaml" )
-              handle = tree.find_handle( args[ 0 ] )
-              raise ArgumentError.new( "Unable to find handle for " + args[ 0 ] ) unless handle
-              args[ 0 ] = handle
-            end
-            if ! args[ 0 ] =~ ARINr::POC_HANDLE_REGEX
-              raise OptionParser::InvalidArgument, args[ 0 ] + " does not look like a POC Handle."
-            end
-          end
           if ! args[ 0 ] && @config.options.delete_poc
-            raise OptionParser::InvalidArgument, "You must specify a POC Handle to delete a POC."
-          end
-          if ! args[ 0 ] && @config.options.modify_poc
-            raise OptionParser::InvalidArgument, "You must specify a POC Handle to modify a POC."
+            raise OptionParser::InvalidArgument, "You must specify a Point of Contact to delete."
           end
           if ! args[ 0 ] && @config.options.make_template
-            raise OptionParser::InvalidArgument, "You must specify a POC Handle to template."
+            raise OptionParser::InvalidArgument, "You must specify a Point of Contact from which to create a template."
           end
         rescue OptionParser::InvalidArgument => e
           puts e.message
@@ -169,36 +152,70 @@ module ARINr
 
         if( @config.options.help )
           help()
-        elsif( @config.options.argv == nil || @config.options.argv == [] )
-          if File.exists?( @config.make_file_name( ARINP_MODIFY_POC_FILE ) )
-            @config.options.modify_poc = true
-            @config.options.data_file = @config.make_file_name( ARINP_MODIFY_POC_FILE )
-          elsif File.exists?( @config.make_file_name( ARINP_CREATE_POC_FILE ) ) && !@config.options.create_poc
-            @config.options.create_poc = true
-            @config.options.data_file = @config.make_file_name( ARINP_CREATE_POC_FILE )
-          elsif ! @config.options.create_poc
-              help()
-          end
+          return
         end
 
         @config.logger.mesg( ARINr::VERSION )
         @config.setup_workspace
 
-        if @config.options.make_template
-          make_yaml_template( @config.options.template_file, @config.options.argv[ 0 ] )
-        elsif @config.options.modify_poc
-          modify_poc()
-        elsif @config.options.delete_poc
-          reg = ARINr::Registration::RegistrationService.new( @config )
-          element = reg.delete_poc( @config.options.argv[ 0 ] )
-          @config.logger.mesg( @config.options.argv[ 0 ] + " deleted." ) if element
-        elsif @config.options.create_poc
-          create_poc()
-        else
-          @config.logger.mesg( "Action or feature is not implemented." )
+        # If no action is given, then the default action is to modify a POC
+        if ( ! @config.options.delete_poc ) && ( ! @config.options.create_poc ) && ( ! @config.options.make_template )
+          @config.options.modify_poc = true
+          @config.logger.mesg( "No action specified. Default action is to modify a POC." )
+        end
+
+        # because we use this constantly in this code section
+        args = @config.options.argv
+
+        # a POC handle is given, see if it is a tree reference and dereference it,
+        # then make sure it looks like a POC handle.
+        if !@config.options.help && args != nil && args != []
+          if args[ 0 ] =~ ARINr::DATA_TREE_ADDR_REGEX
+            tree = @config.load_as_yaml( ARINr::ARINW_LASTTREE_YAML )
+            handle = tree.find_handle( args[ 0 ] )
+            raise ArgumentError.new( "Unable to find handle for " + args[ 0 ] ) unless handle
+            args[ 0 ] = handle
+          end
+          if ! args[ 0 ] =~ ARINr::POC_HANDLE_REGEX
+            raise ArgumentError.new (args[ 0 ] + " does not look like a POC Handle.")
+          end
+        end
+
+        exit_code = 0
+        begin
+          if @config.options.make_template
+            make_yaml_template( @config.options.template_file, args[ 0 ] )
+          elsif @config.options.modify_poc
+            last_modified = @config.make_file_name( ARINP_MODIFY_POC_FILE )
+            if File.exists?( last_modified ) && (!args[ 0 ])
+              @config.options.data_file = last_modified
+              @config.logger.mesg( "Re-using data from last modify POC action." )
+            elsif !args[ 0 ]
+              raise ArgumentError.new ("You must specify a Point of Contact to modify." )
+            end
+            modify_poc()
+          elsif @config.options.delete_poc
+            reg = ARINr::Registration::RegistrationService.new( @config )
+            element = reg.delete_poc( args[ 0 ] )
+            @config.logger.mesg( args[ 0 ] + " deleted." ) if element
+          elsif @config.options.create_poc
+            last_created = @config.make_file_name( ARINP_CREATE_POC_FILE )
+            if File.exists?( last_created ) && !args[ 0 ]
+              @config.options.data_file = last_created
+              @config.logger.mesg( "Re-using data from last create POC action." )
+            end
+            create_poc()
+          else
+            @config.logger.mesg( "Action or feature is not implemented." )
+            exit_code = 1
+          end
+        rescue ArgumentError => e
+          @config.logger.mesg( e.message )
+          exit_code = 1
         end
 
         @config.logger.end_run
+        exit( exit_code )
 
       end
 
@@ -275,12 +292,14 @@ HELP_SUMMARY
           new_poc = ARINr::Registration.element_to_poc( element )
           @config.logger.mesg( "New point of contact created with handle " + new_poc.handle )
           @config.logger.mesg( 'Use "arinp ' + new_poc.handle + '" to modify this point of contact.')
+          last_created = @config.make_file_name( ARINP_CREATE_POC_FILE )
+          if File.exists?( last_created )
+            File.delete( last_created )
+          end
         else
           @config.logger.mesg( "Point of contact was not created." )
           if !@config.options.data_file_specified
-            df = @config.make_file_name( ARINP_MODIFY_POC_FILE )
-            File.delete( df ) if File.exists?( df )
-            @config.logger.mesg( 'Use "arinp" to re-edit and resubmit.' )
+            @config.logger.mesg( 'Use "arinp --create" to re-edit and resubmit.' )
           else
             @config.logger.mesg( 'Edit file then use "arinp -f ' + @config.options.data_file + ' --create" to resubmit.')
           end
