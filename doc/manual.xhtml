@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>ARINr v.0.1.0 Manual</title><meta name="generator" content="DocBook XSL-NS Stylesheets V1.76.1"/></head><body><div class="book" title="ARINr v.0.1.0 Manual"><div class="titlepage"><div><div><h1 class="title"><a id="d0e2"/>ARINr v.0.1.0 Manual</h1></div><div><div class="author"><h3 class="author"><span class="orgname">American Registry for Internet Numbers</span><div class="address"><p><br/>
+                <span class="city">Chantilly, VA</span><br/>
+                <span class="street">3635 Concorde Parkway, Suite 200</span><br/>
+                <span class="postcode">20151</span><br/>
+                <span class="country">USA</span><br/>
+            </p></div><code class="email">&lt;<a class="email" href="mailto:arin-tech-discuss@arin.net">arin-tech-discuss@arin.net</a>&gt;</code></h3><code class="email">&lt;<a class="email" href="mailto:arin-tech-discuss@arin.net">arin-tech-discuss@arin.net</a>&gt;</code></div></div></div><hr/></div><div class="toc"><p><strong>Table of Contents</strong></p><dl><dt><span class="part"><a href="#d0e25">I. Background and Installation</a></span></dt><dd><dl><dt><span class="chapter"><a href="#d0e28">1. Interacting with ARIN</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e31">The Different Protocols and Services</a></span></dt><dt><span class="section"><a href="#d0e46">What is ARINr?</a></span></dt></dl></dd></dl></dd></dl></div><div class="part" title="Part I. Background and Installation"><div class="titlepage"><div><div><h1 class="title"><a id="d0e25"/>Part I. Background and Installation</h1></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl><dt><span class="chapter"><a href="#d0e28">1. Interacting with ARIN</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e31">The Different Protocols and Services</a></span></dt><dt><span class="section"><a href="#d0e46">What is ARINr?</a></span></dt></dl></dd></dl></div><div class="chapter" title="Chapter 1. Interacting with ARIN"><div class="titlepage"><div><div><h2 class="title"><a id="d0e28"/>Chapter 1. Interacting with ARIN</h2></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl><dt><span class="section"><a href="#d0e31">The Different Protocols and Services</a></span></dt><dt><span class="section"><a href="#d0e46">What is ARINr?</a></span></dt></dl></div><div class="section" title="The Different Protocols and Services"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e31"/>The Different Protocols and Services</h2></div></div></div><p>Registering information within ARIN's system has been traditionally
+                    accomplished with plain text templates send in via email. Users were expected to
+                    download the templates from ARIN's website, fill them out appropriately, and
+                    send them in. This is a process that was inherited from the InterNIC, the
+                    registry for IP addresses before ARIN was formed to take on that
+                    responsibility.</p><p>The process of using email templates was also used by the InterNIC for the
+                    registration of domain names, a function now conducted by domain registries and
+                    registrars (depending on the top-level domain in question). Email templates are
+                    no longer used for domain registration.</p><p>Public views into the ARIN's registration data has been traditionally
+                    accomplished using the NICNAME/WHOIS protocol. This protocol is currently
+                    defined by RFC 3912, but dates back before the definition of IPv4.
+                    NICNAME/WHOIS, or just WHOIS as stated by RFC 3912, is in use today by all of
+                    the Regional Internet Registries as well as domain registries and registrars and
+                    the IANA.</p><p>In recent years, ARIN has been adding RESTful web services on top of the
+                    traditional email templates and WHOIS services. These RESTful web services are
+                    intended to take advantage of more mainstream technologies commonly found in web
+                    infrastrucutes throughout the Internet. Because RESTful web services re-use the
+                    technology set of mainstream web infrastructure, programmers can easily find
+                    libraries with which to build tools.</p><p>ARIN currently offers two distinct RESTful web services: Whois-RWS and
+                    Reg-RWS. Whois-RWS is a RESTful web service for querying and viewing the pubic
+                    data in ARIN's registration database and is analogous to ARIN's traditional
+                    WHOIS service. Reg-RWS is a more complicated service for registering and
+                    administering information in ARIN's registration database and is analogous to
+                    ARIN's traditional email templates.</p><p>Reg-RWS limits interactions to only those resources, IP networks and AS
+                    numbers, and administrative objects for which a user has authority over. This
+                    authority flows from the linkages between a users web account in ARIN Online to
+                    Points of Contact (POCs) and the linkages between POCs and organizations holding
+                    resources. Authentication of users in Reg-RWS requires an API-KEY, which users
+                    can generate in ARIN Online. ARIN also offers an Operational Testing and
+                    Evaluation environment (OT&amp;E) for Reg-RWS, an environment with the same data
+                    intended to help development against Reg-RWS without compromising data in the
+                    production registration system.</p></div><div class="section" title="What is ARINr?"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e46"/>What is ARINr?</h2></div></div></div><p>ARINr is a set of Ruby scripts that utilize both the Whois-RWS service and the
+                    Reg-RWS service. Because ARIN's RESTful web services share common code and
+                    infrastructure with ARIN Online, these scripts were created using completely
+                    seperate tooling to help expose issues with the RESTful web services that may
+                    not be obvious to developers familiar with and developing with standard ARIN
+                    tools.</p><p>However, ARIN believes these tools could also be of value to the general
+                    public and has therefore released them with a
+                    BSD
+                    open source license.</p><p>The ARINr script 'arinw' is designed to work against Whois-RWS, while the rest
+                    of the main scripts are designed to work against Reg-RWS; they can even be used
+                    against the Reg-RWS OT&amp;E system.</p><p>At the time of this writing, the ARINr scripts should be considered "alpha"
+                    quality. A lot of functionality is still missing from the scripts, and ARIN has
+                    not conducted any qualified degree of quality assurance against them.</p></div></div></div></div></body></html>
