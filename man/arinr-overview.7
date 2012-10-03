@@ -1,0 +1,24 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "ARINR\-OVERVIEW" "7" "October 2012" "" ""
+.
+.SH "NAME"
+\fBarinr\-overview\fR \- An overview of the ARINr scripts
+.
+.SH "DESCRIPTION"
+ARINr is a set of Ruby scripts that utilize both the Whois\-RWS(7) service and the Reg\-RWS(7) service\. Whois\-RWS(7) is ARIN\'s Whois/NICNAME RESTful web service for exposing IP network and ASN registration data to the public (Note this service pre\-dates the IETF WEIRDS/RDAP service and is not yet compatible with that specification)\. Reg\-RWS(7) is ARIN\'s registration RESTful web service available to customers of ARIN\.
+.
+.P
+At the time of this writing, the ARINr scripts should be considered \fBalpha\fR quality\. A lot of functionality is still missing from the scripts, and ARIN has not conducted any qualified degree of quality assurance against them\.
+.
+.SH "COMMANDS"
+.
+.IP "\(bu" 4
+arinw(1) queries ARIN\'s Whois\-RWS(7) service\.
+.
+.IP "\(bu" 4
+arinu(1) is a utility for managing ARINr scripts\.
+.
+.IP "" 0
+

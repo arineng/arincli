@@ -1,0 +1,31 @@
+arinu(1) -- ARINr Utility Command
+=================================
+
+## SYNOPSIS
+
+arinu COMMAND
+
+## DESCRIPTION
+
+This program performs maintenance tasks for the ARINr suite of commands.
+
+## COMMANDS
+
+  * `help`
+    Shows a help screen.
+
+  * `clean_cache`
+    Forces the cleaning of the arinw(1) cache.
+
+  * `cache_count`
+    Reports the number of files in the arinw(1) cache.
+
+  * `cached_last`
+    Shows details on the last file cached.
+
+  * `config`
+    Show the interpretted configuration for ARINr commands.
+
+## SEE ALSO
+
+arinr-overview(7), arinw(1)

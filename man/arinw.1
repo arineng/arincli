@@ -1,0 +1,68 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "ARINW" "1" "October 2012" "" ""
+.
+.SH "NAME"
+\fBarinw\fR \- ARINr Whois Command
+.
+.SH "SYNOPSIS"
+arinw \fIoptions\fR QUERY_VALUE
+.
+.SH "DESCRIPTION"
+This program uses ARIN\'s Whois\-RWS(7) RESTful API to query ARIN\'s Whois database\. The general usage is "arinw QUERY_VALUE" where the type of QUERY_VALUE influences the type of query performed\. This program will attempt to guess the type of QUERY_VALUE, but the QUERY_VALUE type maybe explicitly set using the \-t option\. Queries for data related to the QUERY_VALUE may be specified using the \-r option (i\.e\. the reverse DNS delegations related to a network)\.
+.
+.P
+In certain cases, Organization handles (orghandle), also knows as organization ids, can be properly determined\. This occurs when the Organization handle ends with \'\-z\' or with \'\-xxx\' where xxx is a number\. As a shortcut for Organization handles that do not match these cases, a \'\-o\' can be appended to signify that it is an Organization handle\.
+.
+.SH "OPTIONS"
+.
+.IP "\(bu" 4
+\fB\-r\fR, \fB\-\-related\fR TYPE: Query for the specified type related to the query value: \fBnets\fR for query for the related networks, \fBdels\fR for query for the reverse DNS delegations, \fBorgs\fR for query for the related organizations, \fBpocs\fR for query for the related points of contact, \fBasns\fR for query for the related autonomous system numbers
+.
+.IP "\(bu" 4
+\fB\-t\fR, \fB\-\-type\fR TYPE: Specify type of the query value: \fBnethandle\fR for network handle, \fBpochandle\fR for point of contact handle, \fBorghandle\fR for organization handle, \fBip4addr\fR for IPv4 address, \fBip6addr\fR for IPv6 address, \fBip4cidr\fR for IPv4 cidr block, \fBip6cidr\fR for IPv6 cidr block, \fBasnumber\fR for autonomous system number, \fBdelegation\fR for reverse DNS delegation, \fBpocname\fR for name of a point of contact, \fBorgname\fR for name of an organization, \fBresult\fR for result from a previous query
+.
+.IP "\(bu" 4
+\fB\-\-pft\fR YES|NO|TRUE|FALSE: Use a PFT style query\.
+.
+.IP "\(bu" 4
+\fB\-\-cidr\fR LESS|EXACT|MORE: Type of matching to use for CIDR queries\.
+.
+.IP "\(bu" 4
+\fB\-\-substring\fR YES|NO|TRUE|FALSE: Use substring matching for name searches\.
+.
+.IP "\(bu" 4
+\fB\-\-details\fR YES|NO|TRUE|FALSE: Query for extra details\.
+.
+.IP "\(bu" 4
+\fB\-U\fR, \fB\-\-url\fR URL: The base URL of the Whois\-RWS(7) system\.
+.
+.IP "\(bu" 4
+\fB\-\-cache\-expiry\fR SECONDS: Age in seconds of items in the cache to be considered expired\.
+.
+.IP "\(bu" 4
+\fB\-\-cache\fR YES|NO|TRUE|FALSE: Controls if the cache is used or not\.
+.
+.IP "\(bu" 4
+\fB\-\-messages\fR MESSAGE_LEVEL: Specify one of the message levels: \fBnone\fR for no messages are to be output, \fBsome\fR for some messages to be output, or \fBall\fR for all messages to be output\.
+.
+.IP "\(bu" 4
+\fB\-\-messages\-out\fR FILE: Specifies that messages are to be written to the given file\.
+.
+.IP "\(bu" 4
+\fB\-\-data\fR DATA_AMOUNT: Specifies the amount of data to be output\. Use of of: \fBterse\fR, \fBnormal\fR, or \fBextra\fR\.
+.
+.IP "\(bu" 4
+\fB\-\-data\-out\fR FILE: File where data is to be written if specified\.
+.
+.IP "\(bu" 4
+\fB\-V\fR Equivalent to \fB\-\-messages all\fR and \fB\-\-data extra\fR
+.
+.IP "\(bu" 4
+\fB\-h\fR Displays help\.
+.
+.IP "" 0
+.
+.SH "SEE ALSO"
+arinr\-overview(7), arinu(1), Whois\-RWS(7)

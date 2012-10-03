@@ -1,0 +1,8 @@
+# manuals
+arinr-overview(7) arinr-overview.7.ronn
+arinu(1) arinu.1.ronn
+arinw(1) arinw.1.ronn
+
+# external stuff
+Whois-RWS(7) https://www.arin.net/resources/whoisrws/index.html
+Reg-RWS(7) https://www.arin.net/resources/restful-interfaces.html
