@@ -21,4 +21,21 @@ arinw(1) queries ARIN\'s Whois\-RWS(7) service\.
 arinu(1) is a utility for managing ARINr scripts\.
 .
 .IP "" 0
-
+.
+.SH "CONFIGURATION"
+The ARINr commands all use an application data directory to store configuration files, caches, etc\. The arinu(1) command can be used to manipulate the caches and configuration\. This application data directory is \fB$HOME/\.ARINr\fR for Unix and Unix\-like systems, and \fB%APPDATA%\eARINr\fR for Windows\. This directory is created automatically the first time an ARINr command is run\.
+.
+.P
+Configuration is kept in the \fBconfig\.yaml\fR file in the application data directory\. This is a YAML file and so YAML syntax is required\. YAML is designed to be human friendly yet machine parsable\. For users of Reg\-RWS(7), the API Key given will likely need be changed to the users real API key\. An API Key can be obtained via ARIN Online \fIhttp://www\.arin\.net/public\fR\. An API Key is not needed for Whois\-RWS(7)\.
+.
+.SH "INSTALLATION"
+At present, the only way to install the ARINr scripts is from the source using Git\. The ARINr commands are Ruby programs, and Ruby 1\.8\.7 and above are needed\.
+.
+.P
+To get the code, clone the repository using the following command: \fIgit clone http://stash\-projects\.arin\.net:7990/scm/ARINR/arinr\.git\fR\. The commands are executables in the bin directory and should be usable straight away\.
+.
+.P
+To verify compatibility and that everything is working, run the tests with the \fBrun_all_tests\fR command\.
+.
+.P
+To build the man pages and these documents, you must use \fBronn\fR\. You can install it as a Ruby gem with \fIgem install ronn\fR\. Once it is installed, build the man pages with the following command: \fIronn man/*\.ronn\fR\.
