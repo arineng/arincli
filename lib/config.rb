@@ -203,7 +203,7 @@ registration:
   apikey: API-1234-5678-9012-3456
 
   # the base URL for the Reg-RWS service
-  url: https://www.arin.net
+  url: https://reg.arin.net
 
   # The editor to use for editing values.
   # If left blank, an attempt will be used to find a system default
