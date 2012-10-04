@@ -74,6 +74,7 @@
     <a href="#SYNOPSIS">SYNOPSIS</a>
     <a href="#DESCRIPTION">DESCRIPTION</a>
     <a href="#OPTIONS">OPTIONS</a>
+    <a href="#EXAMPLES">EXAMPLES</a>
     <a href="#SEE-ALSO">SEE ALSO</a>
   </div>
 
@@ -97,14 +98,47 @@
 <p>This program uses ARIN's <a class="man-ref" href="https://www.arin.net/resources/whoisrws/index.html">Whois-RWS<span class="s">(7)</span></a> RESTful API to query ARIN's Whois database.
 The general usage is "arinw QUERY_VALUE" where the type of QUERY_VALUE influences the
 type of query performed. This program will attempt to guess the type of QUERY_VALUE,
-but the QUERY_VALUE type maybe explicitly set using the -t option. Queries for data
-related to the QUERY_VALUE may be specified using the -r option (i.e. the reverse DNS
+but the QUERY_VALUE type maybe explicitly set using the <code>-t</code> option. Queries for data
+related to the QUERY_VALUE may be specified using the <code>-r</code> option (i.e. the reverse DNS
 delegations related to a network).</p>
 
 <p>In certain cases, Organization handles (orghandle), also knows as organization ids,
-can be properly determined. This occurs when the Organization handle ends with '-z'
-or with '-xxx' where xxx is a number. As a shortcut for Organization handles that do
-not match these cases, a '-o' can be appended to signify that it is an Organization handle.</p>
+can be properly determined. This occurs when the Organization handle ends with <em>-z</em>
+or with <em>-xxx</em> where xxx is a number. As a shortcut for Organization handles that do
+not match these cases, a <em>-o</em> can be appended to signify that it is an Organization
+handle.</p>
+
+<p>The following are other criteria for determining the type of the QUERY_VALUE when
+the <code>-t</code> option is not given:</p>
+
+<ul>
+<li><p>If the QUERY_VALUE is simply a number, it is assumed to be an Autonomous
+System Number.</p></li>
+<li><p>If the QUERY_VALUE is a number prepended with "AS", it is assumed to be an
+Autonomous System Number.</p></li>
+<li><p>If the QUERY_VALUE begins with "NET-" or "NET6-" it is assumed to be a
+network handle.</p></li>
+<li><p>If the QUERY_VALUE appears to be an IPv4 or IPv6 address, then it is assumed
+to be an IP address.</p></li>
+<li><p>If the QUERY_VALUE ends in "in-addr.arpa" or "ip6.arpa", it is assumed to
+be a reverse DNS delegation point.</p></li>
+<li><p>If the QUERY_VALUE appears to be a proper name, it is assumed to be a name
+of a Point of Contact.</p></li>
+</ul>
+
+
+<p>The QUERY_VALUE can also be a result value from a previous query if it ends with
+an equal sign ("="). Consider the following tree output:</p>
+
+<p>1= NET-192-136-136-0-1 ( 192.136.136.0 - 192.136.136.255 )   <br />
+   `--- 1. Reverse DNS Delegations</p>
+
+<pre><code>    `--- 1= 136.136.192.in-addr.arpa.
+</code></pre>
+
+<p>A QUERY_VALUE of "1=1=1=" would be a shortcut for requerying for
+136.136.192.in-addr.arpa. The character between the numbers can also be a
+period character ("."). So "1.1.1=" would be equivalent.</p>
 
 <h2 id="OPTIONS">OPTIONS</h2>
 
@@ -151,6 +185,18 @@ File where data is to be written if specified.</p></li>
 Equivalent to <code>--messages all</code> and <code>--data extra</code></p></li>
 <li><p><code>-h</code>
 Displays help.</p></li>
+</ul>
+
+
+<h2 id="EXAMPLES">EXAMPLES</h2>
+
+<ul>
+<li><p><code>arinw kosters</code> queries for a POC with the last name of "Kosters".</p></li>
+<li><p><code>arinw 2=</code> queries for the second value in a result from the previous query.</p></li>
+<li><p><code>arinw -t orghandle arin</code> queries for organizations with the handle "arin".</p></li>
+<li><p><code>arinw arin-o</code> is the same as above.</p></li>
+<li><p><code>arinw 192.136.136.51</code> queries for the most specific network enclosing
+192.136.136.51.</p></li>
 </ul>
 
 

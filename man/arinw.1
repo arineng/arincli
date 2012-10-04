@@ -10,10 +10,55 @@
 arinw \fIoptions\fR QUERY_VALUE
 .
 .SH "DESCRIPTION"
-This program uses ARIN\'s Whois\-RWS(7) RESTful API to query ARIN\'s Whois database\. The general usage is "arinw QUERY_VALUE" where the type of QUERY_VALUE influences the type of query performed\. This program will attempt to guess the type of QUERY_VALUE, but the QUERY_VALUE type maybe explicitly set using the \-t option\. Queries for data related to the QUERY_VALUE may be specified using the \-r option (i\.e\. the reverse DNS delegations related to a network)\.
+This program uses ARIN\'s Whois\-RWS(7) RESTful API to query ARIN\'s Whois database\. The general usage is "arinw QUERY_VALUE" where the type of QUERY_VALUE influences the type of query performed\. This program will attempt to guess the type of QUERY_VALUE, but the QUERY_VALUE type maybe explicitly set using the \fB\-t\fR option\. Queries for data related to the QUERY_VALUE may be specified using the \fB\-r\fR option (i\.e\. the reverse DNS delegations related to a network)\.
 .
 .P
-In certain cases, Organization handles (orghandle), also knows as organization ids, can be properly determined\. This occurs when the Organization handle ends with \'\-z\' or with \'\-xxx\' where xxx is a number\. As a shortcut for Organization handles that do not match these cases, a \'\-o\' can be appended to signify that it is an Organization handle\.
+In certain cases, Organization handles (orghandle), also knows as organization ids, can be properly determined\. This occurs when the Organization handle ends with \fI\-z\fR or with \fI\-xxx\fR where xxx is a number\. As a shortcut for Organization handles that do not match these cases, a \fI\-o\fR can be appended to signify that it is an Organization handle\.
+.
+.P
+The following are other criteria for determining the type of the QUERY_VALUE when the \fB\-t\fR option is not given:
+.
+.IP "\(bu" 4
+If the QUERY_VALUE is simply a number, it is assumed to be an Autonomous System Number\.
+.
+.IP "\(bu" 4
+If the QUERY_VALUE is a number prepended with "AS", it is assumed to be an Autonomous System Number\.
+.
+.IP "\(bu" 4
+If the QUERY_VALUE begins with "NET\-" or "NET6\-" it is assumed to be a network handle\.
+.
+.IP "\(bu" 4
+If the QUERY_VALUE appears to be an IPv4 or IPv6 address, then it is assumed to be an IP address\.
+.
+.IP "\(bu" 4
+If the QUERY_VALUE ends in "in\-addr\.arpa" or "ip6\.arpa", it is assumed to be a reverse DNS delegation point\.
+.
+.IP "\(bu" 4
+If the QUERY_VALUE appears to be a proper name, it is assumed to be a name of a Point of Contact\.
+.
+.IP "" 0
+.
+.P
+The QUERY_VALUE can also be a result value from a previous query if it ends with an equal sign ("=")\. Consider the following tree output:
+.
+.P
+1= NET\-192\-136\-136\-0\-1 ( 192\.136\.136\.0 \- 192\.136\.136\.255 )
+.
+.br
+`\-\-\- 1\. Reverse DNS Delegations
+.
+.IP "" 4
+.
+.nf
+
+    `\-\-\- 1= 136\.136\.192\.in\-addr\.arpa\.
+.
+.fi
+.
+.IP "" 0
+.
+.P
+A QUERY_VALUE of "1=1=1=" would be a shortcut for requerying for 136\.136\.192\.in\-addr\.arpa\. The character between the numbers can also be a period character ("\.")\. So "1\.1\.1=" would be equivalent\.
 .
 .SH "OPTIONS"
 .
@@ -61,6 +106,25 @@ In certain cases, Organization handles (orghandle), also knows as organization i
 .
 .IP "\(bu" 4
 \fB\-h\fR Displays help\.
+.
+.IP "" 0
+.
+.SH "EXAMPLES"
+.
+.IP "\(bu" 4
+\fBarinw kosters\fR queries for a POC with the last name of "Kosters"\.
+.
+.IP "\(bu" 4
+\fBarinw 2=\fR queries for the second value in a result from the previous query\.
+.
+.IP "\(bu" 4
+\fBarinw \-t orghandle arin\fR queries for organizations with the handle "arin"\.
+.
+.IP "\(bu" 4
+\fBarinw arin\-o\fR is the same as above\.
+.
+.IP "\(bu" 4
+\fBarinw 192\.136\.136\.51\fR queries for the most specific network enclosing 192\.136\.136\.51\.
 .
 .IP "" 0
 .
