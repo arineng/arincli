@@ -142,8 +142,8 @@ class TicketRegTest < Test::Unit::TestCase
     end
     assert_not_nil( the_one_attachment )
     assert( File.exist?( the_one_attachment ) )
-    assert( "urnbis-ietf80-minutes.pdf", the_one_attachment )
-    assert( 20620, File.size?( the_one_attachment ) )
+    assert_equal( "urnbis-ietf80-minutes.pdf", File.basename( the_one_attachment ) )
+    assert_equal( 20620, File.size?( the_one_attachment ) )
   end
 
 end
