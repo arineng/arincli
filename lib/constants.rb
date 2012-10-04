@@ -1,4 +1,4 @@
-# Copyright (C) 2011 American Registry for Internet Numbers
+# Copyright (C) 2011,2012 American Registry for Internet Numbers
 #
 # IPv4 and IPv6 regular expressions are credited to Mike Poulson and are found here:
 #   http://blogs.msdn.com/b/mpoulson/archive/2005/01/10/350037.aspx

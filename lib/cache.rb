@@ -1,4 +1,4 @@
-# Copyright (C) 2011 American Registry for Internet Numbers
+# Copyright (C) 2011,2012 American Registry for Internet Numbers
 
 require 'time'
 require 'uri'

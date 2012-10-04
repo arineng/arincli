@@ -1,4 +1,4 @@
-# Copyright (C) 2011 American Registry for Internet Numbers
+# Copyright (C) 2011,2012 American Registry for Internet Numbers
 # This file is public domain, and originates from Sean Russell
 # in a posting at http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/99306
 # for a Ruby object call XMlObject. It has been modified from its original form though.
