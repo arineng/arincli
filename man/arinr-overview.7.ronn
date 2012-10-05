@@ -1,5 +1,5 @@
-arinr-overview(7) -- An overview of the ARINr scripts
-=====================================================
+arinr-overview(7) -- ARIN RESTful Commands in Ruby
+==================================================
 
 ## DESCRIPTION
 
