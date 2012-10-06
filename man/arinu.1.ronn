@@ -28,4 +28,4 @@ This program performs maintenance tasks for the ARINr suite of commands.
 
 ## SEE ALSO
 
-arinr-overview(7), arinw(1)
+arinr(7), arinw(1)

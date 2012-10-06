@@ -127,4 +127,4 @@ period character ("."). So "1.1.1=" would be equivalent.
 
 ## SEE ALSO
 
-arinr-overview(7), arinu(1), Whois-RWS(7)
+arinr(7), arinu(1), Whois-RWS(7)
