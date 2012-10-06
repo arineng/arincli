@@ -63,49 +63,94 @@ A QUERY_VALUE of "1=1=1=" would be a shortcut for requerying for 136\.136\.192\.
 .SH "OPTIONS"
 .
 .IP "\(bu" 4
-\fB\-r\fR, \fB\-\-related\fR TYPE: Query for the specified type related to the query value: \fBnets\fR for query for the related networks, \fBdels\fR for query for the reverse DNS delegations, \fBorgs\fR for query for the related organizations, \fBpocs\fR for query for the related points of contact, \fBasns\fR for query for the related autonomous system numbers
+\fB\-r\fR, \fB\-\-related\fR TYPE
+.
+.br
+Query for the specified type related to the query value: \fBnets\fR for query for the related networks, \fBdels\fR for query for the reverse DNS delegations, \fBorgs\fR for query for the related organizations, \fBpocs\fR for query for the related points of contact, \fBasns\fR for query for the related autonomous system numbers
 .
 .IP "\(bu" 4
-\fB\-t\fR, \fB\-\-type\fR TYPE: Specify type of the query value: \fBnethandle\fR for network handle, \fBpochandle\fR for point of contact handle, \fBorghandle\fR for organization handle, \fBip4addr\fR for IPv4 address, \fBip6addr\fR for IPv6 address, \fBip4cidr\fR for IPv4 cidr block, \fBip6cidr\fR for IPv6 cidr block, \fBasnumber\fR for autonomous system number, \fBdelegation\fR for reverse DNS delegation, \fBpocname\fR for name of a point of contact, \fBorgname\fR for name of an organization, \fBresult\fR for result from a previous query
+\fB\-t\fR, \fB\-\-type\fR TYPE
+.
+.br
+Specify type of the query value: \fBnethandle\fR for network handle, \fBpochandle\fR for point of contact handle, \fBorghandle\fR for organization handle, \fBip4addr\fR for IPv4 address, \fBip6addr\fR for IPv6 address, \fBip4cidr\fR for IPv4 cidr block, \fBip6cidr\fR for IPv6 cidr block, \fBasnumber\fR for autonomous system number, \fBdelegation\fR for reverse DNS delegation, \fBpocname\fR for name of a point of contact, \fBorgname\fR for name of an organization, \fBresult\fR for result from a previous query
 .
 .IP "\(bu" 4
-\fB\-\-pft\fR YES|NO|TRUE|FALSE: Use a PFT style query\.
+\fB\-\-pft\fR YES|NO|TRUE|FALSE
+.
+.br
+Use a PFT style query\.
 .
 .IP "\(bu" 4
-\fB\-\-cidr\fR LESS|EXACT|MORE: Type of matching to use for CIDR queries\.
+\fB\-\-cidr\fR LESS|EXACT|MORE
+.
+.br
+Type of matching to use for CIDR queries\.
 .
 .IP "\(bu" 4
-\fB\-\-substring\fR YES|NO|TRUE|FALSE: Use substring matching for name searches\.
+\fB\-\-substring\fR YES|NO|TRUE|FALSE
+.
+.br
+Use substring matching for name searches\.
 .
 .IP "\(bu" 4
-\fB\-\-details\fR YES|NO|TRUE|FALSE: Query for extra details\.
+\fB\-\-details\fR YES|NO|TRUE|FALSE
+.
+.br
+Query for extra details\.
 .
 .IP "\(bu" 4
-\fB\-U\fR, \fB\-\-url\fR URL: The base URL of the Whois\-RWS(7) system\.
+\fB\-U\fR, \fB\-\-url\fR URL
+.
+.br
+The base URL of the Whois\-RWS(7) system\.
 .
 .IP "\(bu" 4
-\fB\-\-cache\-expiry\fR SECONDS: Age in seconds of items in the cache to be considered expired\.
+\fB\-\-cache\-expiry\fR SECONDS
+.
+.br
+Age in seconds of items in the cache to be considered expired\.
 .
 .IP "\(bu" 4
-\fB\-\-cache\fR YES|NO|TRUE|FALSE: Controls if the cache is used or not\.
+\fB\-\-cache\fR YES|NO|TRUE|FALSE
+.
+.br
+Controls if the cache is used or not\.
 .
 .IP "\(bu" 4
-\fB\-\-messages\fR MESSAGE_LEVEL: Specify one of the message levels: \fBnone\fR for no messages are to be output, \fBsome\fR for some messages to be output, or \fBall\fR for all messages to be output\.
+\fB\-\-messages\fR MESSAGE_LEVEL
+.
+.br
+Specify one of the message levels: \fBnone\fR for no messages are to be output, \fBsome\fR for some messages to be output, or \fBall\fR for all messages to be output\.
 .
 .IP "\(bu" 4
-\fB\-\-messages\-out\fR FILE: Specifies that messages are to be written to the given file\.
+\fB\-\-messages\-out\fR FILE
+.
+.br
+Specifies that messages are to be written to the given file\.
 .
 .IP "\(bu" 4
-\fB\-\-data\fR DATA_AMOUNT: Specifies the amount of data to be output\. Use of of: \fBterse\fR, \fBnormal\fR, or \fBextra\fR\.
+\fB\-\-data\fR DATA_AMOUNT
+.
+.br
+Specifies the amount of data to be output\. Use of of: \fBterse\fR, \fBnormal\fR, or \fBextra\fR\.
 .
 .IP "\(bu" 4
-\fB\-\-data\-out\fR FILE: File where data is to be written if specified\.
+\fB\-\-data\-out\fR FILE
+.
+.br
+File where data is to be written if specified\.
 .
 .IP "\(bu" 4
-\fB\-V\fR Equivalent to \fB\-\-messages all\fR and \fB\-\-data extra\fR
+\fB\-V\fR
+.
+.br
+Equivalent to \fB\-\-messages all\fR and \fB\-\-data extra\fR
 .
 .IP "\(bu" 4
-\fB\-h\fR Displays help\.
+\fB\-h\fR
+.
+.br
+Displays help\.
 .
 .IP "" 0
 .

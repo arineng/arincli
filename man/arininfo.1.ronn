@@ -54,14 +54,14 @@ period character ("."). So "1.1.1=" would be equivalent.
 
 ## OPTIONS
 
-  * `-r`, `--related` TYPE: 
+  * `-r`, `--related` TYPE   
     Query for the specified type related to the query value:
     `nets` for query for the related networks, `dels` for query for the 
     reverse DNS delegations, `orgs` for query for the related organizations,
     `pocs` for query for the related points of contact, `asns` for query for 
     the related autonomous system numbers
 
-  * `-t`, `--type` TYPE: 
+  * `-t`, `--type` TYPE   
     Specify type of the query value:
     `nethandle` for network handle, `pochandle` for point of contact handle,
     `orghandle` for organization handle, `ip4addr` for IPv4 address,
@@ -70,45 +70,45 @@ period character ("."). So "1.1.1=" would be equivalent.
     reverse DNS delegation, `pocname` for name of a point of contact,
     `orgname` for name of an organization, `result` for result from a previous query
 
-  * `--pft` YES|NO|TRUE|FALSE:
+  * `--pft` YES|NO|TRUE|FALSE  
     Use a PFT style query.
 
-  * `--cidr` LESS|EXACT|MORE:
+  * `--cidr` LESS|EXACT|MORE  
     Type of matching to use for CIDR queries.
 
-  * `--substring` YES|NO|TRUE|FALSE:
+  * `--substring` YES|NO|TRUE|FALSE  
     Use substring matching for name searches.
 
-  * `--details` YES|NO|TRUE|FALSE:
+  * `--details` YES|NO|TRUE|FALSE  
     Query for extra details.
 
-  * `-U`, `--url` URL:
+  * `-U`, `--url` URL  
     The base URL of the Whois-RWS(7) system.
 
-  * `--cache-expiry` SECONDS:
+  * `--cache-expiry` SECONDS  
     Age in seconds of items in the cache to be considered expired.
 
-  * `--cache` YES|NO|TRUE|FALSE:
+  * `--cache` YES|NO|TRUE|FALSE  
     Controls if the cache is used or not.
 
-  * `--messages` MESSAGE_LEVEL:
+  * `--messages` MESSAGE_LEVEL  
     Specify one of the message levels: `none` for no messages are to be output,
     `some` for some messages to be output, or `all` for all messages to be output.
 
-  * `--messages-out` FILE:
+  * `--messages-out` FILE  
     Specifies that messages are to be written to the given file.
 
-  * `--data` DATA_AMOUNT:
+  * `--data` DATA_AMOUNT  
     Specifies the amount of data to be output. Use of of: `terse`, `normal`,
     or `extra`.
  
-  * `--data-out` FILE:
+  * `--data-out` FILE  
     File where data is to be written if specified.
 
-  * `-V`
+  * `-V`  
     Equivalent to `--messages all` and `--data extra`
 
-  * `-h`
+  * `-h`  
     Displays help.
 
 ## EXAMPLES

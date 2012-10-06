@@ -143,13 +143,13 @@ period character ("."). So "1.1.1=" would be equivalent.</p>
 <h2 id="OPTIONS">OPTIONS</h2>
 
 <ul>
-<li><p><code>-r</code>, <code>--related</code> TYPE:
+<li><p><code>-r</code>, <code>--related</code> TYPE <br />
 Query for the specified type related to the query value:
 <code>nets</code> for query for the related networks, <code>dels</code> for query for the
 reverse DNS delegations, <code>orgs</code> for query for the related organizations,
 <code>pocs</code> for query for the related points of contact, <code>asns</code> for query for
 the related autonomous system numbers</p></li>
-<li><p><code>-t</code>, <code>--type</code> TYPE:
+<li><p><code>-t</code>, <code>--type</code> TYPE <br />
 Specify type of the query value:
 <code>nethandle</code> for network handle, <code>pochandle</code> for point of contact handle,
 <code>orghandle</code> for organization handle, <code>ip4addr</code> for IPv4 address,
@@ -157,33 +157,33 @@ Specify type of the query value:
 IPv6 cidr block, <code>asnumber</code> for autonomous system number, <code>delegation</code> for
 reverse DNS delegation, <code>pocname</code> for name of a point of contact,
 <code>orgname</code> for name of an organization, <code>result</code> for result from a previous query</p></li>
-<li><p><code>--pft</code> YES|NO|TRUE|FALSE:
+<li><p><code>--pft</code> YES|NO|TRUE|FALSE<br />
 Use a PFT style query.</p></li>
-<li><p><code>--cidr</code> LESS|EXACT|MORE:
+<li><p><code>--cidr</code> LESS|EXACT|MORE<br />
 Type of matching to use for CIDR queries.</p></li>
-<li><p><code>--substring</code> YES|NO|TRUE|FALSE:
+<li><p><code>--substring</code> YES|NO|TRUE|FALSE<br />
 Use substring matching for name searches.</p></li>
-<li><p><code>--details</code> YES|NO|TRUE|FALSE:
+<li><p><code>--details</code> YES|NO|TRUE|FALSE<br />
 Query for extra details.</p></li>
-<li><p><code>-U</code>, <code>--url</code> URL:
+<li><p><code>-U</code>, <code>--url</code> URL<br />
 The base URL of the <a href="https://www.arin.net/resources/whoisrws/index.html" class="man-ref">Whois-RWS<span class="s">(7)</span></a> system.</p></li>
-<li><p><code>--cache-expiry</code> SECONDS:
+<li><p><code>--cache-expiry</code> SECONDS<br />
 Age in seconds of items in the cache to be considered expired.</p></li>
-<li><p><code>--cache</code> YES|NO|TRUE|FALSE:
+<li><p><code>--cache</code> YES|NO|TRUE|FALSE<br />
 Controls if the cache is used or not.</p></li>
-<li><p><code>--messages</code> MESSAGE_LEVEL:
+<li><p><code>--messages</code> MESSAGE_LEVEL<br />
 Specify one of the message levels: <code>none</code> for no messages are to be output,
 <code>some</code> for some messages to be output, or <code>all</code> for all messages to be output.</p></li>
-<li><p><code>--messages-out</code> FILE:
+<li><p><code>--messages-out</code> FILE<br />
 Specifies that messages are to be written to the given file.</p></li>
-<li><p><code>--data</code> DATA_AMOUNT:
+<li><p><code>--data</code> DATA_AMOUNT<br />
 Specifies the amount of data to be output. Use of of: <code>terse</code>, <code>normal</code>,
 or <code>extra</code>.</p></li>
-<li><p><code>--data-out</code> FILE:
+<li><p><code>--data-out</code> FILE<br />
 File where data is to be written if specified.</p></li>
-<li><p><code>-V</code>
+<li><p><code>-V</code><br />
 Equivalent to <code>--messages all</code> and <code>--data extra</code></p></li>
-<li><p><code>-h</code>
+<li><p><code>-h</code><br />
 Displays help.</p></li>
 </ul>
 

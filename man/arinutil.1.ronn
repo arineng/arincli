@@ -11,19 +11,19 @@ This program performs maintenance tasks for the ARINr suite of commands.
 
 ## COMMANDS
 
-  * `help`
+  * `help`  
     Shows a help screen.
 
-  * `clean_cache`
+  * `clean_cache`  
     Forces the cleaning of the arininfo(1) cache.
 
-  * `cache_count`
+  * `cache_count`  
     Reports the number of files in the arininfo(1) cache.
 
-  * `cached_last`
+  * `cached_last`  
     Shows details on the last file cached.
 
-  * `config`
+  * `config`  
     Show the interpretted configuration for ARINr commands.
 
 ## SEE ALSO
