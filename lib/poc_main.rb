@@ -29,9 +29,9 @@ module ARINr
 
     class PocMain < ARINr::BaseOpts
 
-      ARINP_LOG_SUFFIX = 'arinp'
-      ARINP_CREATE_POC_FILE = 'arinp_create_poc'
-      ARINP_MODIFY_POC_FILE = 'arinp_modify_poc'
+      ARINP_LOG_SUFFIX = 'poc'
+      ARINP_CREATE_POC_FILE = 'poc_create_poc'
+      ARINP_MODIFY_POC_FILE = 'poc_modify_poc'
 
       def initialize args, config = nil
 
@@ -43,7 +43,7 @@ module ARINr
 
         @opts = OptionParser.new do |opts|
 
-          opts.banner = "Usage: arinp [options] [POC_HANDLE]"
+          opts.banner = "Usage: poc [options] [POC_HANDLE]"
 
           opts.separator ""
           opts.separator "Actions:"
@@ -151,9 +151,9 @@ module ARINr
             @config.logger.mesg(poc.handle + " has been modified.")
           else
             if !@config.options.data_file_specified
-              @config.logger.mesg( 'Use "arinp" to re-edit and resubmit.' )
+              @config.logger.mesg( 'Use "poc" to re-edit and resubmit.' )
             else
-              @config.logger.mesg( 'Edit file then use "arinp -f ' + @config.options.data_file + ' --modify" to resubmit.')
+              @config.logger.mesg( 'Edit file then use "poc -f ' + @config.options.data_file + ' --modify" to resubmit.')
             end
           end
         else
@@ -239,7 +239,7 @@ module ARINr
         puts <<HELP_SUMMARY
 
 This program uses ARIN's Reg-RWS RESTful API to query ARIN's Registration database.
-The general usage is "arinp POC_HANDLE" where POC_HANDLE is the identifier of the point
+The general usage is "poc POC_HANDLE" where POC_HANDLE is the identifier of the point
 of contact to modify. Other actions can be specified with options, but if not explicit
 action is given then modification is assumed.
 
@@ -304,7 +304,7 @@ HELP_SUMMARY
         if element
           new_poc = ARINr::Registration.element_to_poc( element )
           @config.logger.mesg( "New point of contact created with handle " + new_poc.handle )
-          @config.logger.mesg( 'Use "arinp ' + new_poc.handle + '" to modify this point of contact.')
+          @config.logger.mesg( 'Use "poc ' + new_poc.handle + '" to modify this point of contact.')
           last_created = @config.make_file_name( ARINP_CREATE_POC_FILE )
           if File.exists?( last_created )
             File.delete( last_created )
@@ -312,9 +312,9 @@ HELP_SUMMARY
         else
           @config.logger.mesg( "Point of contact was not created." )
           if !@config.options.data_file_specified
-            @config.logger.mesg( 'Use "arinp --create" to re-edit and resubmit.' )
+            @config.logger.mesg( 'Use "poc --create" to re-edit and resubmit.' )
           else
-            @config.logger.mesg( 'Edit file then use "arinp -f ' + @config.options.data_file + ' --create" to resubmit.')
+            @config.logger.mesg( 'Edit file then use "poc -f ' + @config.options.data_file + ' --create" to resubmit.')
           end
         end
       end
