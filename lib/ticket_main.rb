@@ -32,8 +32,8 @@ module ARINr
 
     class TicketMain < ARINr::BaseOpts
 
-      ARINT_LOG_SUFFIX = 'arint_summary'
-      ARINT_TICKETS = 'arint_tickets.yaml'
+      ARINT_LOG_SUFFIX = 'ticket_summary'
+      ARINT_TICKETS = 'ticket_tickets.yaml'
 
       def initialize args, config = nil
 
@@ -45,7 +45,7 @@ module ARINr
 
         @opts = OptionParser.new do |opts|
 
-          opts.banner = "Usage: arint [options] [TICKET_NO]"
+          opts.banner = "Usage: ticket [options] [TICKET_NO]"
 
           opts.separator ""
           opts.separator "Actions:"
@@ -139,7 +139,7 @@ module ARINr
         puts <<HELP_SUMMARY
 
 This program uses ARIN's Reg-RWS RESTful API to query ARIN's Registration database.
-The general usage is "arint TICKET_NO" where TICKET_NO is the identifier of the ticket
+The general usage is "ticket TICKET_NO" where TICKET_NO is the identifier of the ticket
 to be acted upon.
 
 HELP_SUMMARY
