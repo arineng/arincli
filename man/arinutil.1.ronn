@@ -1,9 +1,9 @@
-arinu(1) -- ARINr Utility Command
-=================================
+arinutil(1) -- ARINr Utility Command
+====================================
 
 ## SYNOPSIS
 
-arinu COMMAND
+arinutil COMMAND
 
 ## DESCRIPTION
 

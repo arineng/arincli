@@ -41,7 +41,7 @@ module ARINr
         when "config"
           config
         else
-          puts "Unknown command input for arinu."
+          puts "Unknown command input for arinutil."
           puts
           help
       end
@@ -57,7 +57,7 @@ module ARINr
 
 This program is for maintenance of the ARINr program files.
 
-Usage is "arinu COMMAND" where COMMAND is one of the following:
+Usage is "arinutil COMMAND" where COMMAND is one of the following:
 
   help        - shows this help
   clean_cache - forces a cleaning of the arinw cache

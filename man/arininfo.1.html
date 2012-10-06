@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv='content-type' value='text/html;charset=utf8'>
   <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
-  <title>arinw(1) - ARINr Whois Command</title>
+  <title>arininfo(1) - ARINr Whois Command</title>
   <style type='text/css' media='all'>
   /* style: man */
   body#manpage {margin:0}
@@ -79,24 +79,24 @@
   </div>
 
   <ol class='man-decor man-head man head'>
-    <li class='tl'>arinw(1)</li>
+    <li class='tl'>arininfo(1)</li>
     <li class='tc'></li>
-    <li class='tr'>arinw(1)</li>
+    <li class='tr'>arininfo(1)</li>
   </ol>
 
   <h2 id="NAME">NAME</h2>
 <p class="man-name">
-  <code>arinw</code> - <span class="man-whatis">ARINr Whois Command</span>
+  <code>arininfo</code> - <span class="man-whatis">ARINr Whois Command</span>
 </p>
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p>arinw <a href="#OPTIONS" title="OPTIONS" data-bare-link="true">options</a> QUERY_VALUE</p>
+<p>arininfo <a href="#OPTIONS" title="OPTIONS" data-bare-link="true">options</a> QUERY_VALUE</p>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
 <p>This program uses ARIN's <a href="https://www.arin.net/resources/whoisrws/index.html" class="man-ref">Whois-RWS<span class="s">(7)</span></a> RESTful API to query ARIN's Whois database.
-The general usage is "arinw QUERY_VALUE" where the type of QUERY_VALUE influences the
+The general usage is "arininfo QUERY_VALUE" where the type of QUERY_VALUE influences the
 type of query performed. This program will attempt to guess the type of QUERY_VALUE,
 but the QUERY_VALUE type maybe explicitly set using the <code>-t</code> option. Queries for data
 related to the QUERY_VALUE may be specified using the <code>-r</code> option (i.e. the reverse DNS
@@ -191,24 +191,24 @@ Displays help.</p></li>
 <h2 id="EXAMPLES">EXAMPLES</h2>
 
 <ul>
-<li><p><code>arinw kosters</code> queries for a POC with the last name of "Kosters".</p></li>
-<li><p><code>arinw 2=</code> queries for the second value in a result from the previous query.</p></li>
-<li><p><code>arinw -t orghandle arin</code> queries for organizations with the handle "arin".</p></li>
-<li><p><code>arinw arin-o</code> is the same as above.</p></li>
-<li><p><code>arinw 192.136.136.51</code> queries for the most specific network enclosing
+<li><p><code>arininfo kosters</code> queries for a POC with the last name of "Kosters".</p></li>
+<li><p><code>arininfo 2=</code> queries for the second value in a result from the previous query.</p></li>
+<li><p><code>arininfo -t orghandle arin</code> queries for organizations with the handle "arin".</p></li>
+<li><p><code>arininfo arin-o</code> is the same as above.</p></li>
+<li><p><code>arininfo 192.136.136.51</code> queries for the most specific network enclosing
 192.136.136.51.</p></li>
 </ul>
 
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
-<p><a href="arinr.7.html" class="man-ref">arinr<span class="s">(7)</span></a>, <a href="arinu.1.html" class="man-ref">arinu<span class="s">(1)</span></a>, <a href="https://www.arin.net/resources/whoisrws/index.html" class="man-ref">Whois-RWS<span class="s">(7)</span></a></p>
+<p><a href="arinr.7.html" class="man-ref">arinr<span class="s">(7)</span></a>, <a href="arinutil.1.html" class="man-ref">arinutil<span class="s">(1)</span></a>, <a href="https://www.arin.net/resources/whoisrws/index.html" class="man-ref">Whois-RWS<span class="s">(7)</span></a></p>
 
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
     <li class='tc'>October 2012</li>
-    <li class='tr'>arinw(1)</li>
+    <li class='tr'>arininfo(1)</li>
   </ol>
 
   </div>

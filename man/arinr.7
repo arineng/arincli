@@ -15,15 +15,15 @@ At the time of this writing, the ARINr scripts should be considered \fBalpha\fR 
 .SH "COMMANDS"
 .
 .IP "\(bu" 4
-arinw(1) queries ARIN\'s Whois\-RWS(7) service\.
+arininfo(1) queries ARIN\'s Whois\-RWS(7) service\.
 .
 .IP "\(bu" 4
-arinu(1) is a utility for managing ARINr scripts\.
+arinutil(1) is a utility for managing ARINr scripts\.
 .
 .IP "" 0
 .
 .SH "CONFIGURATION"
-The ARINr commands all use an application data directory to store configuration files, caches, etc\. The arinu(1) command can be used to manipulate the caches and configuration\. This application data directory is \fB$HOME/\.ARINr\fR for Unix and Unix\-like systems, and \fB%APPDATA%\eARINr\fR for Windows\. This directory is created automatically the first time an ARINr command is run\.
+The ARINr commands all use an application data directory to store configuration files, caches, etc\. The arinutil(1) command can be used to manipulate the caches and configuration\. This application data directory is \fB$HOME/\.ARINr\fR for Unix and Unix\-like systems, and \fB%APPDATA%\eARINr\fR for Windows\. This directory is created automatically the first time an ARINr command is run\.
 .
 .P
 Configuration is kept in the \fBconfig\.yaml\fR file in the application data directory\. This is a YAML file and so YAML syntax is required\. YAML is designed to be human friendly yet machine parsable\. For users of Reg\-RWS(7), the API Key given will likely need be changed to the users real API key\. An API Key can be obtained via ARIN Online \fIhttp://www\.arin\.net/public\fR\. An API Key is not needed for Whois\-RWS(7)\.
