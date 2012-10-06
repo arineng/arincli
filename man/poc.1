@@ -24,6 +24,9 @@ This program uses ARIN\'s Reg\-RWS(7) service to create, modify, or delete a Poi
 .P
 For \fB\-\-create\fR and \fB\-\-modify\fR, an editor will be invoked containing a POC template in YAML form if the \fB\-f\fR option is not given\. The \fB\-\-modify\fR action will fetch the POC data from Reg\-RWS(7) and pre\-populate the YAML template\.
 .
+.P
+When the editor is invoked, if no changes are made (i\.e\. the editor quits without saving), then the action will be aborted\.
+.
 .SH "OPTIONS"
 .
 .IP "\(bu" 4

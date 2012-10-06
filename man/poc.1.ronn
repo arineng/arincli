@@ -17,6 +17,9 @@ For `--create` and `--modify`, an editor will be invoked containing a POC
 template in YAML form if the `-f` option is not given. The `--modify` action
 will fetch the POC data from Reg-RWS(7) and pre-populate the YAML template.
 
+When the editor is invoked, if no changes are made (i.e. the editor quits
+without saving), then the action will be aborted.
+
 ## OPTIONS
 
   * `--delete`  
