@@ -16,7 +16,7 @@ has not conducted any qualified degree of quality assurance against them.
 
 ## COMMANDS
 
-  * arinw(1) queries ARIN's Whois-RWS(7) service.
+  * arininfo(1) queries ARIN's Whois-RWS(7) service.
 
   * arinu(1) is a utility for managing ARINr scripts.
 

@@ -69,7 +69,7 @@ module ARINr
 
     end
 
-    # The main class for the arinw command.
+    # The main class for the arininfo command.
     class Main < ARINr::BaseOpts
 
       def initialize args, config = nil
@@ -82,7 +82,7 @@ module ARINr
 
         @opts = OptionParser.new do |opts|
 
-          opts.banner = "Usage: arinw [options] QUERY_VALUE"
+          opts.banner = "Usage: arininfo [options] QUERY_VALUE"
 
           opts.separator ""
           opts.separator "Query Options:"
@@ -327,7 +327,7 @@ module ARINr
         puts <<HELP_SUMMARY
 
 This program uses ARIN's Whois-RWS RESTful API to query ARIN's Whois database.
-The general usage is "arinw QUERY_VALUE" where the type of QUERY_VALUE influences the
+The general usage is "arininfo QUERY_VALUE" where the type of QUERY_VALUE influences the
 type of query performed. This program will attempt to guess the type of QUERY_VALUE,
 but the QUERY_VALUE type maybe explicitly set using the -t option. Queries for data
 related to the QUERY_VALUE may be specified using the -r option (i.e. the reverse DNS
@@ -693,29 +693,29 @@ HELP_SUMMARY
             net = $+
             if( ! net.include?( "/rdns" ) )
               new_net = net.sub( "/pft", "" )
-              @config.logger.mesg( 'Use "arinw -r dels ' + new_net + '" to see reverse DNS information.' );
+              @config.logger.mesg( 'Use "arininfo -r dels ' + new_net + '" to see reverse DNS information.' );
               show_default_help = false
             end
             if( ! net.include?( "/pft" ) )
               new_net = net.sub( "/rdns", "" )
-              @config.logger.mesg( 'Use "arinw --pft true ' + new_net + '" to see reverse DNS information.' );
+              @config.logger.mesg( 'Use "arininfo --pft true ' + new_net + '" to see reverse DNS information.' );
               show_default_help = false
             end
           when /rest\/org\/(.*)/
             org = $+
             if( ! org.include?( "/" ) )
-              @config.logger.mesg( 'Use "arinw --pft true ' + org + '-o" to see other relevant information.' );
+              @config.logger.mesg( 'Use "arininfo --pft true ' + org + '-o" to see other relevant information.' );
               show_default_help = false
             end
           when /rest\/ip\/(.*)/
             ip = $+
             if( ip.match( /\/pft/ ) == nil )
-              @config.logger.mesg( 'Use "arinw --pft true ' + ip + '" to see other relevant information.' );
+              @config.logger.mesg( 'Use "arininfo --pft true ' + ip + '" to see other relevant information.' );
               show_default_help = false
             end
         end
         if show_default_help
-          @config.logger.mesg( 'Use "arinw -h" for help.' )
+          @config.logger.mesg( 'Use "arininfo -h" for help.' )
         end
       end
 

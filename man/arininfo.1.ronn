@@ -1,14 +1,14 @@
-arinw(1) -- ARINr Whois Command
-===============================
+arininfo(1) -- ARINr Whois Command
+==================================
 
 ## SYNOPSIS
 
-arinw [options] QUERY_VALUE
+arininfo [options] QUERY_VALUE
 
 ## DESCRIPTION
 
 This program uses ARIN's Whois-RWS(7) RESTful API to query ARIN's Whois database.
-The general usage is "arinw QUERY_VALUE" where the type of QUERY_VALUE influences the
+The general usage is "arininfo QUERY_VALUE" where the type of QUERY_VALUE influences the
 type of query performed. This program will attempt to guess the type of QUERY_VALUE,
 but the QUERY_VALUE type maybe explicitly set using the `-t` option. Queries for data
 related to the QUERY_VALUE may be specified using the `-r` option (i.e. the reverse DNS
@@ -113,15 +113,15 @@ period character ("."). So "1.1.1=" would be equivalent.
 
 ## EXAMPLES
 
-  * `arinw kosters` queries for a POC with the last name of "Kosters".
+  * `arininfo kosters` queries for a POC with the last name of "Kosters".
 
-  * `arinw 2=` queries for the second value in a result from the previous query.
+  * `arininfo 2=` queries for the second value in a result from the previous query.
 
-  * `arinw -t orghandle arin` queries for organizations with the handle "arin".
+  * `arininfo -t orghandle arin` queries for organizations with the handle "arin".
 
-  * `arinw arin-o` is the same as above.
+  * `arininfo arin-o` is the same as above.
 
-  * `arinw 192.136.136.51` queries for the most specific network enclosing
+  * `arininfo 192.136.136.51` queries for the most specific network enclosing
     192.136.136.51.
     
 
