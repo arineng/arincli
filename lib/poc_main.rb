@@ -190,7 +190,7 @@ module ARINr
             args[ 0 ] = handle
           end
           if ! args[ 0 ] =~ ARINr::POC_HANDLE_REGEX
-            raise ArgumentError.new (args[ 0 ] + " does not look like a POC Handle.")
+            raise ArgumentError.new(args[ 0 ] + " does not look like a POC Handle.")
           end
         end
 
@@ -204,7 +204,7 @@ module ARINr
               @config.options.data_file = last_modified
               @config.logger.mesg( "Re-using data from last modify POC action." )
             elsif !args[ 0 ]
-              raise ArgumentError.new ("You must specify a Point of Contact to modify." )
+              raise ArgumentError.new("You must specify a Point of Contact to modify." )
             end
             modify_poc()
           elsif @config.options.delete_poc

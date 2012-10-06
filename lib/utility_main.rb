@@ -26,6 +26,7 @@ module ARINr
 
       puts ARINr::VERSION
       puts "ARINr Utility Program"
+      puts ARINr::COPYRIGHT
 
       case args[ 0 ]
         when "-h"
@@ -49,9 +50,6 @@ module ARINr
     end
 
     def help
-
-      puts ARINr::VERSION
-      puts ARINr::COPYRIGHT
 
       help_summary = <<HELP_SUMMARY
 
