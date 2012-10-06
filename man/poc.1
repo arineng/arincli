@@ -1,0 +1,110 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "POC" "1" "October 2012" "" ""
+.
+.SH "NAME"
+\fBpoc\fR \- ARINr Point of Contact Program
+.
+.SH "SYNOPSIS"
+poc \fIoptions\fR \-\-create
+.
+.br
+poc \fIoptions\fR \-\-modify POC_HANDLE
+.
+.br
+poc \fIoptions\fR \-\-yaml YAML_FILE POC_HANDLE
+.
+.br
+poc \fIoptions\fR \-\-delete POC_HANDLE
+.
+.SH "DESCRIPTION"
+This program uses ARIN\'s Reg\-RWS(7) service to create, modify, or delete a Point of Contact (POC)\. POC\'s are identified by a POC_HANDLE\.
+.
+.P
+For \fB\-\-create\fR and \fB\-\-modify\fR, an editor will be invoked containing a POC template in YAML form if the \fB\-f\fR option is not given\. The \fB\-\-modify\fR action will fetch the POC data from Reg\-RWS(7) and pre\-populate the YAML template\.
+.
+.SH "OPTIONS"
+.
+.IP "\(bu" 4
+\fB\-\-delete\fR
+.
+.br
+Deletes the POC\.
+.
+.IP "\(bu" 4
+\fB\-\-modify\fR
+.
+.br
+If given without the \fB\-f\fR option, the POC information is retreived and an editor is invoked so the POC information may be changed\. If used with the \fB\-f\fR option, the information in the file modifies the given POC\.
+.
+.IP "\(bu" 4
+\fB\-\-create\fR
+.
+.br
+Creates a POC\. If the \fB\-f\fR option is given, the data from the file is used to create the POC\. If not, an editor is invoked with a YAML template which will be used to create the POC\.
+.
+.IP "\(bu" 4
+\fB\-\-yaml\fR YAML_FILE
+.
+.br
+With this action, the POC information is fetched and written to the file specified\.
+.
+.IP "\(bu" 4
+\fB\-f\fR, \fB\-\-file\fR FILE
+.
+.br
+A YAML file to use as input\. In many of the operations, this command will invoke an appropriate editor to allow the user to fill out a YAML template\. When this option is used, the file specified is used as the YAML template\.
+.
+.IP "\(bu" 4
+\fB\-A\fR, \fB\-\-apikey\fR API_KEY
+.
+.br
+The API_KEY to use\. API Keys are associated with ARIN Online accounts and are the methods used for authentication in Reg\-RWS(7)\.
+.
+.IP "\(bu" 4
+\fB\-U\fR, \fB\-\-url\fR URL
+.
+.br
+The base URL of the Reg\-RWS(7) system\.
+.
+.IP "\(bu" 4
+\fB\-\-messages\fR MESSAGE_LEVEL
+.
+.br
+Specify one of the message levels: \fBnone\fR for no messages are to be output, \fBsome\fR for some messages to be output, or \fBall\fR for all messages to be output\.
+.
+.IP "\(bu" 4
+\fB\-\-messages\-out\fR FILE
+.
+.br
+Specifies that messages are to be written to the given file\.
+.
+.IP "\(bu" 4
+\fB\-\-data\fR DATA_AMOUNT
+.
+.br
+Specifies the amount of data to be output\. Use of of: \fBterse\fR, \fBnormal\fR, or \fBextra\fR\.
+.
+.IP "\(bu" 4
+\fB\-\-data\-out\fR FILE
+.
+.br
+File where data is to be written if specified\.
+.
+.IP "\(bu" 4
+\fB\-V\fR
+.
+.br
+Equivalent to \fB\-\-messages all\fR and \fB\-\-data extra\fR
+.
+.IP "\(bu" 4
+\fB\-h\fR
+.
+.br
+Displays help\.
+.
+.IP "" 0
+.
+.SH "SEE ALSO"
+arinr(7), Reg\-RWS(7)

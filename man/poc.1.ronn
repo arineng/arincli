@@ -1,0 +1,74 @@
+poc(1) -- ARINr Point of Contact Program
+========================================
+
+## SYNOPSIS
+
+poc [options] --create  
+poc [options] --modify POC_HANDLE  
+poc [options] --yaml YAML_FILE POC_HANDLE  
+poc [options] --delete POC_HANDLE  
+
+## DESCRIPTION
+
+This program uses ARIN's Reg-RWS(7) service to create, modify, or delete a
+Point of Contact (POC).  POC's are identified by a POC_HANDLE.
+
+For `--create` and `--modify`, an editor will be invoked containing a POC
+template in YAML form if the `-f` option is not given. The `--modify` action
+will fetch the POC data from Reg-RWS(7) and pre-populate the YAML template.
+
+## OPTIONS
+
+  * `--delete`  
+    Deletes the POC.
+
+  * `--modify`  
+    If given without the `-f` option, the POC information is retreived and an
+    editor is invoked so the POC information may be changed. If used with the `-f`
+    option, the information in the file modifies the given POC.
+
+  * `--create`  
+    Creates a POC. If the `-f` option is given, the data from the file is used
+    to create the POC. If not, an editor is invoked with a YAML template which
+    will be used to create the POC.
+
+  * `--yaml` YAML_FILE  
+    With this action, the POC information is fetched and written to the file
+    specified.
+
+  * `-f`, `--file` FILE  
+    A YAML file to use as input. In many of the operations, this command
+    will invoke an appropriate editor to allow the user to fill out a YAML
+    template. When this option is used, the file specified is used as the
+    YAML template.
+
+  * `-A`, `--apikey` API_KEY  
+    The API_KEY to use. API Keys are associated with ARIN Online accounts and
+    are the methods used for authentication in Reg-RWS(7).
+
+  * `-U`, `--url` URL  
+    The base URL of the Reg-RWS(7) system.
+
+  * `--messages` MESSAGE_LEVEL  
+    Specify one of the message levels: `none` for no messages are to be output,
+    `some` for some messages to be output, or `all` for all messages to be output.
+
+  * `--messages-out` FILE  
+    Specifies that messages are to be written to the given file.
+
+  * `--data` DATA_AMOUNT  
+    Specifies the amount of data to be output. Use of of: `terse`, `normal`,
+    or `extra`.
+ 
+  * `--data-out` FILE  
+    File where data is to be written if specified.
+
+  * `-V`  
+    Equivalent to `--messages all` and `--data extra`
+
+  * `-h`  
+    Displays help.
+
+## SEE ALSO
+
+arinr(7), Reg-RWS(7)

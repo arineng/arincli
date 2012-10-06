@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
+  <title>poc(1) - ARINr Point of Contact Program</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+  <style type='text/css' media='all'>
+  /* style: dark */
+  .mp,body#manpage {background:#080706;color:#888}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#aaa}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#fff}
+  .man-decor,.man-decor ol li {color:#666}
+  .mp code,.mp strong,.mp b {color:#fff}
+  .mp em,.mp var,.mp u {color:#ddd}
+  .mp pre code {color:#ddd}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#fff}
+  </style>
+  <style type='text/css' media='all'>
+  /* style: toc */
+  .man-navigation {display:block !important;position:fixed;top:0;left:113ex;height:100%;width:100%;padding:48px 0 0 0;border-left:1px solid #dbdbdb;background:#eee}
+  .man-navigation a,.man-navigation a:hover,.man-navigation a:link,.man-navigation a:visited {display:block;margin:0;padding:5px 2px 5px 30px;color:#999;text-decoration:none}
+  .man-navigation a:hover {color:#111;text-decoration:underline}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#OPTIONS">OPTIONS</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>poc(1)</li>
+    <li class='tc'></li>
+    <li class='tr'>poc(1)</li>
+  </ol>
+
+  <h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>poc</code> - <span class="man-whatis">ARINr Point of Contact Program</span>
+</p>
+
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p>poc <a href="#OPTIONS" title="OPTIONS" data-bare-link="true">options</a> --create<br />
+poc <a href="#OPTIONS" title="OPTIONS" data-bare-link="true">options</a> --modify POC_HANDLE<br />
+poc <a href="#OPTIONS" title="OPTIONS" data-bare-link="true">options</a> --yaml YAML_FILE POC_HANDLE<br />
+poc <a href="#OPTIONS" title="OPTIONS" data-bare-link="true">options</a> --delete POC_HANDLE</p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>This program uses ARIN's <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> service to create, modify, or delete a
+Point of Contact (POC).  POC's are identified by a POC_HANDLE.</p>
+
+<p>For <code>--create</code> and <code>--modify</code>, an editor will be invoked containing a POC
+template in YAML form if the <code>-f</code> option is not given. The <code>--modify</code> action
+will fetch the POC data from <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> and pre-populate the YAML template.</p>
+
+<h2 id="OPTIONS">OPTIONS</h2>
+
+<ul>
+<li><p><code>--delete</code><br />
+Deletes the POC.</p></li>
+<li><p><code>--modify</code><br />
+If given without the <code>-f</code> option, the POC information is retreived and an
+editor is invoked so the POC information may be changed. If used with the <code>-f</code>
+option, the information in the file modifies the given POC.</p></li>
+<li><p><code>--create</code><br />
+Creates a POC. If the <code>-f</code> option is given, the data from the file is used
+to create the POC. If not, an editor is invoked with a YAML template which
+will be used to create the POC.</p></li>
+<li><p><code>--yaml</code> YAML_FILE<br />
+With this action, the POC information is fetched and written to the file
+specified.</p></li>
+<li><p><code>-f</code>, <code>--file</code> FILE<br />
+A YAML file to use as input. In many of the operations, this command
+will invoke an appropriate editor to allow the user to fill out a YAML
+template. When this option is used, the file specified is used as the
+YAML template.</p></li>
+<li><p><code>-A</code>, <code>--apikey</code> API_KEY<br />
+The API_KEY to use. API Keys are associated with ARIN Online accounts and
+are the methods used for authentication in <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a>.</p></li>
+<li><p><code>-U</code>, <code>--url</code> URL<br />
+The base URL of the <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> system.</p></li>
+<li><p><code>--messages</code> MESSAGE_LEVEL<br />
+Specify one of the message levels: <code>none</code> for no messages are to be output,
+<code>some</code> for some messages to be output, or <code>all</code> for all messages to be output.</p></li>
+<li><p><code>--messages-out</code> FILE<br />
+Specifies that messages are to be written to the given file.</p></li>
+<li><p><code>--data</code> DATA_AMOUNT<br />
+Specifies the amount of data to be output. Use of of: <code>terse</code>, <code>normal</code>,
+or <code>extra</code>.</p></li>
+<li><p><code>--data-out</code> FILE<br />
+File where data is to be written if specified.</p></li>
+<li><p><code>-V</code><br />
+Equivalent to <code>--messages all</code> and <code>--data extra</code></p></li>
+<li><p><code>-h</code><br />
+Displays help.</p></li>
+</ul>
+
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p><a href="arinr.7.html" class="man-ref">arinr<span class="s">(7)</span></a>, <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a></p>
+
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'></li>
+    <li class='tc'>October 2012</li>
+    <li class='tr'>poc(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>
