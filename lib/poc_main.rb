@@ -184,7 +184,7 @@ module ARINr
         # then make sure it looks like a POC handle.
         if !@config.options.help && args != nil && args != []
           if args[ 0 ] =~ ARINr::DATA_TREE_ADDR_REGEX
-            tree = @config.load_as_yaml( ARINr::ARINW_LASTTREE_YAML )
+            tree = @config.load_as_yaml( ARINr::ARININFO_LASTTREE_YAML )
             handle = tree.find_handle( args[ 0 ] )
             raise ArgumentError.new( "Unable to find handle for " + args[ 0 ] ) unless handle
             args[ 0 ] = handle

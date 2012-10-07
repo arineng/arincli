@@ -58,8 +58,8 @@ This program is for maintenance of the ARINr program files.
 Usage is "arinutil COMMAND" where COMMAND is one of the following:
 
   help        - shows this help
-  clean_cache - forces a cleaning of the arinw cache
-  cache_count - reports the number of files in the arinw cache
+  clean_cache - forces a cleaning of the arininfo cache
+  cache_count - reports the number of files in the arininfo cache
   cached_last - shows details on the last file cached
   config      - show the interpretted configuration
 

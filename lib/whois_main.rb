@@ -456,7 +456,7 @@ HELP_SUMMARY
           when QueryType::BY_DELEGATION
             path << "rest/rdns/" << args[ 0 ]
           when QueryType::BY_RESULT
-            tree = @config.load_as_yaml( ARINr::ARINW_LASTTREE_YAML )
+            tree = @config.load_as_yaml( ARINr::ARININFO_LASTTREE_YAML )
             path = tree.find_rest_ref( args[ 0 ] )
             raise ArgumentError.new( "Unable to find result for " + args[ 0 ] ) unless path
           when QueryType::BY_POC_NAME
@@ -605,7 +605,7 @@ HELP_SUMMARY
         end
         if !tree_root.empty?
           tree.to_normal_log( @config.logger, true )
-          @config.save_as_yaml( ARINr::ARINW_LASTTREE_YAML, tree )
+          @config.save_as_yaml( ARINr::ARININFO_LASTTREE_YAML, tree )
         end
         objs.each do |obj|
           obj.to_log( @config.logger )
@@ -657,7 +657,7 @@ HELP_SUMMARY
 
         if !tree.empty?
           tree.to_terse_log( @config.logger, true )
-          @config.save_as_yaml( ARINr::ARINW_LASTTREE_YAML, tree )
+          @config.save_as_yaml( ARINr::ARININFO_LASTTREE_YAML, tree )
         end
         objs.each do |obj|
           obj.to_log( @config.logger )
