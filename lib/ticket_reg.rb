@@ -31,28 +31,20 @@ module ARINr
       attr_accessor :messages
     end
 
+    class TicketMessageRef
+      attr_accessor :id
+      attr_accessor :attachments
+    end
+
     class TicketMessage
       attr_accessor :subject, :text, :category
       attr_accessor :attachments
-
-      def get_id
-        s = ""
-        s << @text.join if ! @text.empty?
-        s << @category if ! @category
-        @attachments.each do |attachment|
-          s << attachment.file_name
-        end if @attachments
-        return s.hash
-      end
-
-      def get_id_safe_s
-        id = get_id
-        ARINr::make_safe( format( "%0X", id ) )
-      end
+      attr_accessor :id, :created_date
     end
 
     class TicketAttachment
       attr_accessor :file_name, :temp_file_name
+      attr_accessor :id
     end
 
     def Registration::element_to_ticket_summary element
@@ -65,12 +57,17 @@ module ARINr
       ticket.ticket_type=element.elements[ "webTicketType" ].text
       ticket.ticket_status=element.elements[ "webTicketStatus" ].text
       ticket.ticket_resolution=element.elements[ "webTicketResolution" ].text if element.elements[ "webTicketResolution" ]
+      ticket.messages=[]
+      element.elements.each( "messageReferences/messageReference" ) do |msgRef|
+        ticket.messages << element_to_ticket_message_ref( msgRef )
+      end
       return ticket
     end
 
     def Registration::ticket_summary_to_element ticket_summary
       element = REXML::Element.new( "ticket" )
       element.add_namespace( "http://www.arin.net/regrws/core/v1" )
+      element.add_namespace( "http://www.arin.net/regrws/messages/v1" )
       element.add_element( ARINr::new_element_with_text( "ticketNo", ticket_summary.ticket_no ) )
       element.add_element( ARINr::new_element_with_text( "createdDate", ticket_summary.created_date ) )
       element.add_element( ARINr::new_element_with_text( "resolvedDate", ticket_summary.resolved_date ) ) if ticket_summary.resolved_date
@@ -79,6 +76,50 @@ module ARINr
       element.add_element( ARINr::new_element_with_text( "webTicketType", ticket_summary.ticket_type ) )
       element.add_element( ARINr::new_element_with_text( "webTicketStatus", ticket_summary.ticket_status ) )
       element.add_element( ARINr::new_element_with_text( "webTicketResolution", ticket_summary.ticket_resolution ) ) if ticket_summary.ticket_resolution
+      if ticket_summary.messages
+        msg_ref_wrapper = REXML::Element.new( "messageReferences" )
+        ticket_summary.messages.each do |msg_ref|
+          msg_ref_wrapper.add_element( ticket_message_ref_to_element( msg_ref ) )
+        end
+        element.add_element( msg_ref_wrapper )
+      end
+      return element
+    end
+
+    def Registration::element_to_ticket_message_ref element
+      ref = ARINr::Registration::TicketMessageRef.new
+      ref.id=element.elements[ "messageId" ].text
+      ref.attachments=[]
+      element.elements.each( "attachmentReferences/attachmentReference" ) do |attachment|
+        ref.attachments << element_to_ticket_attachment_ref( attachment )
+      end
+      return ref
+    end
+
+    def Registration::ticket_message_ref_to_element msg_ref
+      element = REXML::Element.new( "messageReference" )
+      element.add_element( ARINr::new_element_with_text( "messageId", msg_ref.id ) )
+      if msg_ref.attachments
+        attachment_wrapper = REXML::Element.new( "attachmentReferences" )
+        msg_ref.attachments.each do |attachment_ref|
+          attachment_wrapper.add_element( ticket_attachment_ref_to_element( attachment_ref ) )
+        end
+        element.add_element( attachment_wrapper )
+      end
+      return element
+    end
+
+    def Registration::element_to_ticket_attachment_ref element
+      ref = ARINr::Registration::TicketAttachment.new
+      ref.file_name=element.elements[ "attachmentFilename" ].text
+      ref.id=element.elements[ "attachmentId" ].text
+      return ref
+    end
+
+    def Registration::ticket_attachment_ref_to_element attachment_ref
+      element = REXML::Element.new( "attachmentReference" )
+      element.add_element( ARINr.new_element_with_text( "attachmentFilename", attachment_ref.file_name ) )
+      element.add_element( ARINr.new_element_with_text( "attachmentId", attachment_ref.id ) )
       return element
     end
 
@@ -175,7 +216,7 @@ module ARINr
         end
         prepare_ticket_area(ticket_no)
         file_name =
-          File.join( @config.tickets_dir, ticket_no, ticket_message.get_id_safe_s + ".xml" )
+          File.join( @config.tickets_dir, ticket_no, ticket_message.id + ".xml" )
         @config.logger.trace( "Storing ticket message to " + file_name )
         element = ARINr::Registration::ticket_message_to_element( ticket_message )
         xml_as_s = ARINr::pretty_print_xml_to_s( element )
