@@ -47,9 +47,9 @@ class TicketRegTest < Test::Unit::TestCase
     ticket.ticket_status="APPROVED"
     ticket.ticket_resolution="DENIED"
 
-    element = ARINr::Registration::ticket_summary_to_element ticket
+    element = ARINr::Registration::ticket_to_element ticket
 
-    ticket2 = ARINr::Registration::element_to_ticket_summary element
+    ticket2 = ARINr::Registration::element_to_ticket element
 
     assert_equal( "XB85", ticket2.ticket_no )
     assert_equal( "July 18, 2011", ticket2.created_date )

@@ -47,7 +47,7 @@ module ARINr
       attr_accessor :id
     end
 
-    def Registration::element_to_ticket_summary element
+    def Registration::element_to_ticket element
       ticket = ARINr::Registration::Ticket.new
       ticket.ticket_no=element.elements[ "ticketNo" ].text
       ticket.created_date=element.elements[ "createdDate" ].text
@@ -64,7 +64,7 @@ module ARINr
       return ticket
     end
 
-    def Registration::ticket_summary_to_element ticket_summary
+    def Registration::ticket_to_element ticket_summary
       element = REXML::Element.new( "ticket" )
       element.add_namespace( "http://www.arin.net/regrws/core/v1" )
       element.add_namespace( "http://www.arin.net/regrws/messages/v1" )
@@ -76,7 +76,7 @@ module ARINr
       element.add_element( ARINr::new_element_with_text( "webTicketType", ticket_summary.ticket_type ) )
       element.add_element( ARINr::new_element_with_text( "webTicketStatus", ticket_summary.ticket_status ) )
       element.add_element( ARINr::new_element_with_text( "webTicketResolution", ticket_summary.ticket_resolution ) ) if ticket_summary.ticket_resolution
-      if ticket_summary.messages
+      if ticket_summary.messages && !ticket_summary.messages.empty?
         msg_ref_wrapper = REXML::Element.new( "messageReferences" )
         ticket_summary.messages.each do |msg_ref|
           msg_ref_wrapper.add_element( ticket_message_ref_to_element( msg_ref ) )
@@ -99,7 +99,7 @@ module ARINr
     def Registration::ticket_message_ref_to_element msg_ref
       element = REXML::Element.new( "messageReference" )
       element.add_element( ARINr::new_element_with_text( "messageId", msg_ref.id ) )
-      if msg_ref.attachments
+      if msg_ref.attachments && !msg_ref.attachments.empyt?
         attachment_wrapper = REXML::Element.new( "attachmentReferences" )
         msg_ref.attachments.each do |attachment_ref|
           attachment_wrapper.add_element( ticket_attachment_ref_to_element( attachment_ref ) )
@@ -147,24 +147,28 @@ module ARINr
     # The directory structure is thusly:
     # config_dir
     #  |-- tickets
-    #       |-- message1_summary.xml
-    #       |-- message2_summary.xml
-    #       |-- message2
-    #            |-- attachment1
-    #            |-- attachment2
+    #       |-- ticketno_summary.xml
+    #       |-- ticketno_msgrefs.xml
+    #       |-- ticketno
+    #            |-- message1.xml
+    #            |-- message2.xml
+    #            |-- message2
+    #                 |-- attachment1
+    #                 |-- attachment2
     class TicketStorageManager
 
       SUMMARY_FILE_SUFFIX = "_summary.xml"
+      MSGREFS_FILE_SUFFIX = "_msgrefs.xml"
 
       def initialize config
         @config = config
       end
 
-      def get_ticket_summary ticket_no
+      def get_ticket ticket_no, suffix
         if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
           ticket_no = ticket_no.ticket_no
         end
-        base_name = ticket_no + SUMMARY_FILE_SUFFIX
+        base_name = ticket_no + suffix
         file_name = File.join( @config.tickets_dir, base_name )
         if File.exist?( file_name )
           @config.logger.trace( "Reading stored ticket summary from " + file_name );
@@ -175,35 +179,35 @@ module ARINr
           end
           f.close
           doc = REXML::Document.new( data )
-          return ARINr::Registration::element_to_ticket_summary doc.root
+          return ARINr::Registration::element_to_ticket doc.root
         end
         return nil
       end
 
-      def put_ticket_summary ticket_summary
-        file_name = File.join( @config.tickets_dir, ticket_summary.ticket_no + SUMMARY_FILE_SUFFIX )
+      def put_ticket ticket, suffix
+        file_name = File.join( @config.tickets_dir, ticket_summary.ticket_no + suffix )
         @config.logger.trace( "Storing ticket summary to " + file_name )
-        element = ARINr::Registration::ticket_summary_to_element( ticket_summary )
+        element = ARINr::Registration::ticket_to_element( ticket_summary )
         xml_as_s = ARINr::pretty_print_xml_to_s( element )
         f = File.open( file_name, "w" )
         f.puts xml_as_s
         f.close
       end
 
-      def get_ticket_summary_entries
+      def get_ticket_entries suffix
         retval = []
         dir = Dir.new( @config.tickets_dir )
         dir.each do |file_name|
-          retval << File.join( @config.tickets_dir, file_name ) if file_name.end_with?( SUMMARY_FILE_SUFFIX )
+          retval << File.join( @config.tickets_dir, file_name ) if file_name.end_with?( suffix )
         end
         return retval
       end
 
-      def get_ticket_summaries
-        entries = get_ticket_summary_entries
+      def get_tickets suffix
+        entries = get_ticket_summary_entries suffix
         retval = []
         entries.each do |entry|
-          ticket_no = File.basename( entry ).sub( SUMMARY_FILE_SUFFIX, "" )
+          ticket_no = File.basename( entry ).sub( suffix, "" )
           ticket = get_ticket_summary ticket_no
           retval << ticket if ticket
         end
@@ -285,133 +289,6 @@ module ARINr
         end
         return ticket_area
       end
-    end
-
-    class TicketStreamListener
-
-      def initialize config
-        @config = config
-        @mgr = TicketStorageManager.new config
-        @text_accumulators = [ "ticketNo", "createdDate", "updatedDate", "resolvedDate",
-                               "closedDate", "webTicketStatus", "webTicketResolution", "webTicketType", "subject",
-                               "line", "category", "filename" ]
-      end
-
-      def tag_start name, attrs
-        if name == "ticket"
-          @ticket = ARINr::Registration::Ticket.new
-          @ticket.messages=[]
-        elsif name == "message"
-          @message = ARINr::Registration::TicketMessage.new
-          @message.text=[]
-          @message.attachments=[]
-          @ticket.messages << @message
-        elsif name == "data"
-          @data_file = Tempfile.new "ticket_stream"
-          @data_file.binmode
-          attachment = ARINr::Registration::TicketAttachment.new
-          attachment.temp_file_name=@data_file.path
-          @message.attachments << attachment
-          @data_accumulator = ""
-          @accumulate_data = true
-        elsif @text_accumulators.index( name )
-          @accumulate_text = true
-          @text_accumulator = ""
-        end
-      end
-      def tag_end name
-        case name
-          when "ticketNo"
-            @ticket.ticket_no=@text_accumulator
-            @accumulate_text=false
-          when "createdDate"
-            @ticket.created_date=@text_accumulator
-            @accumulate_text=false
-          when "updatedDate"
-            @ticket.updated_date=@text_accumulator
-            @accumulate_text=false
-          when "resolvedDate"
-            @ticket.resolved_date=@text_accumulator
-            @accumulate_text=false
-          when "closedDate"
-            @ticket.closed_date=@text_accumulator
-            @accumulate_text=false
-          when "webTicketStatus"
-            @ticket.ticket_status=@text_accumulator
-            @accumulate_text=false
-          when "webTicketResolution"
-            @ticket.ticket_resolution=@text_accumulator
-            @accumulate_text=false
-          when "webTicketType"
-            @ticket.ticket_type=@text_accumulator
-            @accumulate_text=false
-          when "subject"
-            @message.subject=@text_accumulator
-            @accumulate_text=false
-          when "line"
-            @message.text << @text_accumulator
-            @accumulate_text=false
-          when "category"
-            @message.category=@text_accumulator
-            @accumulate_text=false
-          when "filename"
-            @message.attachments.last.file_name = @text_accumulator
-            @accumulate_text=false
-          when "ticket"
-            @mgr.put_ticket_summary @ticket
-            @ticket.messages.each do |message|
-              @mgr.put_ticket_message @ticket, message
-              message.attachments.each do |attachment|
-                dest = @mgr.prepare_file_attachment @ticket, message, attachment.file_name
-                @config.logger.trace( "Extracting " + attachment.file_name + " file attachment" )
-                FileUtils.move attachment.temp_file_name, dest
-              end if message.attachments
-            end if @ticket.messages
-          when "data"
-            if @data_accumulator.length > 0
-              @data_file.write( Base64::decode64( @data_accumulator ) )
-            end
-            @accumulate_data = false
-            @data_file.close
-        end
-      end
-      def text text
-        if @accumulate_text
-          @text_accumulator << text
-        elsif @accumulate_data
-          @data_accumulator << text
-          if @data_accumulator.length % 4 == 0
-            @data_file.write( Base64::decode64( @data_accumulator ) )
-            @data_accumulator = ""
-          elsif @data_accumulator.length > 1024
-            @data_file.write( Base64::decode64( @data_accumulator[0..1023] ) )
-            @data_accumulator = @data_accumulator[ 1024..-1]
-          end
-        end
-      end
-      def instruction name, instruction
-      end
-      def comment comment
-      end
-      def doctype name, pub_sys, long_name, uri
-      end
-      def doctype_end
-      end
-      def attlistdecl element_name, attributes, raw_content
-      end
-      def elementdecl content
-      end
-      def entitydecl content
-      end
-      def notationdecl content
-      end
-      def entity content
-      end
-      def cdata content
-      end
-      def xmldecl version, encoding, standalone
-      end
-
     end
 
   end

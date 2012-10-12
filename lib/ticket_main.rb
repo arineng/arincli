@@ -177,7 +177,7 @@ HELP_SUMMARY
       end
 
       def check_ticket( element, updated, mgr )
-        ticket = ARINr::Registration.element_to_ticket_summary element
+        ticket = ARINr::Registration.element_to_ticket element
         s = format( "%-20s %-15s %-15s", ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
         ticket_node = ARINr::DataNode.new( s, ticket.ticket_no )
         stored_ticket = mgr.get_ticket_summary ticket
