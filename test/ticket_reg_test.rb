@@ -35,46 +35,56 @@ class TicketRegTest < Test::Unit::TestCase
 
   end
 
-  def test_element_to_ticket_summary
+  def test_ticket_summary
 
-    ticket = ARINr::Registration::Ticket.new
-    ticket.ticket_no="XB85"
-    ticket.created_date="July 18, 2011"
-    ticket.resolved_date="July 19, 2011"
-    ticket.closed_date="July 20, 2011"
-    ticket.updated_date="July 21, 2011"
-    ticket.ticket_type="QUESTION"
-    ticket.ticket_status="APPROVED"
-    ticket.ticket_resolution="DENIED"
+    file = File.new( File.join( File.dirname( __FILE__ ) , "ticket-summary.xml" ), "r" )
+    doc = REXML::Document.new( file )
+    element = doc.root
+
+    ticket = ARINr::Registration::element_to_ticket element
+    assert_equal( "20121012-X1", ticket.ticket_no )
+    assert_equal( "2012-10-12T11:39:36.724-04:00", ticket.created_date )
+    assert_equal( "2012-10-12T11:39:36.724-04:00", ticket.updated_date )
+    assert_equal( "PENDING_REVIEW", ticket.ticket_status )
+    assert_equal( "QUESTION", ticket.ticket_type )
 
     element = ARINr::Registration::ticket_to_element ticket
+    ticket = ARINr::Registration::element_to_ticket element
+    assert_equal( "20121012-X1", ticket.ticket_no )
+    assert_equal( "2012-10-12T11:39:36.724-04:00", ticket.created_date )
+    assert_equal( "2012-10-12T11:39:36.724-04:00", ticket.updated_date )
+    assert_equal( "PENDING_REVIEW", ticket.ticket_status )
+    assert_equal( "QUESTION", ticket.ticket_type )
 
-    ticket2 = ARINr::Registration::element_to_ticket element
-
-    assert_equal( "XB85", ticket2.ticket_no )
-    assert_equal( "July 18, 2011", ticket2.created_date )
-    assert_equal( "July 19, 2011", ticket2.resolved_date )
-    assert_equal( "July 20, 2011", ticket2.closed_date )
-    assert_equal( "July 21, 2011", ticket2.updated_date )
-    assert_equal( "QUESTION", ticket2.ticket_type )
-    assert_equal( "APPROVED", ticket2.ticket_status )
-    assert_equal( "DENIED", ticket2.ticket_resolution )
   end
 
-  def test_element_to_ticket_message
+  def test_ticket_message
+    file = File.new( File.join( File.dirname( __FILE__ ) , "ticket_message.xml" ), "r" )
+    doc = REXML::Document.new( file )
+    element = doc.root
 
-    message = ARINr::Registration::TicketMessage.new
-    message.subject="Test"
-    message.text=[ "This is line 1", "This is line 2" ]
-    message.category="NONE"
+    message = ARINr::Registration::element_to_ticket_message element
+    assert_equal( "NONE", message.category )
+    assert_equal( "4", message.id )
+    assert_equal( "2012-10-12T11:48:50.281-04:00", message.created_date )
+    assert_equal( 2, message.text.size )
+    assert_equal( "pleasee get back to me", message.text[0] )
+    assert_equal( "you bone heads", message.text[1] )
+    assert_equal( 1, message.attachments.size )
+    assert_equal( "oracle-driver-license.txt", message.attachments[0].file_name )
+    assert_equal( "8a8180b13a5597b1013a55a9d42f0007", message.attachments[0].id )
 
-    element = ARINr::Registration::ticket_message_to_element( message )
-
-    message2 = ARINr::Registration::element_to_ticket_message( element )
-
-    assert_equal( "Test", message2.subject )
-    assert_equal( ["This is line 1", "This is line 2" ], message2.text )
-    assert_equal( "NONE", message2.category )
+    element = ARINr::Registration::ticket_message_to_element message
+    message = ARINr::Registration::element_to_ticket_message element
+    assert_equal( "NONE", message.category )
+    assert_equal( "4", message.id )
+    assert_equal( "2012-10-12T11:48:50.281-04:00", message.created_date )
+    assert_equal( 2, message.text.size )
+    assert_equal( "pleasee get back to me", message.text[0] )
+    assert_equal( "you bone heads", message.text[1] )
+    assert_equal( 1, message.attachments.size )
+    assert_equal( "oracle-driver-license.txt", message.attachments[0].file_name )
+    assert_equal( "8a8180b13a5597b1013a55a9d42f0007", message.attachments[0].id )
   end
 
   def test_store_ticket_summary
@@ -96,9 +106,9 @@ class TicketRegTest < Test::Unit::TestCase
     ticket.ticket_status="APPROVED"
     ticket.ticket_resolution="DENIED"
 
-    mgr.put_ticket_summary ticket
+    mgr.put_ticket ticket, ARINr::Registration::TicketStorageManager::SUMMARY_FILE_SUFFIX
 
-    ticket2 = mgr.get_ticket_summary "XB85"
+    ticket2 = mgr.get_ticket "XB85", ARINr::Registration::TicketStorageManager::SUMMARY_FILE_SUFFIX
 
     assert_equal( "XB85", ticket2.ticket_no )
     assert_equal( "July 18, 2011", ticket2.created_date )
@@ -123,40 +133,9 @@ class TicketRegTest < Test::Unit::TestCase
     message.subject="Test"
     message.text=[ "This is line 1", "This is line 2" ]
     message.category="NONE"
+    message.id="4"
 
     mgr.put_ticket_message "XB85", message
-  end
-
-  def test_ticket_stream_listener
-
-    dir = File.join( @work_dir, "test_ticket_stream_listener" )
-    c = ARINr::Config.new( dir )
-    c.logger.message_level = "NONE"
-    c.setup_workspace
-
-    file = File.new( File.join( File.dirname( __FILE__ ) , "test-ticket.xml" ), "r" )
-    listener = ARINr::Registration::TicketStreamListener.new c
-    REXML::Document.parse_stream( file, listener )
-
-    mgr = ARINr::Registration::TicketStorageManager.new c
-    ticket = mgr.get_ticket_summary "20110718-X21"
-    assert_not_nil ticket
-    assert_equal( "2011-07-18T15:42:27-04:00", ticket.created_date )
-    assert_equal( "20110718-X21", ticket.ticket_no )
-    assert_equal( "2011-07-18T17:30:07-04:00", ticket.updated_date )
-    assert_equal( "ASSIGNED", ticket.ticket_status )
-    assert_equal( "ORG_CREATE", ticket.ticket_type )
-    message_entries = mgr.get_ticket_message_entries( ticket )
-    assert_equal( 3, message_entries.size )
-    the_one_attachment = nil
-    message_entries.each do |entry|
-      attachments = mgr.get_attachment_entries entry
-      the_one_attachment = attachments[ 0 ] if attachments
-    end
-    assert_not_nil( the_one_attachment )
-    assert( File.exist?( the_one_attachment ) )
-    assert_equal( "urnbis-ietf80-minutes.pdf", File.basename( the_one_attachment ) )
-    assert_equal( 20620, File.size?( the_one_attachment ) )
   end
 
 end

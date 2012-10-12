@@ -31,11 +31,6 @@ module ARINr
       attr_accessor :messages
     end
 
-    class TicketMessageRef
-      attr_accessor :id
-      attr_accessor :attachments
-    end
-
     class TicketMessage
       attr_accessor :subject, :text, :category
       attr_accessor :attachments
@@ -86,22 +81,43 @@ module ARINr
       return element
     end
 
-    def Registration::element_to_ticket_message_ref element
-      ref = ARINr::Registration::TicketMessageRef.new
-      ref.id=element.elements[ "messageId" ].text
-      ref.attachments=[]
-      element.elements.each( "attachmentReferences/attachmentReference" ) do |attachment|
-        ref.attachments << element_to_ticket_attachment_ref( attachment )
+    def Registration::element_to_ticket_message element
+      msg = ARINr::Registration::TicketMessage.new
+      element.elements.each do |e|
+        case e.name
+          when "subject"
+            msg.subject=e.text
+          when "messageId"
+            msg.id=e.text
+          when "category"
+            msg.category=e.text
+          when "createdDate"
+            msg.created_date=e.text
+          when "attachmentReferences"
+            msg.attachments=[]
+            e.elements.each( "attachmentReference" ) do |attachment|
+              msg.attachments << element_to_ticket_attachment_ref( attachment )
+            end
+          when "text"
+            msg.text=[]
+            e.elements.each( "line" ) do |line|
+              msg.text << line.text
+            end
+        end
       end
-      return ref
+      return msg
     end
 
-    def Registration::ticket_message_ref_to_element msg_ref
+    def Registration::ticket_message_to_element msg
       element = REXML::Element.new( "messageReference" )
-      element.add_element( ARINr::new_element_with_text( "messageId", msg_ref.id ) )
-      if msg_ref.attachments && !msg_ref.attachments.empyt?
+      element.add_element( ARINr::new_element_with_text( "subject", msg.subject ) ) if msg.subject
+      element.add_element( ARINr::new_number_wrapped_element( "text", msg.text ) )
+      element.add_element( ARINr::new_element_with_text( "category", msg.category ) ) if msg.category
+      element.add_element( ARINr::new_element_with_text( "messageId", msg.id ) )
+      element.add_element( ARINr::new_element_with_text( "createdDate", msg.created_date ) ) if msg.created_date
+      if msg.attachments && !msg.attachments.empty?
         attachment_wrapper = REXML::Element.new( "attachmentReferences" )
-        msg_ref.attachments.each do |attachment_ref|
+        msg.attachments.each do |attachment_ref|
           attachment_wrapper.add_element( ticket_attachment_ref_to_element( attachment_ref ) )
         end
         element.add_element( attachment_wrapper )
@@ -120,26 +136,6 @@ module ARINr
       element = REXML::Element.new( "attachmentReference" )
       element.add_element( ARINr.new_element_with_text( "attachmentFilename", attachment_ref.file_name ) )
       element.add_element( ARINr.new_element_with_text( "attachmentId", attachment_ref.id ) )
-      return element
-    end
-
-    def Registration::element_to_ticket_message element
-      message = ARINr::Registration::TicketMessage.new
-      message.subject=element.elements[ "subject" ].text
-      message.text=[]
-      element.elements.each( "text/line" ) do |line|
-        message.text << line.text
-      end
-      message.category=element.elements[ "category" ].text if element.elements[ "category" ]
-      return message
-    end
-
-    def Registration::ticket_message_to_element ticket_message
-      element = REXML::Element.new( "message" )
-      element.add_namespace( "http://www.arin.net/regrws/core/v1" )
-      element.add_element( ARINr::new_element_with_text( "subject", ticket_message.subject ) )
-      element.add_element( ARINr::new_number_wrapped_element( "text", ticket_message.text ) )
-      element.add_element( ARINr::new_element_with_text( "category", ticket_message.category ) ) if ticket_message.category
       return element
     end
 
@@ -185,9 +181,9 @@ module ARINr
       end
 
       def put_ticket ticket, suffix
-        file_name = File.join( @config.tickets_dir, ticket_summary.ticket_no + suffix )
+        file_name = File.join( @config.tickets_dir, ticket.ticket_no + suffix )
         @config.logger.trace( "Storing ticket summary to " + file_name )
-        element = ARINr::Registration::ticket_to_element( ticket_summary )
+        element = ARINr::Registration::ticket_to_element( ticket )
         xml_as_s = ARINr::pretty_print_xml_to_s( element )
         f = File.open( file_name, "w" )
         f.puts xml_as_s
