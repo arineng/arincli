@@ -42,5 +42,6 @@ module ARINr
 
   #File Name Constants
   ARININFO_LASTTREE_YAML = "arininfo-lasttree.yaml"
+  TICKET_TREE_YAML       = "ticket-tree.yaml"
 
 end

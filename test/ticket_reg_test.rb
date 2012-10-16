@@ -31,7 +31,7 @@ class TicketRegTest < Test::Unit::TestCase
 
   def teardown
 
-    FileUtils.rm_r( @work_dir )
+     FileUtils.rm_r( @work_dir )
 
   end
 
@@ -136,6 +136,48 @@ class TicketRegTest < Test::Unit::TestCase
     message.id="4"
 
     mgr.put_ticket_message "XB85", message
+  end
+
+  def test_out_of_date_ticket
+    # initialize ticket_tree_manager
+    dir = File.join( @work_dir, "test_out_of_date" )
+    c = ARINr::Config.new( dir )
+    c.logger.message_level = "NONE"
+    c.setup_workspace
+    tree_mgr = ARINr::Registration::TicketTreeManager.new c
+
+    # create a ticket and save it
+    file = File.new( File.join( File.dirname( __FILE__ ) , "ticket-summary.xml" ), "r" )
+    doc = REXML::Document.new( file )
+    element = doc.root
+    ticket = ARINr::Registration::element_to_ticket element
+    tree_mgr.put_ticket ticket
+    tree_mgr.save
+
+    # initialize new ticket_tree_manager
+    tree_mgr = ARINr::Registration::TicketTreeManager.new c
+
+    # load ticket_tree_manager
+    tree_mgr.load
+
+    # compare ticket_node.updated_date to ticket_summary.updated_date
+    out_of_date = tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
+    assert( out_of_date )
+
+    # change ticket date to 2013 and check again
+    ticket.updated_date="2013-10-12T11:48:50.303-04:00"
+    out_of_date = tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
+    assert( !out_of_date )
+
+    # now put the updated ticket in the tree manager and compare once more
+    tree_mgr.put_ticket ticket
+    out_of_date = tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
+    assert( out_of_date )
+
+    # now change the ticket no so it won't be found and compare
+    ticket.ticket_no="20121012-X1"
+    out_of_date = tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
+    assert( out_of_date )
   end
 
 end

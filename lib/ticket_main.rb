@@ -33,7 +33,6 @@ module ARINr
     class TicketMain < ARINr::BaseOpts
 
       ARINT_LOG_SUFFIX = 'ticket_summary'
-      ARINT_TICKETS = 'ticket_tickets.yaml'
 
       def initialize args, config = nil
 

@@ -15,11 +15,12 @@
 
 require 'rexml/document'
 require 'rexml/streamlistener'
-require "utils"
-require "config"
 require 'tempfile'
 require 'base64'
 require 'fileutils'
+require "utils"
+require "config"
+require "constants"
 
 module ARINr
 
@@ -285,6 +286,65 @@ module ARINr
         end
         return ticket_area
       end
+    end
+
+    # Manages an ARINr::DataTree for tickets
+    class TicketTreeManager
+
+      def initialize config
+        @config = config
+        @ticket_tree = ARINr::DataTree.new
+        @dirty = false
+      end
+
+      def save
+        if @dirty
+          @config.save_as_yaml( TICKET_TREE_YAML, @ticket_tree )
+        else
+          @config.logger.mesg( "No tickets have been updated." )
+        end
+      end
+
+      def load
+        @ticket_tree = @config.load_as_yaml( TICKET_TREE_YAML )
+      end
+
+      def get_ticket_node ticket_no
+        if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
+          ticket_no = ticket_no.ticket_no
+        end
+        retval = nil
+        @ticket_tree.roots.each do |ticket_node|
+          retval = ticket_node if ticket_node.handle == ticket_no
+        end
+        return retval
+      end
+
+      def out_of_date?( ticket_no, updated_date )
+        ticket_node = get_ticket_node( ticket_no )
+        retval = true
+        if ticket_node != nil
+            updated_date_time = Time.parse( updated_date )
+            ticket_node_time = Time.parse( ticket_node.data[ "updated_date" ] )
+            retval = false if (ticket_node_time <=> updated_date_time) == -1
+        end
+        return retval
+      end
+
+      def put_ticket ticket
+        ticket_node = get_ticket_node( ticket.ticket_no )
+        if ticket_node == nil
+          s = format( "%-20s %-15s %-15s", ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
+          ticket_node = ARINr::DataNode.new( s, ticket.ticket_no )
+          ticket_node.handle=ticket.ticket_no
+          ticket_node.data = {}
+          @ticket_tree.add_root( ticket_node )
+        end
+        ticket_node.data[ "updated_date" ] = ticket.updated_date if ticket.updated_date != nil
+        ticket_node.data[ "updated_date" ] = ticket.created_date if ticket.updated_date == nil
+        @dirty = true
+      end
+
     end
 
   end
