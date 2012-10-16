@@ -224,6 +224,7 @@ module ARINr
         f = File.open( file_name, "w" )
         f.puts xml_as_s
         f.close
+        return file_name
       end
 
       # returns an array of paths which can be used to get ticket messages
