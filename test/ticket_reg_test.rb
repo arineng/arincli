@@ -219,8 +219,40 @@ class TicketRegTest < Test::Unit::TestCase
     rest_ref = "http://ticket/" + ticket.ticket_no + "/" + message.id + "/" + attachment.id
     attachment_node =
         tree_mgr.put_ticket_attachment ticket_node, message_node, attachment, attachment_file, rest_ref
+    f = File.open( attachment_file, "w" )
+    f.puts( "1234" )
+    f.puts( "5678" )
+    f.close
 
     tree_mgr.save
+
+    # Get new managers
+    store_mgr2 = ARINr::Registration::TicketStorageManager.new c
+    tree_mgr2 = ARINr::Registration::TicketTreeManager.new c
+    tree_mgr2.load
+
+    # test the ticket retrieval
+    ticket_node2 = tree_mgr2.get_ticket_node ticket
+    assert_equal( ticket_node2.handle, ticket.ticket_no )
+    ticket2 = store_mgr2.get_ticket ticket
+    assert_equal( ticket2.ticket_no, ticket.ticket_no )
+
+    # get the message and retrieve
+    assert_equal( ticket_node2.children.size, 1 )
+    message_node2 = ticket_node.children[ 0 ]
+    assert_equal( message_node2.handle, message.id )
+    message2 = store_mgr2.get_ticket_message message_node2.data[ "storage_file" ]
+    assert_equal( message.id, message2.id )
+
+    # get the attachment
+    assert_equal( message_node2.children.size, 1 )
+    attachment_node2 = message_node2.children[ 0 ]
+    f = File.open( attachment_node2.data[ "storage_file" ], "r" )
+    lines = f.readlines
+    assert_equal( lines.size, 2 )
+    assert_equal( lines[ 0 ], "1234\n" )
+    assert_equal( lines[ 1 ], "5678\n" )
+    f.close
   end
 
 end

@@ -161,10 +161,11 @@ module ARINr
         @config = config
       end
 
-      def get_ticket ticket_no, suffix
+      def get_ticket ticket_no, suffix = nil
         if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
           ticket_no = ticket_no.ticket_no
         end
+        suffix = MSGREFS_FILE_SUFFIX if suffix == nil
         base_name = ticket_no + suffix
         file_name = File.join( @config.tickets_dir, base_name )
         if File.exist?( file_name )
@@ -181,7 +182,8 @@ module ARINr
         return nil
       end
 
-      def put_ticket ticket, suffix
+      def put_ticket ticket, suffix = nil
+        suffix = MSGREFS_FILE_SUFFIX if suffix == nil
         file_name = File.join( @config.tickets_dir, ticket.ticket_no + suffix )
         @config.logger.trace( "Storing ticket summary to " + file_name )
         element = ARINr::Registration::ticket_to_element( ticket )
@@ -410,7 +412,7 @@ module ARINr
           @dirty = true
         end
         if storage_file != nil
-          message_node.data[ "storeage_file" ] = storage_file
+          message_node.data[ "storage_file" ] = storage_file
           @dirty = true
         end
         if rest_ref != nil
