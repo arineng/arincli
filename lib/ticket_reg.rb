@@ -39,7 +39,7 @@ module ARINr
     end
 
     class TicketAttachment
-      attr_accessor :file_name, :temp_file_name
+      attr_accessor :file_name
       attr_accessor :id
     end
 
@@ -55,7 +55,7 @@ module ARINr
       ticket.ticket_resolution=element.elements[ "webTicketResolution" ].text if element.elements[ "webTicketResolution" ]
       ticket.messages=[]
       element.elements.each( "messageReferences/messageReference" ) do |msgRef|
-        ticket.messages << element_to_ticket_message_ref( msgRef )
+        ticket.messages << element_to_ticket_message( msgRef )
       end
       return ticket
     end
@@ -75,7 +75,7 @@ module ARINr
       if ticket_summary.messages && !ticket_summary.messages.empty?
         msg_ref_wrapper = REXML::Element.new( "messageReferences" )
         ticket_summary.messages.each do |msg_ref|
-          msg_ref_wrapper.add_element( ticket_message_ref_to_element( msg_ref ) )
+          msg_ref_wrapper.add_element( ticket_message_to_element( msg_ref ) )
         end
         element.add_element( msg_ref_wrapper )
       end
@@ -112,7 +112,7 @@ module ARINr
     def Registration::ticket_message_to_element msg
       element = REXML::Element.new( "messageReference" )
       element.add_element( ARINr::new_element_with_text( "subject", msg.subject ) ) if msg.subject
-      element.add_element( ARINr::new_number_wrapped_element( "text", msg.text ) )
+      element.add_element( ARINr::new_number_wrapped_element( "text", msg.text ) ) if msg.text
       element.add_element( ARINr::new_element_with_text( "category", msg.category ) ) if msg.category
       element.add_element( ARINr::new_element_with_text( "messageId", msg.id ) )
       element.add_element( ARINr::new_element_with_text( "createdDate", msg.created_date ) ) if msg.created_date
@@ -189,6 +189,7 @@ module ARINr
         f = File.open( file_name, "w" )
         f.puts xml_as_s
         f.close
+        return file_name
       end
 
       def get_ticket_entries suffix
@@ -259,7 +260,7 @@ module ARINr
         end
         prepare_ticket_area(ticket_no)
         file_name =
-            File.join( @config.tickets_dir, ticket_no, ticket_message.get_id_safe_s )
+            File.join( @config.tickets_dir, ticket_no, ticket_message.id )
         Dir.mkdir( file_name ) if ! File.exist?( file_name )
         return File.join( file_name, ARINr::make_safe( attachment_name ) )
       end
@@ -307,16 +308,22 @@ module ARINr
       end
 
       def load
-        @ticket_tree = @config.load_as_yaml( TICKET_TREE_YAML )
+        yaml_file = @config.make_file_name( TICKET_TREE_YAML )
+        if File.exists? yaml_file
+          @ticket_tree = @config.load_as_yaml( TICKET_TREE_YAML )
+        end
       end
 
-      def get_ticket_node ticket_no
-        if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
-          ticket_no = ticket_no.ticket_no
+      def get_ticket_node ticket
+        if ticket.is_a?( ARINr::Registration::Ticket )
+          ticket = ticket.ticket_no
+        end
+        if ticket.is_a?( ARINr::DataNode )
+          ticket = ticket.handle
         end
         retval = nil
         @ticket_tree.roots.each do |ticket_node|
-          retval = ticket_node if ticket_node.handle == ticket_no
+          retval = ticket_node if ticket_node.handle == ticket
         end
         return retval
       end
@@ -328,8 +335,11 @@ module ARINr
         if message.is_a?( ARINr::Registration::TicketMessage )
           message = message.id
         end
+        if message.is_a?( ARINr::DataNode )
+          message = message.handle
+        end
         retval = nil
-        ticket_node.children.each do |message_node|
+        ticket.children.each do |message_node|
           retval = message_node if message_node.handle == message
         end
         return retval
@@ -343,9 +353,12 @@ module ARINr
         if attachment.is_a?( ARINr::Registration::TicketAttachment )
           attachment = attachment.id
         end
+        if attachment.is_a?( ARINr::DataNode )
+          attachment = attachment.handle
+        end
         retval = nil
         message.children.each do |attachment_node|
-          retval = attachment_node if attachment_node.id == attachment
+          retval = attachment_node if attachment_node.handle == attachment
         end
         return retval
       end
@@ -361,35 +374,70 @@ module ARINr
         return retval
       end
 
-      def put_ticket ticket
+      def put_ticket ticket, storage_file = nil, rest_ref = nil
         ticket_node = get_ticket_node( ticket.ticket_no )
         if ticket_node == nil
           s = format( "%-20s %-15s %-15s", ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
           ticket_node = ARINr::DataNode.new( s, ticket.ticket_no )
           ticket_node.data = {}
           @ticket_tree.add_root( ticket_node )
+          @dirty = true
         end
         ticket_node.data[ "updated_date" ] = ticket.updated_date if ticket.updated_date != nil
         ticket_node.data[ "updated_date" ] = ticket.created_date if ticket.updated_date == nil
         @dirty = true
+        if storage_file != nil
+          ticket_node.data[ "storage_file" ] = storage_file
+        end
+        if rest_ref != nil
+          ticket_node.rest_ref=rest_ref
+        end
         return ticket_node
       end
 
-      def put_ticket_message ticket, ticket_message
-        ticket_node = get_ticket_node ticket
-        message_node = get_ticket_message( ticket, ticket_message )
-        if( message_node == nil )
-          message_name = ticket_message.subject
+      def put_ticket_message ticket, message, storage_file = nil, rest_ref = nil
+        ticket = get_ticket_node ticket if !ticket.is_a?( ARINr::DataNode )
+        message_node = get_ticket_message( ticket, message )
+        if message_node == nil
+          message_name = message.subject
           if message_name == nil
             message_name = "(no subject)"
           end
-          message_node = ARINr::DataNode.new( message_name, ticket_message.id )
+          message_node = ARINr::DataNode.new( message_name, message.id )
           message_node.data = {}
-          message_node.data[ "created_date" ] = ticket_message.created_date
-          ticket_node.children << message_node
+          message_node.data[ "created_date" ] = message.created_date
+          ticket.add_child message_node
+          @dirty = true
+        end
+        if storage_file != nil
+          message_node.data[ "storeage_file" ] = storage_file
+          @dirty = true
+        end
+        if rest_ref != nil
+          message_node.rest_ref= rest_ref
           @dirty = true
         end
         return message_node
+      end
+
+      def put_ticket_attachment ticket, message, attachment, storage_file = nil, rest_ref = nil
+        message = get_ticket_message( ticket, message ) if !message.is_a?( ARINr::DataNode )
+        attachment_node = get_ticket_attachment( ticket, message, attachment )
+        if attachment_node == nil
+          attachment_node = ARINr::DataNode.new( attachment.file_name, attachment.id )
+          attachment_node.data = {}
+          message.add_child attachment_node
+          @dirty = true
+        end
+        if storage_file != nil
+          attachment_node.data[ "storage_file" ] = storage_file
+          @dirty = true
+        end
+        if rest_ref != nil
+          attachment_node.rest_ref=rest_ref
+          @dirty = true
+        end
+        return attachment_node
       end
 
     end

@@ -180,4 +180,47 @@ class TicketRegTest < Test::Unit::TestCase
     assert( out_of_date )
   end
 
+  def test_update_ticket
+    # setup workspace
+    dir = File.join( @work_dir, "test_update_ticket" )
+    c = ARINr::Config.new( dir )
+    c.logger.message_level = "NONE"
+    c.setup_workspace
+
+    # initialize the managers
+    store_mgr = ARINr::Registration::TicketStorageManager.new c
+    tree_mgr = ARINr::Registration::TicketTreeManager.new c
+    tree_mgr.load
+
+    # get a ticket_msgrefs
+    summary_file = File.new( File.join( File.dirname( __FILE__ ) , "ticket-msgrefs.xml" ), "r" )
+    doc = REXML::Document.new( summary_file )
+    element = doc.root
+    ticket = ARINr::Registration::element_to_ticket element
+
+    # put the ticket-msgrefs
+    ticket_file = store_mgr.put_ticket ticket, ARINr::Registration::TicketStorageManager::MSGREFS_FILE_SUFFIX
+    ticket_node = tree_mgr.put_ticket ticket, ticket_file, "http://ticket/" + ticket.ticket_no
+
+    # get a ticket messasge
+    message_file = File.new( File.join( File.dirname( __FILE__ ) , "ticket_message.xml" ), "r" )
+    doc = REXML::Document.new( message_file )
+    element = doc.root
+    message = ARINr::Registration::element_to_ticket_message element
+
+    # put the ticket message
+    message_file = store_mgr.put_ticket_message ticket, message
+    rest_ref = "http://ticket/" + ticket.ticket_no + "/" + message.id
+    message_node = tree_mgr.put_ticket_message ticket_node, message, message_file, rest_ref
+
+    # put the ticket attachment
+    attachment = message.attachments[ 0 ]
+    attachment_file = store_mgr.prepare_file_attachment ticket, message, attachment.id
+    rest_ref = "http://ticket/" + ticket.ticket_no + "/" + message.id + "/" + attachment.id
+    attachment_node =
+        tree_mgr.put_ticket_attachment ticket_node, message_node, attachment, attachment_file, rest_ref
+
+    tree_mgr.save
+  end
+
 end
