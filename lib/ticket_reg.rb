@@ -320,6 +320,35 @@ module ARINr
         return retval
       end
 
+      def get_ticket_message ticket, message
+        orig_ticket = ticket
+        ticket = get_ticket_node( ticket ) if !ticket.is_a?( ARINr::DataNode )
+        raise "no ticket found for #{orig_ticket}" if ticket == nil
+        if message.is_a?( ARINr::Registration::TicketMessage )
+          message = message.id
+        end
+        retval = nil
+        ticket_node.children.each do |message_node|
+          retval = message_node if message_node.handle == message
+        end
+        return retval
+      end
+
+      def get_ticket_attachment ticket, message, attachment
+        orig_ticket = ticket
+        orig_message = message
+        message = get_ticket_message( ticket, message ) if !message.is_a?( ARINr::DataNode )
+        raise "no message found for #{orig_ticket} - #{orig_message}" if message == nil
+        if attachment.is_a?( ARINr::Registration::TicketAttachment )
+          attachment = attachment.id
+        end
+        retval = nil
+        message.children.each do |attachment_node|
+          retval = attachment_node if attachment_node.id == attachment
+        end
+        return retval
+      end
+
       def out_of_date?( ticket_no, updated_date )
         ticket_node = get_ticket_node( ticket_no )
         retval = true
@@ -336,13 +365,30 @@ module ARINr
         if ticket_node == nil
           s = format( "%-20s %-15s %-15s", ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
           ticket_node = ARINr::DataNode.new( s, ticket.ticket_no )
-          ticket_node.handle=ticket.ticket_no
           ticket_node.data = {}
           @ticket_tree.add_root( ticket_node )
         end
         ticket_node.data[ "updated_date" ] = ticket.updated_date if ticket.updated_date != nil
         ticket_node.data[ "updated_date" ] = ticket.created_date if ticket.updated_date == nil
         @dirty = true
+        return ticket_node
+      end
+
+      def put_ticket_message ticket, ticket_message
+        ticket_node = get_ticket_node ticket
+        message_node = get_ticket_message( ticket, ticket_message )
+        if( message_node == nil )
+          message_name = ticket_message.subject
+          if message_name == nil
+            message_name = "(no subject)"
+          end
+          message_node = ARINr::DataNode.new( message_name, ticket_message.id )
+          message_node.data = {}
+          message_node.data[ "created_date" ] = ticket_message.created_date
+          ticket_node.children << message_node
+          @dirty = true
+        end
+        return message_node
       end
 
     end
