@@ -29,10 +29,6 @@ module ARINr
 
     class PocMain < ARINr::BaseOpts
 
-      ARINP_LOG_SUFFIX = 'poc'
-      ARINP_CREATE_POC_FILE = 'poc_create_poc'
-      ARINP_MODIFY_POC_FILE = 'poc_modify_poc'
-
       def initialize args, config = nil
 
         if config
@@ -126,7 +122,7 @@ module ARINr
 
       def modify_poc
         if !@config.options.data_file
-          @config.options.data_file = @config.make_file_name( ARINP_MODIFY_POC_FILE )
+          @config.options.data_file = @config.make_file_name( ARINr::MODIFY_POC_FILE )
           data_to_send = make_yaml_template(@config.options.data_file, @config.options.argv[0])
         else
           data_to_send = true
@@ -140,7 +136,7 @@ module ARINr
           end
         end
         if data_to_send
-          reg = ARINr::Registration::RegistrationService.new(@config, ARINP_LOG_SUFFIX)
+          reg = ARINr::Registration::RegistrationService.new(@config, ARINr::POC_TX_PREFIX)
           file = File.new(@config.options.data_file, "r")
           data = file.read
           file.close
@@ -199,7 +195,7 @@ module ARINr
           if @config.options.make_template
             make_yaml_template( @config.options.template_file, args[ 0 ] )
           elsif @config.options.modify_poc
-            last_modified = @config.make_file_name( ARINP_MODIFY_POC_FILE )
+            last_modified = @config.make_file_name( ARINr::MODIFY_POC_FILE )
             if File.exists?( last_modified ) && (!args[ 0 ])
               @config.options.data_file = last_modified
               @config.logger.mesg( "Re-using data from last modify POC action." )
@@ -212,7 +208,7 @@ module ARINr
             element = reg.delete_poc( args[ 0 ] )
             @config.logger.mesg( args[ 0 ] + " deleted." ) if element
           elsif @config.options.create_poc
-            last_created = @config.make_file_name( ARINP_CREATE_POC_FILE )
+            last_created = @config.make_file_name( ARINr::CREATE_POC_FILE )
             if File.exists?( last_created ) && !args[ 0 ]
               @config.options.data_file = last_created
               @config.logger.mesg( "Re-using data from last create POC action." )
@@ -251,7 +247,7 @@ HELP_SUMMARY
 
       def make_yaml_template file_name, poc_handle
         success = false
-        reg = ARINr::Registration::RegistrationService.new @config, ARINP_LOG_SUFFIX
+        reg = ARINr::Registration::RegistrationService.new @config, ARINr::POC_TX_PREFIX
         element = reg.get_poc( poc_handle )
         if element
           poc = ARINr::Registration.element_to_poc( element )
@@ -280,7 +276,7 @@ HELP_SUMMARY
           poc.emails=["YOUR_EMAIL_ADDRESS_HERE@SOME_COMPANY.NET"]
           poc.phones={ "office" => ["1-XXX-XXX-XXXX", "x123"]}
           poc.comments=["PUT FIRST LINE OF COMMENTS HEERE", "PUT SECOND LINE OF COMMENTS HERE"]
-          @config.options.data_file = @config.make_file_name( ARINP_CREATE_POC_FILE )
+          @config.options.data_file = @config.make_file_name( ARINr::CREATE_POC_FILE )
           file = File.new( @config.options.data_file, "w" )
           file.puts( ARINr::Registration.poc_to_template( poc ) )
           file.close
@@ -293,7 +289,7 @@ HELP_SUMMARY
             return
           end
         end
-        reg = ARINr::Registration::RegistrationService.new(@config,ARINP_LOG_SUFFIX)
+        reg = ARINr::Registration::RegistrationService.new(@config,ARINr::POC_TX_PREFIX)
         file = File.new(@config.options.data_file, "r")
         data = file.read
         file.close
@@ -305,7 +301,7 @@ HELP_SUMMARY
           new_poc = ARINr::Registration.element_to_poc( element )
           @config.logger.mesg( "New point of contact created with handle " + new_poc.handle )
           @config.logger.mesg( 'Use "poc ' + new_poc.handle + '" to modify this point of contact.')
-          last_created = @config.make_file_name( ARINP_CREATE_POC_FILE )
+          last_created = @config.make_file_name( ARINr::CREATE_POC_FILE )
           if File.exists?( last_created )
             File.delete( last_created )
           end

@@ -42,6 +42,11 @@ module ARINr
 
   #File Name Constants
   ARININFO_LASTTREE_YAML = "arininfo-lasttree.yaml"
+  TICKET_LASTTREE_YAML   = "ticket-lasttree.yaml"
   TICKET_TREE_YAML       = "ticket-tree.yaml"
+  TICKET_TX_PREFIX       = "ticket"
+  POC_TX_PREFIX          = "poc"
+  CREATE_POC_FILE        = "create_poc"
+  MODIFY_POC_FILE        = "modify_poc"
 
 end

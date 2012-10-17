@@ -32,8 +32,6 @@ module ARINr
 
     class TicketMain < ARINr::BaseOpts
 
-      ARINT_LOG_SUFFIX = 'ticket_summary'
-
       def initialize args, config = nil
 
         if config
@@ -109,7 +107,10 @@ module ARINr
         @config.setup_workspace
 
         if @config.options.argv[ 0 ] && @config.options.argv[ 0 ] =~ ARINr::DATA_TREE_ADDR_REGEX
-          tree = @config.load_as_yaml( ARINT_TICKETS )
+          tree = @config.load_as_yaml( ARINr::TICKET_LASTTREE_YAML )
+          if tree != nil && tree.roots != nil && tree.roots[ 0 ].rest_ref == ARINr::TICKET_TREE_YAML
+            tree = @config.load_as_yaml( ARINr::TICKET_TREE_YAML )
+          end
           v = tree.find_handle @config.options.argv[ 0 ]
           @config.options.argv[ 0 ] = v if v
         end
@@ -152,7 +153,7 @@ HELP_SUMMARY
         updated = ARINr::DataTree.new
         mgr = ARINr::Registration::TicketStorageManager.new @config
 
-        reg = ARINr::Registration::RegistrationService.new @config, ARINT_LOG_SUFFIX
+        reg = ARINr::Registration::RegistrationService.new @config, ARINr::TICKET_TX_PREFIX
         element = reg.get_ticket_summary( @config.options.argv[ 0 ] )
         if ! element
           @config.logger.mesg( "Unable to get ticket summary information." )
