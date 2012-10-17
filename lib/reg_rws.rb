@@ -73,8 +73,13 @@ module ARINr
         handle_resp( get( uri), uri )
       end
 
-      def get_ticket ticket_no, io
-        uri = ticket_uri ticket_no
+      def get_data uri
+        uri = add_api_key( uri )
+        begin_log "GET", uri
+        handle_resp( get( uri), uri )
+      end
+
+      def get_data_as_stream uri, io
         uri = add_api_key( uri )
         get_stream( uri, io )
       end
@@ -124,6 +129,16 @@ module ARINr
         return uri
       end
 
+      def add_msgrefs uri
+        if uri.query
+          uri.query << "&"
+        else
+          uri.query = ""
+        end
+        uri.query << "msgRefs=true"
+        return uri
+      end
+
       def poc_service_uri
         uri = URI.parse @config.config[ "registration" ][ "url" ]
         uri.path <<= "/rest/poc/"
@@ -138,10 +153,32 @@ module ARINr
         return uri
       end
 
-      def ticket_uri ticket_no
+      def ticket_uri ticket_no, msgRefs=true
         uri = URI.parse @config.config[ "registration" ][ "url" ]
         uri.path <<= "/rest/ticket/"
         uri.path << ticket_no
+        uri = add_msgrefs( uri ) if msgRefs
+        return uri
+      end
+
+      def ticket_message_uri ticket_no, message_id, msgRefs=true
+        uri = URI.parse @config.config[ "registration" ][ "url" ]
+        uri.path <<= "/rest/ticket/"
+        uri.path << ticket_no
+        uri.path << "/message/"
+        uri.path << message_id
+        uri = add_msgrefs( uri ) if msgRefs
+        return uri
+      end
+
+      def ticket_attachment_uri ticket_no, message_id, attachment_id
+        uri = URI.parse @config.config[ "registration" ][ "url" ]
+        uri.path <<= "/rest/ticket/"
+        uri.path << ticket_no
+        uri.path << "/message/"
+        uri.path << message_id
+        uri.path << "/attachment/"
+        uri.path << attachment_id
         return uri
       end
 
