@@ -257,7 +257,7 @@ HELP_SUMMARY
           ticket_node.children.each do |message_node|
             message = @store_mgr.get_ticket_message( message_node.data[ "storage_file" ] )
             @config.logger.start_data_item
-            log_banner "BEGIN MESSAGE"
+            log_banner "BEGIN MESSAGE #{message.id}"
             subject = "Subject:  " + message.subject if message.subject
             subject = "Subject:  ( NO SUBJECT GIVEN )" if !message.subject
             @config.logger.raw ARINr::DataAmount::TERSE_DATA, subject
@@ -285,7 +285,7 @@ HELP_SUMMARY
                 @config.logger.raw ARINr::DataAmount::TERSE_DATA, attachment_node.name
               end
             end
-            log_banner "END MESSAGE"
+            log_banner "END MESSAGE #{message.id}"
             @config.logger.end_data_item
           end if ticket_node.children
         else
@@ -304,7 +304,7 @@ HELP_SUMMARY
       end
 
       def log_banner banner, fill_char = "-"
-        s = fill_char + fill_char + " " + banner + " "
+        s = fill_char*30 + " " + banner + " "
         (s.length..80).each {|x| s << fill_char}
         @config.logger.raw ARINr::DataAmount::TERSE_DATA, s
       end
