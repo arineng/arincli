@@ -301,6 +301,10 @@ module ARINr
         @dirty = false
       end
 
+      def get_ticket_tree
+        @ticket_tree
+      end
+
       def save
         if @dirty
           @config.save_as_yaml( TICKET_TREE_YAML, @ticket_tree )

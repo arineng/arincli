@@ -105,17 +105,20 @@ module ARINr
 
         @config.logger.mesg( ARINr::VERSION )
         @config.setup_workspace
+        @store_mgr = ARINr::Registration::TicketStorageManager.new @config
 
         if @config.options.argv[ 0 ] && @config.options.argv[ 0 ] =~ ARINr::DATA_TREE_ADDR_REGEX
           tree = @config.load_as_yaml( ARINr::TICKET_LASTTREE_YAML )
+          # this is a short cut that basically says go consult the ticket tree db
+          # it is an optimization to stop from saving the ticket tree db as the last ticket/ticket lis
           if tree != nil && tree.roots != nil && tree.roots[ 0 ].rest_ref == ARINr::TICKET_TREE_YAML
-            tree = @config.load_as_yaml( ARINr::TICKET_TREE_YAML )
+            tree = get_tree_mgr.get_ticket_tree
           end
           v = tree.find_handle @config.options.argv[ 0 ]
           @config.options.argv[ 0 ] = v if v
         end
 
-        if( @config.options.check_ticket )
+        if @config.options.check_ticket
           @config.logger.run_pager
           check_tickets()
         elsif @config.options.update_ticket
@@ -129,7 +132,16 @@ module ARINr
         end
 
         @config.logger.end_run
+        @tree_mgr.save
 
+      end
+
+      def get_tree_mgr
+        if @tree_mgr == nil
+          @tree_mgr = ARINr::Registration::TicketTreeManager.new @config
+          @tree_mgr.load
+        end
+        @tree_mgr
       end
 
       def help
@@ -150,8 +162,7 @@ HELP_SUMMARY
 
       def check_tickets
 
-        updated = ARINr::DataTree.new
-        mgr = ARINr::Registration::TicketStorageManager.new @config
+        last_tree = ARINr::DataTree.new
 
         reg = ARINr::Registration::RegistrationService.new @config, ARINr::TICKET_TX_PREFIX
         element = reg.get_ticket_summary( @config.options.argv[ 0 ] )
@@ -159,56 +170,62 @@ HELP_SUMMARY
           @config.logger.mesg( "Unable to get ticket summary information." )
         elsif element.name == "collection"
           element.elements.each( "ticket" ) do |ticket|
-            check_ticket( ticket, updated, mgr )
+            check_ticket( ticket, last_tree )
           end
         elsif element.name == "ticket"
-          check_ticket( element, updated, mgr )
+          check_ticket( element, last_tree )
         else
           @config.logger.mesg( "Unimplemented ticket check!" )
         end
 
-        if !updated.empty?
-          updated.to_terse_log( @config.logger, true )
-          @config.save_as_yaml( ARINT_TICKETS, updated )
+        if !last_tree.empty?
+          last_tree.to_terse_log( @config.logger, true )
+          @config.save_as_yaml( ARINr::TICKET_LASTTREE_YAML, last_tree )
         else
           @config.logger.mesg( "No tickets have been updated." )
         end
-        return updated
+        return last_tree
       end
 
-      def check_ticket( element, updated, mgr )
+      def check_ticket( element, last_tree )
         ticket = ARINr::Registration.element_to_ticket element
-        s = format( "%-20s %-15s %-15s", ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
-        ticket_node = ARINr::DataNode.new( s, ticket.ticket_no )
-        stored_ticket = mgr.get_ticket_summary ticket
-        if ! stored_ticket || @config.options.force_update
-          updated.add_root( ticket_node )
-        else
-          ticket_time = Time.parse( ticket.updated_date )
-          stored_ticket_time = Time.parse( stored_ticket.updated_date )
-          if stored_ticket_time < ticket_time
-            updated.add_root( ticket_node )
-          end
+        if get_tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
+          s = format( "%-20s %-15s %-15s", ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
+          ticket_node = ARINr::DataNode.new( s, ticket.ticket_no )
+          last_tree.add_root( ticket_node )
         end
       end
 
       def update_tickets
         updated = check_tickets
-        reg = ARINr::Registration::RegistrationService.new @config
+        reg = ARINr::Registration::RegistrationService.new @config, ARINr::TICKET_TX_PREFIX
         updated.roots.each do |ticket|
           ticket_no = ticket.handle
-          @config.logger.mesg( "Getting " + ticket_no )
-          ticket_file = Tempfile.new "ticket_" + ticket_no
-          resp = reg.get_ticket ticket_no, ticket_file
-          ticket_file.close
-          if resp.code == "200"
-            @config.logger.mesg( "Processing " + ticket_no )
-            listener = ARINr::Registration::TicketStreamListener.new @config
-            source = File.new( ticket_file.path, "r" )
-            REXML::Document::parse_stream( source, listener )
-            source.close
-          else
-            @config.logger.mesg( "Error getting " + ticket_no )
+          @config.logger.mesg( "Getting ticket #{ticket_no}" )
+          ticket_uri = reg.ticket_uri ticket_no
+          element = reg.get_data ticket_uri
+          new_ticket = ARINr::Registration.element_to_ticket element
+          new_ticket_file = @store_mgr.put_ticket new_ticket
+          new_ticket_node = get_tree_mgr.put_ticket( new_ticket, new_ticket_file, ticket_uri )
+          new_ticket.messages.each do |message|
+            @config.logger.mesg( "Getting message #{ticket_no} : #{message.id}" )
+            message_uri = reg.ticket_message_uri( ticket_no, message.id )
+            message_element = reg.get_data message_uri
+            message_xml = ARINr::Registration::element_to_ticket_message message_element
+            message_file = @store_mgr.put_ticket_message( new_ticket, message_xml )
+            message_node =
+                    get_tree_mgr.put_ticket_message(
+                            new_ticket_node, message_xml, message_file, message_uri )
+            message.attachments.each do |attachment|
+              @config.logger.mesg( "Getting attachment #{ticket_no} : #{message.id} : #{attachment.id}" )
+              attachment_uri = reg.ticket_attachment_uri( ticket_no, message.id, attachment.id )
+              attachment_file = @store_mgr.prepare_file_attachment( new_ticket, message, attachment.id )
+              f = File.open( attachment_file, "w" )
+              reg.get_data_as_stream( attachment_uri, f )
+              f.close
+              get_tree_mgr.put_ticket_attachment(
+                      new_ticket_node, message_node, attachment, attachment_file, attachment_uri)
+            end
           end
         end
       end
