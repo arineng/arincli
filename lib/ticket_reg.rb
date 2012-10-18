@@ -314,10 +314,7 @@ module ARINr
       end
 
       def load
-        yaml_file = @config.make_file_name( TICKET_TREE_YAML )
-        if File.exists? yaml_file
-          @ticket_tree = @config.load_as_yaml( TICKET_TREE_YAML )
-        end
+        @ticket_tree = @config.load_as_yaml( TICKET_TREE_YAML, @ticket_tree )
       end
 
       def get_ticket_node ticket

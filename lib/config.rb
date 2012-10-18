@@ -92,10 +92,16 @@ module ARINr
       return retval
     end
 
-    def load_as_yaml name
-      data_file = File.open( File.join( @app_data, name ), "r" )
-      retval = YAML::load( data_file )
-      data_file.close
+    def load_as_yaml name, default = nil
+      file_name = make_file_name( name )
+      retval = default
+      if File.exists?( file_name )
+        data_file = File.open( File.join( @app_data, name ), "r" )
+        retval = YAML::load( data_file )
+        data_file.close
+      elsif default == nil
+        raise "#{file_name} does not exist"
+      end
       return retval
     end
 
