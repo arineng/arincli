@@ -118,7 +118,7 @@ module ARINr
       @logger.validate_message_level
 
       messages_file = output[ "messages_file" ]
-      if( messages_file != nil )
+      if messages_file != nil
         @logger.message_out = File.open( messages_file, "w+" )
       end
 
@@ -126,7 +126,7 @@ module ARINr
       @logger.validate_data_amount
 
       data_file = output[ "data_file" ]
-      if( data_file != nil )
+      if data_file != nil
         @logger.data_out= File.open( data_file, "w+" )
       end
 
