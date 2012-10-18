@@ -308,8 +308,6 @@ module ARINr
       def save
         if @dirty
           @config.save_as_yaml( TICKET_TREE_YAML, @ticket_tree )
-        else
-          @config.logger.mesg( "No tickets have been updated." )
         end
       end
 
@@ -372,7 +370,7 @@ module ARINr
         if ticket_node != nil
             updated_date_time = Time.parse( updated_date )
             ticket_node_time = Time.parse( ticket_node.data[ "updated_date" ] )
-            retval = false if (ticket_node_time <=> updated_date_time) == -1
+            retval = false if (ticket_node_time <=> updated_date_time) == 1
         end
         return retval
       end

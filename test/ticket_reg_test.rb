@@ -167,6 +167,11 @@ class TicketRegTest < Test::Unit::TestCase
     # change ticket date to 2013 and check again
     ticket.updated_date="2013-10-12T11:48:50.303-04:00"
     out_of_date = tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
+    assert( out_of_date )
+
+    # change ticket date to 2011 and check again
+    ticket.updated_date="2011-10-12T11:48:50.303-04:00"
+    out_of_date = tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
     assert( !out_of_date )
 
     # now put the updated ticket in the tree manager and compare once more

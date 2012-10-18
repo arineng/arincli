@@ -225,7 +225,7 @@ HELP_SUMMARY
               f.close
               get_tree_mgr.put_ticket_attachment(
                       new_ticket_node, message_node, attachment, attachment_file, attachment_uri)
-            end
+            end if message.attachments
           end
         end
       end
@@ -279,7 +279,7 @@ HELP_SUMMARY
               end
             end if message.text
             @config.logger.raw ARINr::DataAmount::TERSE_DATA, ""
-            if message_node.children
+            if message_node.children && message_node.children.size > 0
               log_banner "ATTACHMENTS"
               message_node.children.each do |attachment_node|
                 @config.logger.raw ARINr::DataAmount::TERSE_DATA, attachment_node.name
