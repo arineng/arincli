@@ -189,7 +189,7 @@ HELP_SUMMARY
 
       def check_ticket( element, last_tree )
         ticket = ARINr::Registration.element_to_ticket element
-        if get_tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
+        if get_tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date ) || @config.options.force_update
           s = format( "%-20s %-15s %-15s", ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
           ticket_node = ARINr::DataNode.new( s, ticket.ticket_no )
           last_tree.add_root( ticket_node )
@@ -208,24 +208,33 @@ HELP_SUMMARY
           new_ticket_file = @store_mgr.put_ticket new_ticket
           new_ticket_node = get_tree_mgr.put_ticket( new_ticket, new_ticket_file, ticket_uri )
           new_ticket.messages.each do |message|
-            @config.logger.mesg( "Getting message #{ticket_no} : #{message.id}" )
-            message_uri = reg.ticket_message_uri( ticket_no, message.id )
-            message_element = reg.get_data message_uri
-            message_xml = ARINr::Registration::element_to_ticket_message message_element
-            message_file = @store_mgr.put_ticket_message( new_ticket, message_xml )
-            message_node =
-                    get_tree_mgr.put_ticket_message(
-                            new_ticket_node, message_xml, message_file, message_uri )
-            message.attachments.each do |attachment|
-              @config.logger.mesg( "Getting attachment #{ticket_no} : #{message.id} : #{attachment.id}" )
-              attachment_uri = reg.ticket_attachment_uri( ticket_no, message.id, attachment.id )
-              attachment_file = @store_mgr.prepare_file_attachment( new_ticket, message, attachment.id )
-              f = File.open( attachment_file, "w" )
-              reg.get_data_as_stream( attachment_uri, f )
-              f.close
-              get_tree_mgr.put_ticket_attachment(
-                      new_ticket_node, message_node, attachment, attachment_file, attachment_uri)
-            end if message.attachments
+            if get_tree_mgr.get_ticket_message( new_ticket_node, message ) != nil || @config.options.force_update
+              @config.logger.mesg( "Getting message #{ticket_no} : #{message.id}" )
+              message_uri = reg.ticket_message_uri( ticket_no, message.id )
+              message_element = reg.get_data message_uri
+              message_xml = ARINr::Registration::element_to_ticket_message message_element
+              message_file = @store_mgr.put_ticket_message( new_ticket, message_xml )
+              message_node =
+                      get_tree_mgr.put_ticket_message(
+                              new_ticket_node, message_xml, message_file, message_uri )
+              message.attachments.each do |attachment|
+                if get_tree_mgr.get_ticket_attachment( new_ticket_node, message_node, attachment ) ||
+                        @config.options.force_update
+                  @config.logger.mesg( "Getting attachment #{ticket_no} : #{message.id} : #{attachment.id}" )
+                  attachment_uri = reg.ticket_attachment_uri( ticket_no, message.id, attachment.id )
+                  attachment_file = @store_mgr.prepare_file_attachment( new_ticket, message, attachment.id )
+                  f = File.open( attachment_file, "w" )
+                  reg.get_data_as_stream( attachment_uri, f )
+                  f.close
+                  get_tree_mgr.put_ticket_attachment(
+                          new_ticket_node, message_node, attachment, attachment_file, attachment_uri)
+                else
+                  @config.logger.mesg( "Skipping attachment #{ticket_no} : #{message.id} : #{attachment.id}" )
+                end
+              end if message.attachments
+            else
+              @config.logger.mesg( "Skipping message #{ticket_no} : #{message.id}" )
+            end
           end
         end
       end
@@ -254,10 +263,10 @@ HELP_SUMMARY
           @config.logger.datum( "Updated", Time.parse( ticket.updated_date ).rfc2822 ) if ticket.updated_date
           @config.logger.extra( "Message Count", ticket_node.children.size ) if ticket_node.children
           @config.logger.end_data_item
-          ticket_node.children.each do |message_node|
+          ticket_node.children.each_with_index do |message_node, message_index|
             message = @store_mgr.get_ticket_message( message_node.data[ "storage_file" ] )
             @config.logger.start_data_item
-            log_banner "BEGIN MESSAGE #{message.id}"
+            log_banner "BEGIN MESSAGE #{message_index}"
             subject = "Subject:  " + message.subject if message.subject
             subject = "Subject:  ( NO SUBJECT GIVEN )" if !message.subject
             @config.logger.raw ARINr::DataAmount::TERSE_DATA, subject
@@ -285,7 +294,7 @@ HELP_SUMMARY
                 @config.logger.raw ARINr::DataAmount::TERSE_DATA, attachment_node.name
               end
             end
-            log_banner "END MESSAGE #{message.id}"
+            log_banner "END MESSAGE #{message_index}"
             @config.logger.end_data_item
           end if ticket_node.children
         else
