@@ -114,10 +114,8 @@ module ARINr
           # it is an optimization to stop from saving the ticket tree db as the last ticket/ticket lis
           if tree != nil && tree.roots != nil && tree.roots[ 0 ].rest_ref == ARINr::TICKET_TREE_YAML
             tree = get_tree_mgr.get_ticket_tree
-            v = tree.find_node @config.options.argv[ 0 ]
-          else
-            v = tree.find_handle @config.options.argv[ 0 ]
           end
+          v = tree.find_node @config.options.argv[ 0 ]
           @config.options.argv[ 0 ] = v if v
         end
 
@@ -135,7 +133,7 @@ module ARINr
         end
 
         @config.logger.end_run
-        @tree_mgr.save
+        @tree_mgr.save if @tree_mgr
 
       end
 
@@ -165,6 +163,9 @@ HELP_SUMMARY
 
       def check_tickets
 
+        if @config.options.argv[ 0 ] != nil && @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
+          @config.options.argv[ 0 ] = @config.options.argv[ 0 ].handle
+        end
         last_tree = ARINr::DataTree.new
 
         reg = ARINr::Registration::RegistrationService.new @config, ARINr::TICKET_TX_PREFIX
@@ -252,27 +253,20 @@ HELP_SUMMARY
         if @config.options.argv[ 0 ]
           if @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
             node = @config.options.argv[ 0 ]
-            case node.data["node_type"]
-              when "ticket"
-                return show_ticket(node)
-              when "message"
-                return show_message(-1, node)
-              when "attachment"
-                return detach_attachment(node)
-              else
-                if node.data[ "node_type" ] == nil
-                  raise "node type is nil"
-                else
-                  raise "unknown node type '#{node.data["node_type"] }' for ticket"
-                end
+            if node.data == nil || node.data[ "node_type" ] == nil
+              show_ticket_by_no( node.handle )
+            else
+              case node.data["node_type"]
+                when "ticket"
+                  return show_ticket(node)
+                when "message"
+                  return show_message(-1, node)
+                when "attachment"
+                  return detach_attachment(node)
+              end
             end
           else
-            ticket_node = get_tree_mgr.get_ticket_node @config.options.argv[0]
-            if ticket_node == nil
-              @config.logger.mesg("Ticket #{@config.options.argv[0]} cannot be found.")
-              return nil
-            end
-            return show_ticket( ticket_node )
+            return show_ticket_by_no( @config.options.argv[ 0 ])
           end
         else
           tree = get_tree_mgr.get_ticket_tree
@@ -287,6 +281,15 @@ HELP_SUMMARY
             @config.save_as_yaml( ARINr::TICKET_LASTTREE_YAML, fake_tree )
           end
         end
+      end
+
+      def show_ticket_by_no( ticket_no )
+        ticket_node = get_tree_mgr.get_ticket_node ticket_no
+        if ticket_node == nil
+          @config.logger.mesg("Ticket #{ticket_no} cannot be found.")
+          return nil
+        end
+        return show_ticket(ticket_node)
       end
 
       def show_ticket( ticket_node )
