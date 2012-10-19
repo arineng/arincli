@@ -162,27 +162,27 @@ class TicketRegTest < Test::Unit::TestCase
 
     # compare ticket_node.updated_date to ticket_summary.updated_date
     out_of_date = tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
-    assert( out_of_date )
+    assert_equal( out_of_date, false )
 
     # change ticket date to 2013 and check again
     ticket.updated_date="2013-10-12T11:48:50.303-04:00"
     out_of_date = tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
-    assert( out_of_date )
+    assert_equal( out_of_date, true )
 
     # change ticket date to 2011 and check again
     ticket.updated_date="2011-10-12T11:48:50.303-04:00"
     out_of_date = tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
-    assert( !out_of_date )
+    assert_equal( out_of_date, false )
 
     # now put the updated ticket in the tree manager and compare once more
     tree_mgr.put_ticket ticket
     out_of_date = tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
-    assert( out_of_date )
+    assert_equal( out_of_date, false )
 
     # now change the ticket no so it won't be found and compare
-    ticket.ticket_no="20121012-X1"
+    ticket.ticket_no="20121012-X9999"
     out_of_date = tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date )
-    assert( out_of_date )
+    assert_equal( out_of_date, true )
   end
 
   def test_update_ticket
@@ -258,6 +258,38 @@ class TicketRegTest < Test::Unit::TestCase
     assert_equal( lines[ 0 ], "1234\n" )
     assert_equal( lines[ 1 ], "5678\n" )
     f.close
+  end
+
+  def test_sort_messages
+    ticket_node = ARINr::DataNode.new( "ticket", "X1" )
+    mesg_node5 = ARINr::DataNode.new( "mesg5", "5", nil, {} )
+    mesg_node5.data[ "created_date" ] = "2011-10-12T11:48:50.303-04:00"
+    ticket_node.add_child( mesg_node5 )
+    mesg_node1 = ARINr::DataNode.new( "mesg1", "1", nil, {} )
+    mesg_node1.data[ "created_date" ] = "2011-10-12T11:48:50.303-04:00"
+    ticket_node.add_child( mesg_node1 )
+    mesg_node2 = ARINr::DataNode.new( "mesg2", "2", nil, {} )
+    mesg_node2.data[ "created_date" ] = "2011-10-12T11:48:50.303-04:00"
+    ticket_node.add_child( mesg_node2 )
+    mesg_node3 = ARINr::DataNode.new( "mesg3", "3", nil, {} )
+    mesg_node3.data[ "created_date" ] = "2010-10-12T11:48:50.303-04:00"
+    ticket_node.add_child( mesg_node3 )
+    mesg_node4 = ARINr::DataNode.new( "mesg4", "4", nil, {} )
+    mesg_node4.data[ "created_date" ] = "2010-10-12T11:48:50.303-04:00"
+    ticket_node.add_child( mesg_node4 )
+
+    dir = File.join( @work_dir, "test_sort_messages" )
+    c = ARINr::Config.new( dir )
+    c.logger.message_level = "NONE"
+    c.setup_workspace
+
+    tree_mgr = ARINr::Registration::TicketTreeManager.new c
+    tree_mgr.sort_messages( ticket_node )
+    assert_equal( ticket_node.children[ 0 ].handle, "3" )
+    assert_equal( ticket_node.children[ 1 ].handle, "4" )
+    assert_equal( ticket_node.children[ 2 ].handle, "1" )
+    assert_equal( ticket_node.children[ 3 ].handle, "2" )
+    assert_equal( ticket_node.children[ 4 ].handle, "5" )
   end
 
 end

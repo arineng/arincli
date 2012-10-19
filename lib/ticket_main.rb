@@ -207,8 +207,10 @@ HELP_SUMMARY
           new_ticket = ARINr::Registration.element_to_ticket element
           new_ticket_file = @store_mgr.put_ticket new_ticket
           new_ticket_node = get_tree_mgr.put_ticket( new_ticket, new_ticket_file, ticket_uri )
+          sort_needed = false
           new_ticket.messages.each do |message|
-            if get_tree_mgr.get_ticket_message( new_ticket_node, message ) != nil || @config.options.force_update
+            if get_tree_mgr.get_ticket_message( new_ticket_node, message ) == nil || @config.options.force_update
+              sort_needed = true
               @config.logger.mesg( "Getting message #{ticket_no} : #{message.id}" )
               message_uri = reg.ticket_message_uri( ticket_no, message.id )
               message_element = reg.get_data message_uri
@@ -218,7 +220,7 @@ HELP_SUMMARY
                       get_tree_mgr.put_ticket_message(
                               new_ticket_node, message_xml, message_file, message_uri )
               message.attachments.each do |attachment|
-                if get_tree_mgr.get_ticket_attachment( new_ticket_node, message_node, attachment ) ||
+                if get_tree_mgr.get_ticket_attachment( new_ticket_node, message_node, attachment ) == nil ||
                         @config.options.force_update
                   @config.logger.mesg( "Getting attachment #{ticket_no} : #{message.id} : #{attachment.id}" )
                   attachment_uri = reg.ticket_attachment_uri( ticket_no, message.id, attachment.id )
@@ -235,6 +237,10 @@ HELP_SUMMARY
             else
               @config.logger.mesg( "Skipping message #{ticket_no} : #{message.id}" )
             end
+          end
+          if sort_needed
+            @config.logger.mesg( "Sorting messages for #{ticket_no}" )
+            get_tree_mgr.sort_messages( new_ticket_node )
           end
         end
       end
@@ -266,11 +272,13 @@ HELP_SUMMARY
           ticket_node.children.each_with_index do |message_node, message_index|
             message = @store_mgr.get_ticket_message( message_node.data[ "storage_file" ] )
             @config.logger.start_data_item
-            log_banner "BEGIN MESSAGE #{message_index}"
-            subject = "Subject:  " + message.subject if message.subject
-            subject = "Subject:  ( NO SUBJECT GIVEN )" if !message.subject
+            log_banner "BEGIN MESSAGE #{message_index + 1}"
+            subject = "Subject:    " + message.subject if message.subject
+            subject = "Subject:    ( NO SUBJECT GIVEN )" if !message.subject
             @config.logger.raw ARINr::DataAmount::TERSE_DATA, subject
-            @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Category: " + message.category if message.category
+            @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Category:   " + message.category if message.category
+            @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Date:       " + Time.parse(message.created_date).rfc2822 if message.created_date
+            @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Message Id: " + message.id if message.id
             @config.logger.raw ARINr::DataAmount::TERSE_DATA, ""
             message.text.each do |line|
               line = "" if !line
@@ -290,11 +298,12 @@ HELP_SUMMARY
             @config.logger.raw ARINr::DataAmount::TERSE_DATA, ""
             if message_node.children && message_node.children.size > 0
               log_banner "ATTACHMENTS"
-              message_node.children.each do |attachment_node|
-                @config.logger.raw ARINr::DataAmount::TERSE_DATA, attachment_node.name
+              message_node.children.each_with_index do |attachment_node, attachment_index|
+                s = format( "%2d. %s", attachment_index + 1, attachment_node )
+                @config.logger.raw ARINr::DataAmount::TERSE_DATA, s
               end
             end
-            log_banner "END MESSAGE #{message_index}"
+            log_banner "END MESSAGE #{message_index + 1}"
             @config.logger.end_data_item
           end if ticket_node.children
         else

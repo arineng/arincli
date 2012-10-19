@@ -307,6 +307,7 @@ module ARINr
 
       def save
         if @dirty
+          @config.logger.mesg( "Saving ticket database")
           @config.save_as_yaml( TICKET_TREE_YAML, @ticket_tree )
         end
       end
@@ -370,7 +371,7 @@ module ARINr
         if ticket_node != nil
             updated_date_time = Time.parse( updated_date )
             ticket_node_time = Time.parse( ticket_node.data[ "updated_date" ] )
-            retval = false if (ticket_node_time <=> updated_date_time) == 1
+            retval = false if (ticket_node_time <=> updated_date_time) >= 0
         end
         return retval
       end
@@ -419,6 +420,14 @@ module ARINr
           @dirty = true
         end
         return message_node
+      end
+
+      def sort_messages ticket_node
+        message_node_array = ticket_node.children
+        ticket_node.children = message_node_array.sort_by do |mesg_node|
+          [ Time.parse( mesg_node.data[ "created_date" ] ), mesg_node.handle ]
+        end
+        @dirty = true
       end
 
       def put_ticket_attachment ticket, message, attachment, storage_file = nil, rest_ref = nil
