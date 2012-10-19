@@ -109,12 +109,15 @@ module ARINr
 
         if @config.options.argv[ 0 ] && @config.options.argv[ 0 ] =~ ARINr::DATA_TREE_ADDR_REGEX
           tree = @config.load_as_yaml( ARINr::TICKET_LASTTREE_YAML )
+          v = nil
           # this is a short cut that basically says go consult the ticket tree db
           # it is an optimization to stop from saving the ticket tree db as the last ticket/ticket lis
           if tree != nil && tree.roots != nil && tree.roots[ 0 ].rest_ref == ARINr::TICKET_TREE_YAML
             tree = get_tree_mgr.get_ticket_tree
+            v = tree.find_node @config.options.argv[ 0 ]
+          else
+            v = tree.find_handle @config.options.argv[ 0 ]
           end
-          v = tree.find_handle @config.options.argv[ 0 ]
           @config.options.argv[ 0 ] = v if v
         end
 
@@ -247,65 +250,30 @@ HELP_SUMMARY
 
       def show_tickets
         if @config.options.argv[ 0 ]
-          ticket_node = get_tree_mgr.get_ticket_node @config.options.argv[ 0 ]
-          if ! ticket_node
-            @config.logger.mesg( "Ticket #{@config.options.argv[ 0 ]} cannot be found." )
-            return nil
-          end
-          last_tree = ARINr::DataTree.new
-          last_tree.add_root( ticket_node )
-          if( last_tree.to_normal_log( @config.logger, true ) )
-            @config.save_as_yaml( ARINr::TICKET_LASTTREE_YAML, last_tree )
-          end
-          ticket = @store_mgr.get_ticket( ticket_node.handle )
-          @config.logger.start_data_item
-          @config.logger.terse( "Ticket Number", ticket.ticket_no )
-          @config.logger.terse( "Status", ticket.ticket_status )
-          @config.logger.terse( "Resolution", ticket.ticket_resolution ) if ticket.ticket_resolution
-          @config.logger.datum( "Type", ticket.ticket_type )
-          @config.logger.terse( "Created", Time.parse( ticket.created_date ).rfc2822 ) if ticket.created_date
-          @config.logger.datum( "Resolved", Time.parse( ticket.resolved_date ).rfc2822 ) if ticket.resolved_date
-          @config.logger.datum( "Closed", Time.parse( ticket.closed_date ).rfc2822 ) if ticket.closed_date
-          @config.logger.datum( "Updated", Time.parse( ticket.updated_date ).rfc2822 ) if ticket.updated_date
-          @config.logger.extra( "Message Count", ticket_node.children.size ) if ticket_node.children
-          @config.logger.end_data_item
-          ticket_node.children.each_with_index do |message_node, message_index|
-            message = @store_mgr.get_ticket_message( message_node.data[ "storage_file" ] )
-            @config.logger.start_data_item
-            log_banner "BEGIN MESSAGE #{message_index + 1}"
-            subject = "Subject:    " + message.subject if message.subject
-            subject = "Subject:    ( NO SUBJECT GIVEN )" if !message.subject
-            @config.logger.raw ARINr::DataAmount::TERSE_DATA, subject
-            @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Category:   " + message.category if message.category
-            @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Date:       " + Time.parse(message.created_date).rfc2822 if message.created_date
-            @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Message Id: " + message.id if message.id
-            @config.logger.raw ARINr::DataAmount::TERSE_DATA, ""
-            message.text.each do |line|
-              line = "" if !line
-              auto_wrap = @config.config[ "output" ][ "auto_wrap" ]
-              if auto_wrap && line.length > auto_wrap
-                while line.length > auto_wrap
-                  cutoff = line.rindex( " ", auto_wrap )
-                  cutoff = auto_wrap if cutoff == 0
-                  @config.logger.raw ARINr::DataAmount::TERSE_DATA, line[0..cutoff]
-                  line = line[(cutoff+1)..-1]
-                end
-                @config.logger.raw ARINr::DataAmount::TERSE_DATA, line
+          if @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
+            node = @config.options.argv[ 0 ]
+            case node.data["node_type"]
+              when "ticket"
+                return show_ticket(node)
+              when "message"
+                return show_message(-1, node)
+              when "attachment"
+                return detach_attachment(node)
               else
-                @config.logger.raw ARINr::DataAmount::TERSE_DATA, line
-              end
-            end if message.text
-            @config.logger.raw ARINr::DataAmount::TERSE_DATA, ""
-            if message_node.children && message_node.children.size > 0
-              log_banner "ATTACHMENTS"
-              message_node.children.each_with_index do |attachment_node, attachment_index|
-                s = format( "%2d. %s", attachment_index + 1, attachment_node )
-                @config.logger.raw ARINr::DataAmount::TERSE_DATA, s
-              end
+                if node.data[ "node_type" ] == nil
+                  raise "node type is nil"
+                else
+                  raise "unknown node type '#{node.data["node_type"] }' for ticket"
+                end
             end
-            log_banner "END MESSAGE #{message_index + 1}"
-            @config.logger.end_data_item
-          end if ticket_node.children
+          else
+            ticket_node = get_tree_mgr.get_ticket_node @config.options.argv[0]
+            if ticket_node == nil
+              @config.logger.mesg("Ticket #{@config.options.argv[0]} cannot be found.")
+              return nil
+            end
+            return show_ticket( ticket_node )
+          end
         else
           tree = get_tree_mgr.get_ticket_tree
           if tree.empty?
@@ -319,6 +287,80 @@ HELP_SUMMARY
             @config.save_as_yaml( ARINr::TICKET_LASTTREE_YAML, fake_tree )
           end
         end
+      end
+
+      def show_ticket( ticket_node )
+        last_tree = ARINr::DataTree.new
+        last_tree.add_root(ticket_node)
+        if last_tree.to_normal_log(@config.logger, true)
+          @config.save_as_yaml(ARINr::TICKET_LASTTREE_YAML, last_tree)
+        end
+        ticket = @store_mgr.get_ticket(ticket_node.handle)
+        @config.logger.start_data_item
+        @config.logger.terse("Ticket Number", ticket.ticket_no)
+        @config.logger.terse("Status", ticket.ticket_status)
+        @config.logger.terse("Resolution", ticket.ticket_resolution) if ticket.ticket_resolution
+        @config.logger.datum("Type", ticket.ticket_type)
+        @config.logger.terse("Created", Time.parse(ticket.created_date).rfc2822) if ticket.created_date
+        @config.logger.datum("Resolved", Time.parse(ticket.resolved_date).rfc2822) if ticket.resolved_date
+        @config.logger.datum("Closed", Time.parse(ticket.closed_date).rfc2822) if ticket.closed_date
+        @config.logger.datum("Updated", Time.parse(ticket.updated_date).rfc2822) if ticket.updated_date
+        @config.logger.extra("Message Count", ticket_node.children.size) if ticket_node.children
+        @config.logger.end_data_item
+        ticket_node.children.each_with_index do |message_node, message_index|
+          show_message(message_index, message_node)
+        end if ticket_node.children
+      end
+
+      def show_message(message_index, message_node)
+        message_banner_index = (message_index + 1).to_s
+        if message_index < 0
+          message_banner_index = ""
+        end
+        message = @store_mgr.get_ticket_message(message_node.data["storage_file"])
+        @config.logger.start_data_item
+        log_banner "BEGIN MESSAGE #{message_banner_index}"
+        subject = "Subject:    " + message.subject if message.subject
+        subject = "Subject:    ( NO SUBJECT GIVEN )" if !message.subject
+        @config.logger.raw ARINr::DataAmount::TERSE_DATA, subject
+        @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Category:   " + message.category if message.category
+        @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Date:       " + Time.parse(message.created_date).rfc2822 if message.created_date
+        @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Message Id: " + message.id if message.id
+        @config.logger.raw ARINr::DataAmount::TERSE_DATA, ""
+        message.text.each do |line|
+          line = "" if !line
+          auto_wrap = @config.config["output"]["auto_wrap"]
+          if auto_wrap && line.length > auto_wrap
+            while line.length > auto_wrap
+              cutoff = line.rindex(" ", auto_wrap)
+              cutoff = auto_wrap if cutoff == 0
+              @config.logger.raw ARINr::DataAmount::TERSE_DATA, line[0..cutoff]
+              line = line[(cutoff+1)..-1]
+            end
+            @config.logger.raw ARINr::DataAmount::TERSE_DATA, line
+          else
+            @config.logger.raw ARINr::DataAmount::TERSE_DATA, line
+          end
+        end if message.text
+        @config.logger.raw ARINr::DataAmount::TERSE_DATA, ""
+        if message_node.children && message_node.children.size > 0
+          log_banner "ATTACHMENTS"
+          message_node.children.each_with_index do |attachment_node, attachment_index|
+            s = format("%2d. %s", attachment_index + 1, attachment_node)
+            @config.logger.raw ARINr::DataAmount::TERSE_DATA, s
+          end
+        end
+        log_banner "END MESSAGE #{message_banner_index}"
+        @config.logger.end_data_item
+      end
+
+      def detach_attachment( attachment_node )
+        name = attachment_node.to_s
+        if @config.options.argv[ 1 ]
+          name = @config.options.argv[ 1 ]
+        end
+        @config.logger.mesg( "Putting attachment in #{name}" )
+        FileUtils.copy( attachment_node.data[ "storage_file" ], name )
       end
 
       def log_banner banner, fill_char = "-"

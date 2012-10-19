@@ -387,6 +387,7 @@ module ARINr
         end
         ticket_node.data[ "updated_date" ] = ticket.updated_date if ticket.updated_date != nil
         ticket_node.data[ "updated_date" ] = ticket.created_date if ticket.updated_date == nil
+        ticket_node.data[ "node_type" ] = "ticket"
         @dirty = true
         if storage_file != nil
           ticket_node.data[ "storage_file" ] = storage_file
@@ -408,6 +409,7 @@ module ARINr
           message_node = ARINr::DataNode.new( message_name, message.id )
           message_node.data = {}
           message_node.data[ "created_date" ] = message.created_date
+          message_node.data[ "node_type" ] = "message"
           ticket.add_child message_node
           @dirty = true
         end
@@ -436,6 +438,7 @@ module ARINr
         if attachment_node == nil
           attachment_node = ARINr::DataNode.new( attachment.file_name, attachment.id )
           attachment_node.data = {}
+          attachment_node.data[ "node_type" ] = "attachment"
           message.add_child attachment_node
           @dirty = true
         end
