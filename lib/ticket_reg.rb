@@ -185,13 +185,38 @@ module ARINr
       def put_ticket ticket, suffix = nil
         suffix = MSGREFS_FILE_SUFFIX if suffix == nil
         file_name = File.join( @config.tickets_dir, ticket.ticket_no + suffix )
-        @config.logger.trace( "Storing ticket summary to " + file_name )
+        @config.logger.trace( "Storing ticket to " + file_name )
         element = ARINr::Registration::ticket_to_element( ticket )
         xml_as_s = ARINr::pretty_print_xml_to_s( element )
         f = File.open( file_name, "w" )
         f.puts xml_as_s
         f.close
         return file_name
+      end
+
+      def remove_ticket ticket_no
+        if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
+          ticket_no = ticket_no.ticket_no
+        end
+        dir = Dir.new( @config.tickets_dir )
+        dir.each do |file_name|
+          if file_name.start_with?( ticket_no ) && file_name.end_with?( ".xml" )
+            to_delete = File.join( @config.tickets_dir, file_name )
+            @config.logger.trace( "Removing #{to_delete}")
+            FileUtils.rm( to_delete )
+          end
+        end
+        ticket_area = File.join( @config.tickets_dir, ticket_no )
+        @config.logger.trace( "Removing #{ticket_area}")
+        FileUtils.rm_r( ticket_area )
+      end
+
+      def remove_all_tickets
+        tickets_dir = @config.tickets_dir
+        @config.logger.trace( "Removing #{tickets_dir}" )
+        FileUtils.rm_r( tickets_dir )
+        @config.logger.trace( "Recreating #{tickets_dir}" )
+        Dir.mkdir( tickets_dir )
       end
 
       def get_ticket_entries suffix
@@ -328,6 +353,17 @@ module ARINr
           retval = ticket_node if ticket_node.handle == ticket
         end
         return retval
+      end
+
+      def remove_ticket ticket
+        ticket_node = get_ticket_node ticket
+        @ticket_tree.roots.delete ticket_node
+        @dirty = true
+      end
+
+      def remove_all_tickets
+        @ticket_tree = ARINr::DataTree.new
+        @dirty = true
       end
 
       def get_ticket_message ticket, message

@@ -68,6 +68,11 @@ module ARINr
             @config.options.show_ticket = true
           end
 
+          opts.on( "--remove",
+                   "Removes a ticket from local storage." ) do |check|
+            @config.options.remove_ticket = true
+          end
+
           opts.separator ""
           opts.separator "Communications Options:"
 
@@ -127,6 +132,8 @@ module ARINr
         elsif @config.options.show_ticket
           @config.logger.run_pager
           show_tickets()
+        elsif @config.options.remove_ticket
+          remove_tickets
         else
           @config.logger.run_pager
           show_tickets()
@@ -197,6 +204,22 @@ HELP_SUMMARY
           s = format( "%-20s %-15s %-15s", ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
           ticket_node = ARINr::DataNode.new( s, ticket.ticket_no )
           last_tree.add_root( ticket_node )
+        end
+      end
+
+      def remove_tickets
+        if @config.options.argv[ 0 ] != nil && @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
+          ticket_no = @config.options.argv[ 0 ]
+          if @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
+            ticket_no = @config.options.argv[ 0 ].handle
+          end
+          @config.logger.mesg( "Removing #{ticket_no}" )
+          @store_mgr.remove_ticket ticket_no
+          get_tree_mgr.remove_ticket ticket_no
+        else
+          @config.logger.mesg( "Removing all tickets" )
+          @store_mgr.remove_all_tickets
+          get_tree_mgr.remove_all_tickets
         end
       end
 
