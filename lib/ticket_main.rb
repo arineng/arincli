@@ -74,7 +74,8 @@ module ARINr
             @config.options.remove_ticket = true
           end
 
-          opts.on( "-m", "--message" ) do |file|
+          opts.on( "-m [FILE]", "--message [FILE]",
+                   "Sends a message to be attached to a ticket.") do |file|
             @config.options.message_ticket = true
             @config.options.data_file = file if file.is_a?( String )
             @config.options.data_file_specified = true if file.is_a?( String )
