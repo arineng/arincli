@@ -109,12 +109,17 @@ module ARINr
       return msg
     end
 
-    def Registration::ticket_message_to_element msg
-      element = REXML::Element.new( "messageReference" )
+    def Registration::ticket_message_to_element msg, msgRef = true
+      if msgRef
+        element = REXML::Element.new( "messageReference" )
+      else
+        element = REXML::Element.new( "message" )
+      end
+      element.add_namespace( "http://www.arin.net/regrws/core/v1" )
       element.add_element( ARINr::new_element_with_text( "subject", msg.subject ) ) if msg.subject
       element.add_element( ARINr::new_number_wrapped_element( "text", msg.text ) ) if msg.text
       element.add_element( ARINr::new_element_with_text( "category", msg.category ) ) if msg.category
-      element.add_element( ARINr::new_element_with_text( "messageId", msg.id ) )
+      element.add_element( ARINr::new_element_with_text( "messageId", msg.id ) ) if msg.id
       element.add_element( ARINr::new_element_with_text( "createdDate", msg.created_date ) ) if msg.created_date
       if msg.attachments && !msg.attachments.empty?
         attachment_wrapper = REXML::Element.new( "attachmentReferences" )

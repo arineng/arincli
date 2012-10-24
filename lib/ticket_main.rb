@@ -17,6 +17,7 @@ require 'optparse'
 require 'rexml/document'
 require 'base_opts'
 require 'config'
+require 'erb'
 require 'constants'
 require 'reg_rws'
 require 'ticket_reg'
@@ -75,8 +76,8 @@ module ARINr
 
           opts.on( "-m", "--message" ) do |file|
             @config.options.message_ticket = true
-            @config.options.data_file = file
-            @config.options.data_file_specified = true if file != nil
+            @config.options.data_file = file if file.is_a?( String )
+            @config.options.data_file_specified = true if file.is_a?( String )
           end
 
           opts.separator ""
@@ -254,7 +255,7 @@ HELP_SUMMARY
             end
             @config.logger.mesg( "Sending message for #{ticket_no}")
             message = parse_data_file
-            message_xml = ARINr::Registration::ticket_message_to_element message
+            message_xml = ARINr::Registration::ticket_message_to_element message, false
             send_data = ARINr::pretty_print_xml_to_s( message_xml )
             reg = ARINr::Registration::RegistrationService.new @config, ARINr::TICKET_TX_PREFIX
             new_message_xml = reg.put_ticket_message ticket_no, send_data
@@ -273,8 +274,8 @@ HELP_SUMMARY
         message = ARINr::Registration::TicketMessage.new
         file = File.new( @config.options.data_file, "r" )
         file.each_line do |line|
-          if line.start_with?( ARINr::SUBJECT_HEADER ) && message.subject != nil
-            s = line.sub( ARINr::SUBJECT_HEADER ).strip
+          if line.start_with?( ARINr::SUBJECT_HEADER ) && message.subject == nil
+            s = line.sub( ARINr::SUBJECT_HEADER, "" ).strip
             message.subject=s if s != ARINr::SUBJECT_DEFAULT
           else
             message.text = [] if message.text == nil
@@ -293,10 +294,10 @@ HELP_SUMMARY
         end
         file.close
         erb_template = ERB.new(template, 0, "<>")
-        erb_template.result
+        s = erb_template.result( binding )
         @config.options.data_file = @config.make_file_name(ARINr::TICKET_MESSAGE_FILE)
         file = File.new(@config.options.data_file, "w")
-        file.puts(erb_template)
+        file.puts( s )
         file.close
       end
 
