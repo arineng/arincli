@@ -48,5 +48,10 @@ module ARINr
   POC_TX_PREFIX          = "poc"
   CREATE_POC_FILE        = "create_poc"
   MODIFY_POC_FILE        = "modify_poc"
+  TICKET_MESSAGE_FILE    = "ticket_message"
+
+  #Template constants
+  SUBJECT_HEADER         = "Subject:"
+  SUBJECT_DEFAULT        = "(Place Message Subject Here)"
 
 end

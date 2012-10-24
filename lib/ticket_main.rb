@@ -73,6 +73,12 @@ module ARINr
             @config.options.remove_ticket = true
           end
 
+          opts.on( "-m", "--message" ) do |file|
+            @config.options.message_ticket = true
+            @config.options.data_file = file
+            @config.options.data_file_specified = true if file != nil
+          end
+
           opts.separator ""
           opts.separator "Communications Options:"
 
@@ -134,6 +140,8 @@ module ARINr
           show_tickets()
         elsif @config.options.remove_ticket
           remove_tickets
+        elsif @config.options.message_ticket
+          message_ticket
         else
           @config.logger.run_pager
           show_tickets()
@@ -208,7 +216,7 @@ HELP_SUMMARY
       end
 
       def remove_tickets
-        if @config.options.argv[ 0 ] != nil && @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
+        if @config.options.argv[ 0 ] != nil
           ticket_no = @config.options.argv[ 0 ]
           if @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
             ticket_no = @config.options.argv[ 0 ].handle
@@ -221,6 +229,75 @@ HELP_SUMMARY
           @store_mgr.remove_all_tickets
           get_tree_mgr.remove_all_tickets
         end
+      end
+
+      def message_ticket
+        if @config.options.argv[ 0 ] == nil
+          @config.logger.mesg( "A ticket must be specified." )
+        else
+          ticket_no = @config.options.argv[ 0 ]
+          if @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
+            ticket_no = @config.options.argv[ 0 ].handle
+          end
+          ticket_node = get_tree_mgr.get_ticket_node ticket_no
+          if ticket_node == nil
+            @config.logger.mesg( "Cannot find ticket #{ticket_no}" )
+          else
+            if !@config.options.data_file_specified
+              create_data_file()
+              editor = ARINr::Editor.new( @config )
+              edited = editor.edit( @config.options.data_file )
+              if ! edited
+                @config.logger.mesg( "No modifications made to message file. Aborting." )
+                return
+              end
+            end
+            @config.logger.mesg( "Sending message for #{ticket_no}")
+            message = parse_data_file
+            message_xml = ARINr::Registration::ticket_message_to_element message
+            send_data = ARINr::pretty_print_xml_to_s( message_xml )
+            reg = ARINr::Registration::RegistrationService.new @config, ARINr::TICKET_TX_PREFIX
+            new_message_xml = reg.put_ticket_message ticket_no, send_data
+            new_message = ARINr::Registration::element_to_ticket_message new_message_xml
+            message.created_date=new_message.created_date
+            message.id=new_message.id
+            @config.logger.mesg( "Message assigned ID #{message.id}" )
+            storage_file = @store_mgr.put_ticket_message( ticket_no, message )
+            message_uri = reg.ticket_message_uri ticket_no, message.id, false
+            get_tree_mgr.put_ticket_message( ticket_node, message, storage_file, message_uri )
+          end
+        end
+      end
+
+      def parse_data_file
+        message = ARINr::Registration::TicketMessage.new
+        file = File.new( @config.options.data_file, "r" )
+        file.each_line do |line|
+          if line.start_with?( ARINr::SUBJECT_HEADER ) && message.subject != nil
+            s = line.sub( ARINr::SUBJECT_HEADER ).strip
+            message.subject=s if s != ARINr::SUBJECT_DEFAULT
+          else
+            message.text = [] if message.text == nil
+            message.text << line
+          end
+        end
+        file.close
+        return message
+      end
+
+      def create_data_file
+        template = ""
+        file = File.new(File.join(File.dirname(__FILE__), "ticket_message.erb"), "r")
+        file.each_line do |line|
+          template << line
+        end
+        file.close
+        erb_template = ERB.new(template, 0, "<>")
+        erb_template.result
+        @config.options.data_file = @config.make_file_name(ARINr::TICKET_MESSAGE_FILE)
+        file = File.new(@config.options.data_file, "w")
+        file.puts(erb_template)
+        file.close
       end
 
       def update_tickets

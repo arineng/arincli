@@ -73,6 +73,15 @@ module ARINr
         handle_resp( get( uri), uri )
       end
 
+      def put_ticket_message ticket_no, data
+        uri = ticket_uri ticket_no, false
+        uri.path << "/message"
+        uri = add_api_key( uri )
+        begin_log "PUT", uri, data
+        resp = put( uri, data )
+        handle_resp( resp, uri )
+      end
+
       def get_data uri
         uri = add_api_key( uri )
         begin_log "GET", uri
