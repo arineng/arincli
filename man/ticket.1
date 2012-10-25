@@ -1,0 +1,213 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "TICKET" "1" "October 2012" "" ""
+.
+.SH "NAME"
+\fBticket\fR \- ARINr ticket Command
+.
+.SH "SYNOPSIS"
+ticket \fIoptions\fR \-\-check [TICKET_NUMBER]
+.
+.br
+ticket \fIoptions\fR \-\-update [TICKET_NUMBER]
+.
+.br
+ticket \fIoptions\fR \-\-show [TICKET_NUMBER] [DETACH_FILE]
+.
+.br
+ticket \fIoptions\fR \-\-remove [TICKET_NUMBER]
+.
+.br
+ticket \fIoptions\fR \-\-message[=MESSAGE_FILE] TICKET_NUMBER
+.
+.SH "DESCRIPTION"
+This program uses ARIN\'s Reg\-RWS(7) RESTful API to download tickets, display tickets, and add messages to tickets\.
+.
+.P
+The \fB\-\-check\fR command option checks the internal ticket database against data in Reg\-RWS(7) and displays ticket numbers for any tickets that have been updated\. If a ticket number is given, then only that ticket will be checked\. If no ticket number is given, then all tickets will be checked\.
+.
+.P
+The \fB\-\-update\fR command option downloads tickets to the internal ticket database from Reg\-RWS(7)\. If a ticket number is given, then only that ticket will be downloaded\. If no ticket number is given, then all tickets will be downloaded\. By default, tickets or messages or attachments will not be downloaded if they have already been downloaded or do not need to be updated\. However, the \fB\-\-force\-update\fR option may be used to force downloading when an update would not do so otherwise\.
+.
+.P
+The \fB\-\-show\fR command option displays tickets from the internal ticket database\. If no ticket number is given, a tree summary of all the tickets in the database will be displayed\. If a ticket number is given, a tree summary for that specific ticket will be display along with all messages on that ticket\.
+.
+.P
+The \fB\-\-remove\fR command option removes tickets from the internal ticket database\. If no ticket number is given, all tickets will be removed\. If a ticket number is given, just that ticket will be removed\.
+.
+.P
+The \fB\-\-message\fR command option sends a message to Reg\-RWS(7) to attach to a ticket\. An optional file may be passed to the \fB\-\-message\fR parameter which can specify the file with the message\. If no message file is specified, an editor will be invoked so that the user can create the message\.
+.
+.SH "TREE ADDRESSES"
+All the commands will produce a tree of results in the same way as arininfo(1)\. Numbered items in the tree with a trailing equal sign ("=") are addressable\. Consider the following tree:
+.
+.P
+1= 20121018\-X1
+.
+.br
+|\-\-\- 1= How does Whois Work
+.
+.br
+|\-\-\- 2= Ticket Status Update
+.
+.br
+|\-\-\- 3= Ticket Status Update
+.
+.br
+|\-\-\- 4= IP Addresses/AS Numbers \- test \- ANSWERED
+.
+.br
+|\-\-\- 5= Ticket Status Update
+.
+.br
+|\-\-\- 6= Ticket Status Update
+.
+.br
+|\-\-\- 7= (no subject)
+.
+.br
+| |\-\-\- 1= sac\-055\-en\.pdf
+.
+.br
+|\-\-\- 8= IP Addresses/AS Numbers \- test \- ANSWERED
+.
+.br
+| |\-\-\- 1= my_cat\.jpg
+.
+.br
+| |\-\-\- 2= kitty_litter_disposal\.pdf
+.
+.br
+|\-\-\- 9= Ticket Status Update
+.
+.br
+|\-\- 10= Ticket Status Update
+.
+.br
+`\-\- 11= (no subject)
+.
+.P
+In the above example, 1= is a tree address for ticket 20121018\-X1\. Nodes in the tree can be separated by an ("=") sign or a dot ("\.")\. Therefore 1\.1= addresses the first message of ticket 20121018\-X1, 1\.2= address the second message of that ticket, and so on\.
+.
+.P
+When using \fB\-s\fR or \fB\-\-show\fR to view a ticket, narrowing down a single message on the ticket will display only that message\. In the example above \fBticket \-s 1\.1=\fR would display only the message with the subject "How does Whois Work"\.
+.
+.P
+Attachments can be copied out of the ticket by narrowing the tree address to an attachment\. For example, \fBticket \-s 1\.7\.1=\fR would create a copy of sac\-055\-en\.pdf in the current directory\. The destination name and location can be changed by adding a trailing file name\. For example, \fBticket \-s 1\.7\.1= /tmp/some\.pdf\fR sound copy the attachment sac\-055\-en\.pdf to a file named some\.pdf in the /tmp directory\.
+.
+.SH "OPTIONS"
+.
+.IP "\(bu" 4
+\fB\-r\fR, \fB\-\-related\fR TYPE
+.
+.br
+Query for the specified type related to the query value: \fBnets\fR for query for the related networks, \fBdels\fR for query for the reverse DNS delegations, \fBorgs\fR for query for the related organizations, \fBpocs\fR for query for the related points of contact, \fBasns\fR for query for the related autonomous system numbers
+.
+.IP "\(bu" 4
+\fB\-t\fR, \fB\-\-type\fR TYPE
+.
+.br
+Specify type of the query value: \fBnethandle\fR for network handle, \fBpochandle\fR for point of contact handle, \fBorghandle\fR for organization handle, \fBip4addr\fR for IPv4 address, \fBip6addr\fR for IPv6 address, \fBip4cidr\fR for IPv4 cidr block, \fBip6cidr\fR for IPv6 cidr block, \fBasnumber\fR for autonomous system number, \fBdelegation\fR for reverse DNS delegation, \fBpocname\fR for name of a point of contact, \fBorgname\fR for name of an organization, \fBresult\fR for result from a previous query
+.
+.IP "\(bu" 4
+\fB\-\-pft\fR YES|NO|TRUE|FALSE
+.
+.br
+Use a PFT style query\.
+.
+.IP "\(bu" 4
+\fB\-\-cidr\fR LESS|EXACT|MORE
+.
+.br
+Type of matching to use for CIDR queries\.
+.
+.IP "\(bu" 4
+\fB\-\-substring\fR YES|NO|TRUE|FALSE
+.
+.br
+Use substring matching for name searches\.
+.
+.IP "\(bu" 4
+\fB\-\-details\fR YES|NO|TRUE|FALSE
+.
+.br
+Query for extra details\.
+.
+.IP "\(bu" 4
+\fB\-U\fR, \fB\-\-url\fR URL
+.
+.br
+The base URL of the Whois\-RWS(7) system\.
+.
+.IP "\(bu" 4
+\fB\-\-cache\-expiry\fR SECONDS
+.
+.br
+Age in seconds of items in the cache to be considered expired\.
+.
+.IP "\(bu" 4
+\fB\-\-cache\fR YES|NO|TRUE|FALSE
+.
+.br
+Controls if the cache is used or not\.
+.
+.IP "\(bu" 4
+\fB\-\-messages\fR MESSAGE_LEVEL
+.
+.br
+Specify one of the message levels: \fBnone\fR for no messages are to be output, \fBsome\fR for some messages to be output, or \fBall\fR for all messages to be output\.
+.
+.IP "\(bu" 4
+\fB\-\-messages\-out\fR FILE
+.
+.br
+Specifies that messages are to be written to the given file\.
+.
+.IP "\(bu" 4
+\fB\-\-data\fR DATA_AMOUNT
+.
+.br
+Specifies the amount of data to be output\. Use of of: \fBterse\fR, \fBnormal\fR, or \fBextra\fR\.
+.
+.IP "\(bu" 4
+\fB\-\-data\-out\fR FILE
+.
+.br
+File where data is to be written if specified\.
+.
+.IP "\(bu" 4
+\fB\-V\fR
+.
+.br
+Equivalent to \fB\-\-messages all\fR and \fB\-\-data extra\fR
+.
+.IP "\(bu" 4
+\fB\-h\fR
+.
+.br
+Displays help\.
+.
+.IP "" 0
+.
+.SH "EXAMPLES"
+.
+.IP "\(bu" 4
+\fBarininfo kosters\fR queries for a POC with the last name of "Kosters"\.
+.
+.IP "\(bu" 4
+\fBarininfo 2=\fR queries for the second value in a result from the previous query\.
+.
+.IP "\(bu" 4
+\fBarininfo \-t orghandle arin\fR queries for organizations with the handle "arin"\.
+.
+.IP "\(bu" 4
+\fBarininfo arin\-o\fR is the same as above\.
+.
+.IP "\(bu" 4
+\fBarininfo 192\.136\.136\.51\fR queries for the most specific network enclosing 192\.136\.136\.51\.
+.
+.IP "" 0
+.
+.SH "SEE ALSO"
+arinr(7), arinutil(1), Whois\-RWS(7)

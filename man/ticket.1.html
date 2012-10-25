@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv='content-type' value='text/html;charset=utf8'>
   <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
-  <title>arininfo(1) - ARINr Whois Command</title>
+  <title>ticket(1) - ARINr ticket Command</title>
   <style type='text/css' media='all'>
   /* style: man */
   body#manpage {margin:0}
@@ -73,72 +73,93 @@
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
     <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#TREE-ADDRESSES">TREE ADDRESSES</a>
     <a href="#OPTIONS">OPTIONS</a>
     <a href="#EXAMPLES">EXAMPLES</a>
     <a href="#SEE-ALSO">SEE ALSO</a>
   </div>
 
   <ol class='man-decor man-head man head'>
-    <li class='tl'>arininfo(1)</li>
+    <li class='tl'>ticket(1)</li>
     <li class='tc'></li>
-    <li class='tr'>arininfo(1)</li>
+    <li class='tr'>ticket(1)</li>
   </ol>
 
   <h2 id="NAME">NAME</h2>
 <p class="man-name">
-  <code>arininfo</code> - <span class="man-whatis">ARINr Whois Command</span>
+  <code>ticket</code> - <span class="man-whatis">ARINr ticket Command</span>
 </p>
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p>arininfo <a title="OPTIONS" data-bare-link="true" href="#OPTIONS">options</a> QUERY_VALUE</p>
+<p>ticket <a title="OPTIONS" data-bare-link="true" href="#OPTIONS">options</a> --check [TICKET_NUMBER]<br />
+ticket <a title="OPTIONS" data-bare-link="true" href="#OPTIONS">options</a> --update [TICKET_NUMBER]<br />
+ticket <a title="OPTIONS" data-bare-link="true" href="#OPTIONS">options</a> --show [TICKET_NUMBER] [DETACH_FILE]<br />
+ticket <a title="OPTIONS" data-bare-link="true" href="#OPTIONS">options</a> --remove [TICKET_NUMBER]<br />
+ticket <a title="OPTIONS" data-bare-link="true" href="#OPTIONS">options</a> --message[=MESSAGE_FILE] TICKET_NUMBER</p>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
-<p>This program uses ARIN's <a href="https://www.arin.net/resources/whoisrws/index.html" class="man-ref">Whois-RWS<span class="s">(7)</span></a> RESTful API to query ARIN's Whois database.
-The general usage is "arininfo QUERY_VALUE" where the type of QUERY_VALUE influences the
-type of query performed. This program will attempt to guess the type of QUERY_VALUE,
-but the QUERY_VALUE type maybe explicitly set using the <code>-t</code> option. Queries for data
-related to the QUERY_VALUE may be specified using the <code>-r</code> option (i.e. the reverse DNS
-delegations related to a network).</p>
+<p>This program uses ARIN's <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> RESTful API to download tickets, display tickets, and add
+messages to tickets.</p>
 
-<p>In certain cases, Organization handles (orghandle), also knows as organization ids,
-can be properly determined. This occurs when the Organization handle ends with <em>-z</em>
-or with <em>-xxx</em> where xxx is a number. As a shortcut for Organization handles that do
-not match these cases, a <em>-o</em> can be appended to signify that it is an Organization
-handle.</p>
+<p>The <code>--check</code> command option checks the internal ticket database against data in <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> and
+displays ticket numbers for any tickets that have been updated. If a ticket number is given, then
+only that ticket will be checked. If no ticket number is given, then all tickets will be checked.</p>
 
-<p>The following are other criteria for determining the type of the QUERY_VALUE when
-the <code>-t</code> option is not given:</p>
+<p>The <code>--update</code> command option downloads tickets to the internal ticket database from <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a>.
+If a ticket number is given, then only that ticket will be downloaded. If no ticket number is given,
+then all tickets will be downloaded. By default, tickets or messages or attachments will not be
+downloaded if they have already been downloaded or do not need to be updated. However, the
+<code>--force-update</code> option may be used to force downloading when an update would not do so otherwise.</p>
 
-<ul>
-<li><p>If the QUERY_VALUE is simply a number, it is assumed to be an Autonomous
-System Number.</p></li>
-<li><p>If the QUERY_VALUE is a number prepended with "AS", it is assumed to be an
-Autonomous System Number.</p></li>
-<li><p>If the QUERY_VALUE begins with "NET-" or "NET6-" it is assumed to be a
-network handle.</p></li>
-<li><p>If the QUERY_VALUE appears to be an IPv4 or IPv6 address, then it is assumed
-to be an IP address.</p></li>
-<li><p>If the QUERY_VALUE ends in "in-addr.arpa" or "ip6.arpa", it is assumed to
-be a reverse DNS delegation point.</p></li>
-<li><p>If the QUERY_VALUE appears to be a proper name, it is assumed to be a name
-of a Point of Contact.</p></li>
-</ul>
+<p>The <code>--show</code> command option displays tickets from the internal ticket database. If no ticket number
+is given, a tree summary of all the tickets in the database will be displayed. If a ticket number
+is given, a tree summary for that specific ticket will be display along with all messages on that
+ticket.</p>
 
+<p>The <code>--remove</code> command option removes tickets from the internal ticket database. If no ticket
+number is given, all tickets will be removed. If a ticket number is given, just that ticket will be
+removed.</p>
 
-<p>The QUERY_VALUE can also be a result value from a previous query if it ends with
-an equal sign ("="). Consider the following tree output:</p>
+<p>The <code>--message</code> command option sends a message to <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> to attach to a ticket. An optional
+file may be passed to the <code>--message</code> parameter which can specify the file with the message. If
+no message file is specified, an editor will be invoked so that the user can create the message.</p>
 
-<p>1= NET-192-136-136-0-1 ( 192.136.136.0 - 192.136.136.255 )   <br />
-   `--- 1. Reverse DNS Delegations</p>
+<h2 id="TREE-ADDRESSES">TREE ADDRESSES</h2>
 
-<pre><code>    `--- 1= 136.136.192.in-addr.arpa.
-</code></pre>
+<p>All the commands will produce a tree of results in the same way as <a href="arininfo.1.html" class="man-ref">arininfo<span class="s">(1)</span></a>. Numbered items in
+the tree with a trailing equal sign ("=") are addressable. Consider the following tree:</p>
 
-<p>A QUERY_VALUE of "1=1=1=" would be a shortcut for requerying for
-136.136.192.in-addr.arpa. The character between the numbers can also be a
-period character ("."). So "1.1.1=" would be equivalent.</p>
+<p>1= 20121018-X1<br />
+   |--- 1= How does Whois Work<br />
+   |--- 2= Ticket Status Update<br />
+   |--- 3= Ticket Status Update<br />
+   |--- 4= IP Addresses/AS Numbers - test - ANSWERED <br />
+   |--- 5= Ticket Status Update  <br />
+   |--- 6= Ticket Status Update  <br />
+   |--- 7= (no subject)  <br />
+   |    |--- 1= sac-055-en.pdf  <br />
+   |--- 8= IP Addresses/AS Numbers - test - ANSWERED <br />
+   |    |--- 1= my_cat.jpg  <br />
+   |    |--- 2= kitty_litter_disposal.pdf  <br />
+   |--- 9= Ticket Status Update <br />
+   |-- 10= Ticket Status Update  <br />
+   `-- 11= (no subject)</p>
+
+<p>In the above example, 1= is a tree address for ticket 20121018-X1. Nodes in the tree can be
+separated by an ("=") sign or a dot ("."). Therefore 1.1= addresses the first message of ticket
+20121018-X1, 1.2= address the second message of that ticket, and so on.</p>
+
+<p>When using <code>-s</code> or <code>--show</code> to view a ticket, narrowing down a single message on the ticket
+will display only that message. In the example above <code>ticket -s 1.1=</code> would display only the
+message with the subject "How does Whois Work".</p>
+
+<p>Attachments can be copied out of the ticket by narrowing the tree address to an attachment.
+For example, <code>ticket -s 1.7.1=</code> would create a copy of sac-055-en.pdf in the current directory.
+The destination name and location can be changed by adding a trailing file name. For example,
+<code>ticket -s 1.7.1= /tmp/some.pdf</code> sound copy the attachment sac-055-en.pdf to a file named
+some.pdf in the /tmp directory.</p>
 
 <h2 id="OPTIONS">OPTIONS</h2>
 
@@ -208,7 +229,7 @@ Displays help.</p></li>
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
     <li class='tc'>October 2012</li>
-    <li class='tr'>arininfo(1)</li>
+    <li class='tr'>ticket(1)</li>
   </ol>
 
   </div>

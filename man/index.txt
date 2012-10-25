@@ -3,6 +3,7 @@ arinr(7) arinr.7.ronn
 arinutil(1) arinutil.1.ronn
 arininfo(1) arininfo.1.ronn
 poc(1) poc.1.ronn
+ticket(1) ticket.1.ronn
 
 # external stuff
 Whois-RWS(7) https://www.arin.net/resources/whoisrws/index.html

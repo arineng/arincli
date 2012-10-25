@@ -1,0 +1,120 @@
+ticket(1) -- ARINr ticket Command
+=================================
+
+## SYNOPSIS
+
+ticket [options] --check [TICKET_NUMBER]  
+ticket [options] --update [TICKET_NUMBER]  
+ticket [options] --show [TICKET_NUMBER] [DETACH_FILE]  
+ticket [options] --remove [TICKET_NUMBER]  
+ticket [options] --message[=MESSAGE_FILE] TICKET_NUMBER  
+
+## DESCRIPTION
+
+This program uses ARIN's Reg-RWS(7) RESTful API to download tickets, display tickets, and add
+messages to tickets.
+
+The `--check` command option checks the internal ticket database against data in Reg-RWS(7) and
+displays ticket numbers for any tickets that have been updated. If a ticket number is given, then
+only that ticket will be checked. If no ticket number is given, then all tickets will be checked.
+
+The `--update` command option downloads tickets to the internal ticket database from Reg-RWS(7).
+If a ticket number is given, then only that ticket will be downloaded. If no ticket number is given,
+then all tickets will be downloaded. By default, tickets or messages or attachments will not be
+downloaded if they have already been downloaded or do not need to be updated. However, the
+`--force-update` option may be used to force downloading when an update would not do so otherwise.
+
+The `--show` command option displays tickets from the internal ticket database. If no ticket number
+is given, a tree summary of all the tickets in the database will be displayed. If a ticket number
+is given, a tree summary for that specific ticket will be display along with all messages on that
+ticket.
+
+The `--remove` command option removes tickets from the internal ticket database. If no ticket
+number is given, all tickets will be removed. If a ticket number is given, just that ticket will be
+removed.
+
+The `--message` command option sends a message to Reg-RWS(7) to attach to a ticket. An optional
+file may be passed to the `--message` parameter which can specify the file with the message. If
+no message file is specified, an editor will be invoked so that the user can create the message.
+
+## TREE ADDRESSES
+
+All the commands will produce a tree of results in the same way as arininfo(1). Numbered items in
+the tree with a trailing equal sign ("=") are addressable. Consider the following tree:
+
+1= 20121018-X1  
+   |--- 1= How does Whois Work  
+   |--- 2= Ticket Status Update  
+   |--- 3= Ticket Status Update  
+   |--- 4= IP Addresses/AS Numbers - test - ANSWERED   
+   |--- 5= Ticket Status Update    
+   |--- 6= Ticket Status Update    
+   |--- 7= (no subject)    
+   |    |--- 1= sac-055-en.pdf    
+   |--- 8= IP Addresses/AS Numbers - test - ANSWERED   
+   |    |--- 1= my_cat.jpg    
+   |    |--- 2= kitty_litter_disposal.pdf    
+   |--- 9= Ticket Status Update   
+   |-- 10= Ticket Status Update    
+   `-- 11= (no subject)    
+
+In the above example, 1= is a tree address for ticket 20121018-X1. Nodes in the tree can be
+separated by an ("=") sign or a dot ("."). Therefore 1.1= addresses the first message of ticket
+20121018-X1, 1.2= address the second message of that ticket, and so on.
+
+When using `-s` or `--show` to view a ticket, narrowing down a single message on the ticket
+will display only that message. In the example above `ticket -s 1.1=` would display only the
+message with the subject "How does Whois Work".
+
+Attachments can be copied out of the ticket by narrowing the tree address to an attachment.
+For example, `ticket -s 1.7.1=` would create a copy of sac-055-en.pdf in the current directory.
+The destination name and location can be changed by adding a trailing file name. For example,
+`ticket -s 1.7.1= /tmp/some.pdf` sound copy the attachment sac-055-en.pdf to a file named
+some.pdf in the /tmp directory.
+
+## OPTIONS
+
+  * `-A`, `--apikey` API_KEY  
+    The API_KEY to use. API Keys are associated with ARIN Online accounts and
+    are the methods used for authentication in Reg-RWS(7).
+
+  * `-U`, `--url` URL  
+    The base URL of the Reg-RWS(7) system.
+
+  * `--messages` MESSAGE_LEVEL  
+    Specify one of the message levels: `none` for no messages are to be output,
+    `some` for some messages to be output, or `all` for all messages to be output.
+
+  * `--messages-out` FILE  
+    Specifies that messages are to be written to the given file.
+
+  * `--data` DATA_AMOUNT  
+    Specifies the amount of data to be output. Use of of: `terse`, `normal`,
+    or `extra`.
+ 
+  * `--data-out` FILE  
+    File where data is to be written if specified.
+
+  * `-V`  
+    Equivalent to `--messages all` and `--data extra`
+
+  * `-h`  
+    Displays help.
+
+## EXAMPLES
+
+  * `arininfo kosters` queries for a POC with the last name of "Kosters".
+
+  * `arininfo 2=` queries for the second value in a result from the previous query.
+
+  * `arininfo -t orghandle arin` queries for organizations with the handle "arin".
+
+  * `arininfo arin-o` is the same as above.
+
+  * `arininfo 192.136.136.51` queries for the most specific network enclosing
+    192.136.136.51.
+    
+
+## SEE ALSO
+
+arinr(7), arinutil(1), arininfo(1), Reg-RWS(7)
