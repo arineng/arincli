@@ -18,7 +18,7 @@
 
 module ARINr
 
-  VERSION = "ARINr v.0.1.0"
+  VERSION = "ARINr v.0.5.0"
   COPYRIGHT = "Copyright (c) 2011,2012 American Registry for Internet Numbers (ARIN)"
 
   # regular expressions
