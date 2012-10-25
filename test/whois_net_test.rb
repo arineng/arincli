@@ -25,7 +25,6 @@ class WhoisNetTest < Test::Unit::TestCase
   def setup
     net_xml = <<NET_XML
 <net xmlns="http://www.arin.net/whoisrws/core/v1" xmlns:ns2="http://www.arin.net/whoisrws/rdns/v1" termsOfUse="https://www.arin.net/whois_tou.html">
-  <registrationDate>2002-04-17T00:00:00-04:00</registrationDate>
   <ref>http://whois.arin.net/rest/net/NET-192-136-136-0-1</ref>
   <endAddress>192.136.136.255</endAddress>
   <handle>NET-192-136-136-0-1</handle>
@@ -56,7 +55,6 @@ class WhoisNetTest < Test::Unit::TestCase
   </comment>
   <parentNetRef name="NET192" handle="NET-192-0-0-0-0">http://whois.arin.net/rest/net/NET-192-0-0-0-0</parentNetRef>
   <startAddress>192.136.136.0</startAddress>
-  <updateDate>2011-03-19T00:00:00-04:00</updateDate>
   <version>4</version>
 </net>
 NET_XML
@@ -100,8 +98,6 @@ NET_XML
       Organization Handle:  ARIN
         Organization Name:  American Registry for Internet Numbers
    Organization Reference:  http://whois.arin.net/rest/org/ARIN
-        Registration Date:  Wed, 17 Apr 2002 00:00:00 -0400
-         Last Update Date:  Sat, 19 Mar 2011 00:00:00 -0400
         Comment (line  0):  This IP address range is not registered in the ARIN database.
         Comment (line  1):  For details, refer to the APNIC Whois Database via
         Comment (line  2):  WHOIS.APNIC.NET or http://wq.apnic.net/apnic-bin/whois.pl
