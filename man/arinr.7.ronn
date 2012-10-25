@@ -10,9 +10,9 @@ pre-dates the IETF WEIRDS/RDAP service and is not yet compatible with that
 specification). Reg-RWS(7) is ARIN's
 registration RESTful web service available to customers of ARIN.
 
-At the time of this writing, the ARINr scripts should be considered **alpha**
+At the time of this writing, the ARINr scripts should be considered **beta**
 quality. A lot of functionality is still missing from the scripts, and ARIN 
-has not conducted any qualified degree of quality assurance against them.
+has not conducted any degree of quality assurance against them.
 
 ## COMMANDS
 
@@ -56,4 +56,11 @@ the `run_all_tests` command.
 To build the man pages and these documents, you must use `ronn`. You can
 install it as a Ruby gem with _gem install ronn_. Once it is installed,
 build the man pages with the following command: _ronn man/*.ronn_.
+
+## HELP
+
+Questions and comments regarding this software may be directed to ARIN's
+Technical Discussion mailing list (arin-tech-discuss@arin.net). Archives
+and subscription information are available 
+[here](http://lists.arin.net/pipermail/arin-tech-discuss/).
 

@@ -10,7 +10,7 @@
 ARINr is a set of Ruby scripts that utilize both the Whois\-RWS(7) service and the Reg\-RWS(7) service\. Whois\-RWS(7) is ARIN\'s Whois/NICNAME RESTful web service for exposing IP network and ASN registration data to the public (Note this service pre\-dates the IETF WEIRDS/RDAP service and is not yet compatible with that specification)\. Reg\-RWS(7) is ARIN\'s registration RESTful web service available to customers of ARIN\.
 .
 .P
-At the time of this writing, the ARINr scripts should be considered \fBalpha\fR quality\. A lot of functionality is still missing from the scripts, and ARIN has not conducted any qualified degree of quality assurance against them\.
+At the time of this writing, the ARINr scripts should be considered \fBbeta\fR quality\. A lot of functionality is still missing from the scripts, and ARIN has not conducted any degree of quality assurance against them\.
 .
 .SH "COMMANDS"
 .
@@ -45,3 +45,6 @@ To verify compatibility and that everything is working, run the tests with the \
 .
 .P
 To build the man pages and these documents, you must use \fBronn\fR\. You can install it as a Ruby gem with \fIgem install ronn\fR\. Once it is installed, build the man pages with the following command: \fIronn man/*\.ronn\fR\.
+.
+.SH "HELP"
+Questions and comments regarding this software may be directed to ARIN\'s Technical Discussion mailing list (arin\-tech\-discuss@arin\.net)\. Archives and subscription information are available here \fIhttp://lists\.arin\.net/pipermail/arin\-tech\-discuss/\fR\.

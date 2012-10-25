@@ -92,22 +92,22 @@
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p>ticket <a data-bare-link="true" title="OPTIONS" href="#OPTIONS">options</a> --check [TICKET_NUMBER]<br />
-ticket <a data-bare-link="true" title="OPTIONS" href="#OPTIONS">options</a> --update [TICKET_NUMBER]<br />
-ticket <a data-bare-link="true" title="OPTIONS" href="#OPTIONS">options</a> --show [TICKET_NUMBER] [DETACH_FILE]<br />
-ticket <a data-bare-link="true" title="OPTIONS" href="#OPTIONS">options</a> --remove [TICKET_NUMBER]<br />
-ticket <a data-bare-link="true" title="OPTIONS" href="#OPTIONS">options</a> --message[=MESSAGE_FILE] TICKET_NUMBER</p>
+<p>ticket <a href="#OPTIONS" data-bare-link="true" title="OPTIONS">options</a> --check [TICKET_NUMBER]<br />
+ticket <a href="#OPTIONS" data-bare-link="true" title="OPTIONS">options</a> --update [TICKET_NUMBER]<br />
+ticket <a href="#OPTIONS" data-bare-link="true" title="OPTIONS">options</a> --show [TICKET_NUMBER] [DETACH_FILE]<br />
+ticket <a href="#OPTIONS" data-bare-link="true" title="OPTIONS">options</a> --remove [TICKET_NUMBER]<br />
+ticket <a href="#OPTIONS" data-bare-link="true" title="OPTIONS">options</a> --message[=MESSAGE_FILE] TICKET_NUMBER</p>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
-<p>This program uses ARIN's <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> RESTful API to download tickets, display tickets, and add
+<p>This program uses ARIN's <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> RESTful API to download tickets, display tickets, and add
 messages to tickets.</p>
 
-<p>The <code>--check</code> command option checks the internal ticket database against data in <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> and
+<p>The <code>--check</code> command option checks the internal ticket database against data in <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> and
 displays ticket numbers for any tickets that have been updated. If a ticket number is given, then
 only that ticket will be checked. If no ticket number is given, then all tickets will be checked.</p>
 
-<p>The <code>--update</code> command option downloads tickets to the internal ticket database from <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a>.
+<p>The <code>--update</code> command option downloads tickets to the internal ticket database from <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a>.
 If a ticket number is given, then only that ticket will be downloaded. If no ticket number is given,
 then all tickets will be downloaded. By default, tickets or messages or attachments will not be
 downloaded if they have already been downloaded or do not need to be updated. However, the
@@ -122,13 +122,13 @@ ticket.</p>
 number is given, all tickets will be removed. If a ticket number is given, just that ticket will be
 removed.</p>
 
-<p>The <code>--message</code> command option sends a message to <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> to attach to a ticket. The <code>-f</code> or
+<p>The <code>--message</code> command option sends a message to <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> to attach to a ticket. The <code>-f</code> or
 <code>--file</code> parameters can be used to specify a file to be attached as the message. If
 no message file is specified, an editor will be invoked so that the user can create the message.</p>
 
 <h2 id="TREE-ADDRESSES">TREE ADDRESSES</h2>
 
-<p>All the commands will produce a tree of results in the same way as <a class="man-ref" href="arininfo.1.html">arininfo<span class="s">(1)</span></a>. Numbered items in
+<p>All the commands will produce a tree of results in the same way as <a href="arininfo.1.html" class="man-ref">arininfo<span class="s">(1)</span></a>. Numbered items in
 the tree with a trailing equal sign ("=") are addressable. Consider the following tree:</p>
 
 <p>1= 20121018-X1<br />
@@ -182,9 +182,9 @@ Uses a file instead of invoking an editor for the message to attach to a
 ticket.</p></li>
 <li><p><code>-A</code>, <code>--apikey</code> API_KEY<br />
 The API_KEY to use. API Keys are associated with ARIN Online accounts and
-are the methods used for authentication in <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a>.</p></li>
+are the methods used for authentication in <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a>.</p></li>
 <li><p><code>-U</code>, <code>--url</code> URL<br />
-The base URL of the <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> system.</p></li>
+The base URL of the <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> system.</p></li>
 <li><p><code>--messages</code> MESSAGE_LEVEL<br />
 Specify one of the message levels: <code>none</code> for no messages are to be output,
 <code>some</code> for some messages to be output, or <code>all</code> for all messages to be output.</p></li>
@@ -214,7 +214,7 @@ Displays help.</p></li>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
-<p><a class="man-ref" href="arinr.7.html">arinr<span class="s">(7)</span></a>, <a class="man-ref" href="arinutil.1.html">arinutil<span class="s">(1)</span></a>, <a class="man-ref" href="arininfo.1.html">arininfo<span class="s">(1)</span></a>, <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a></p>
+<p><a href="arinr.7.html" class="man-ref">arinr<span class="s">(7)</span></a>, <a href="arinutil.1.html" class="man-ref">arinutil<span class="s">(1)</span></a>, <a href="arininfo.1.html" class="man-ref">arininfo<span class="s">(1)</span></a>, <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a></p>
 
 
   <ol class='man-decor man-foot man foot'>
