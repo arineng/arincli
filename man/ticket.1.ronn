@@ -33,8 +33,8 @@ The `--remove` command option removes tickets from the internal ticket database.
 number is given, all tickets will be removed. If a ticket number is given, just that ticket will be
 removed.
 
-The `--message` command option sends a message to Reg-RWS(7) to attach to a ticket. An optional
-file may be passed to the `--message` parameter which can specify the file with the message. If
+The `--message` command option sends a message to Reg-RWS(7) to attach to a ticket. The `-f` or
+`--file` parameters can be used to specify a file to be attached as the message. If
 no message file is specified, an editor will be invoked so that the user can create the message.
 
 ## TREE ADDRESSES
@@ -74,6 +74,28 @@ some.pdf in the /tmp directory.
 
 ## OPTIONS
 
+  * `-c`, `--check` [TICKET_NUMBER]  
+    Checks for updated tickets. If no ticket number is given, all tickets are
+    checked.
+
+  * `-u`, `--update` [TICKET_NUMBER]  
+    Updates tickets. If no ticket number is given, all tickets are updated.
+
+  * `--force-update`  
+    Forces an update not to skip the downloading of any attachments or messages
+    or tickets.
+
+  * `-s`, `--show` [TICKET_NUMBER]  
+    Shows ticket information. If no ticket number is given, a summary tree of all
+    tickets will be shown.
+
+  * `-m`, `--message` TICKET_NUMBER
+    Sends a message to be attached to a ticket.
+
+  * `-f`, `--file`  
+    Uses a file instead of invoking an editor for the message to attach to a
+    ticket.
+
   * `-A`, `--apikey` API_KEY  
     The API_KEY to use. API Keys are associated with ARIN Online accounts and
     are the methods used for authentication in Reg-RWS(7).
@@ -103,17 +125,13 @@ some.pdf in the /tmp directory.
 
 ## EXAMPLES
 
-  * `arininfo kosters` queries for a POC with the last name of "Kosters".
+  * `ticket 20121018-X1` shows the ticket 20121018-X1.
 
-  * `arininfo 2=` queries for the second value in a result from the previous query.
+  * `ticket -s 20121018-X1` does the same as above.
 
-  * `arininfo -t orghandle arin` queries for organizations with the handle "arin".
+  * `ticket -s 1=` shows the ticket in the tree addressed by 1=.
 
-  * `arininfo arin-o` is the same as above.
-
-  * `arininfo 192.136.136.51` queries for the most specific network enclosing
-    192.136.136.51.
-    
+  * `ticket -u` updates all the tickets in the internal ticket database.
 
 ## SEE ALSO
 

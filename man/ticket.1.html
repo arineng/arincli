@@ -92,22 +92,22 @@
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p>ticket <a title="OPTIONS" data-bare-link="true" href="#OPTIONS">options</a> --check [TICKET_NUMBER]<br />
-ticket <a title="OPTIONS" data-bare-link="true" href="#OPTIONS">options</a> --update [TICKET_NUMBER]<br />
-ticket <a title="OPTIONS" data-bare-link="true" href="#OPTIONS">options</a> --show [TICKET_NUMBER] [DETACH_FILE]<br />
-ticket <a title="OPTIONS" data-bare-link="true" href="#OPTIONS">options</a> --remove [TICKET_NUMBER]<br />
-ticket <a title="OPTIONS" data-bare-link="true" href="#OPTIONS">options</a> --message[=MESSAGE_FILE] TICKET_NUMBER</p>
+<p>ticket <a data-bare-link="true" title="OPTIONS" href="#OPTIONS">options</a> --check [TICKET_NUMBER]<br />
+ticket <a data-bare-link="true" title="OPTIONS" href="#OPTIONS">options</a> --update [TICKET_NUMBER]<br />
+ticket <a data-bare-link="true" title="OPTIONS" href="#OPTIONS">options</a> --show [TICKET_NUMBER] [DETACH_FILE]<br />
+ticket <a data-bare-link="true" title="OPTIONS" href="#OPTIONS">options</a> --remove [TICKET_NUMBER]<br />
+ticket <a data-bare-link="true" title="OPTIONS" href="#OPTIONS">options</a> --message[=MESSAGE_FILE] TICKET_NUMBER</p>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
-<p>This program uses ARIN's <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> RESTful API to download tickets, display tickets, and add
+<p>This program uses ARIN's <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> RESTful API to download tickets, display tickets, and add
 messages to tickets.</p>
 
-<p>The <code>--check</code> command option checks the internal ticket database against data in <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> and
+<p>The <code>--check</code> command option checks the internal ticket database against data in <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> and
 displays ticket numbers for any tickets that have been updated. If a ticket number is given, then
 only that ticket will be checked. If no ticket number is given, then all tickets will be checked.</p>
 
-<p>The <code>--update</code> command option downloads tickets to the internal ticket database from <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a>.
+<p>The <code>--update</code> command option downloads tickets to the internal ticket database from <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a>.
 If a ticket number is given, then only that ticket will be downloaded. If no ticket number is given,
 then all tickets will be downloaded. By default, tickets or messages or attachments will not be
 downloaded if they have already been downloaded or do not need to be updated. However, the
@@ -122,13 +122,13 @@ ticket.</p>
 number is given, all tickets will be removed. If a ticket number is given, just that ticket will be
 removed.</p>
 
-<p>The <code>--message</code> command option sends a message to <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> to attach to a ticket. An optional
-file may be passed to the <code>--message</code> parameter which can specify the file with the message. If
+<p>The <code>--message</code> command option sends a message to <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> to attach to a ticket. The <code>-f</code> or
+<code>--file</code> parameters can be used to specify a file to be attached as the message. If
 no message file is specified, an editor will be invoked so that the user can create the message.</p>
 
 <h2 id="TREE-ADDRESSES">TREE ADDRESSES</h2>
 
-<p>All the commands will produce a tree of results in the same way as <a href="arininfo.1.html" class="man-ref">arininfo<span class="s">(1)</span></a>. Numbered items in
+<p>All the commands will produce a tree of results in the same way as <a class="man-ref" href="arininfo.1.html">arininfo<span class="s">(1)</span></a>. Numbered items in
 the tree with a trailing equal sign ("=") are addressable. Consider the following tree:</p>
 
 <p>1= 20121018-X1<br />
@@ -164,34 +164,27 @@ some.pdf in the /tmp directory.</p>
 <h2 id="OPTIONS">OPTIONS</h2>
 
 <ul>
-<li><p><code>-r</code>, <code>--related</code> TYPE <br />
-Query for the specified type related to the query value:
-<code>nets</code> for query for the related networks, <code>dels</code> for query for the
-reverse DNS delegations, <code>orgs</code> for query for the related organizations,
-<code>pocs</code> for query for the related points of contact, <code>asns</code> for query for
-the related autonomous system numbers</p></li>
-<li><p><code>-t</code>, <code>--type</code> TYPE <br />
-Specify type of the query value:
-<code>nethandle</code> for network handle, <code>pochandle</code> for point of contact handle,
-<code>orghandle</code> for organization handle, <code>ip4addr</code> for IPv4 address,
-<code>ip6addr</code> for IPv6 address, <code>ip4cidr</code> for IPv4 cidr block, <code>ip6cidr</code> for
-IPv6 cidr block, <code>asnumber</code> for autonomous system number, <code>delegation</code> for
-reverse DNS delegation, <code>pocname</code> for name of a point of contact,
-<code>orgname</code> for name of an organization, <code>result</code> for result from a previous query</p></li>
-<li><p><code>--pft</code> YES|NO|TRUE|FALSE<br />
-Use a PFT style query.</p></li>
-<li><p><code>--cidr</code> LESS|EXACT|MORE<br />
-Type of matching to use for CIDR queries.</p></li>
-<li><p><code>--substring</code> YES|NO|TRUE|FALSE<br />
-Use substring matching for name searches.</p></li>
-<li><p><code>--details</code> YES|NO|TRUE|FALSE<br />
-Query for extra details.</p></li>
+<li><p><code>-c</code>, <code>--check</code> [TICKET_NUMBER]<br />
+Checks for updated tickets. If no ticket number is given, all tickets are
+checked.</p></li>
+<li><p><code>-u</code>, <code>--update</code> [TICKET_NUMBER]<br />
+Updates tickets. If no ticket number is given, all tickets are updated.</p></li>
+<li><p><code>--force-update</code><br />
+Forces an update not to skip the downloading of any attachments or messages
+or tickets.</p></li>
+<li><p><code>-s</code>, <code>--show</code> [TICKET_NUMBER]<br />
+Shows ticket information. If no ticket number is given, a summary tree of all
+tickets will be shown.</p></li>
+<li><p><code>-m</code>, <code>--message</code> TICKET_NUMBER
+Sends a message to be attached to a ticket.</p></li>
+<li><p><code>-f</code>, <code>--file</code><br />
+Uses a file instead of invoking an editor for the message to attach to a
+ticket.</p></li>
+<li><p><code>-A</code>, <code>--apikey</code> API_KEY<br />
+The API_KEY to use. API Keys are associated with ARIN Online accounts and
+are the methods used for authentication in <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a>.</p></li>
 <li><p><code>-U</code>, <code>--url</code> URL<br />
-The base URL of the <a href="https://www.arin.net/resources/whoisrws/index.html" class="man-ref">Whois-RWS<span class="s">(7)</span></a> system.</p></li>
-<li><p><code>--cache-expiry</code> SECONDS<br />
-Age in seconds of items in the cache to be considered expired.</p></li>
-<li><p><code>--cache</code> YES|NO|TRUE|FALSE<br />
-Controls if the cache is used or not.</p></li>
+The base URL of the <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> system.</p></li>
 <li><p><code>--messages</code> MESSAGE_LEVEL<br />
 Specify one of the message levels: <code>none</code> for no messages are to be output,
 <code>some</code> for some messages to be output, or <code>all</code> for all messages to be output.</p></li>
@@ -212,18 +205,16 @@ Displays help.</p></li>
 <h2 id="EXAMPLES">EXAMPLES</h2>
 
 <ul>
-<li><p><code>arininfo kosters</code> queries for a POC with the last name of "Kosters".</p></li>
-<li><p><code>arininfo 2=</code> queries for the second value in a result from the previous query.</p></li>
-<li><p><code>arininfo -t orghandle arin</code> queries for organizations with the handle "arin".</p></li>
-<li><p><code>arininfo arin-o</code> is the same as above.</p></li>
-<li><p><code>arininfo 192.136.136.51</code> queries for the most specific network enclosing
-192.136.136.51.</p></li>
+<li><p><code>ticket 20121018-X1</code> shows the ticket 20121018-X1.</p></li>
+<li><p><code>ticket -s 20121018-X1</code> does the same as above.</p></li>
+<li><p><code>ticket -s 1=</code> shows the ticket in the tree addressed by 1=.</p></li>
+<li><p><code>ticket -u</code> updates all the tickets in the internal ticket database.</p></li>
 </ul>
 
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
-<p><a href="arinr.7.html" class="man-ref">arinr<span class="s">(7)</span></a>, <a href="arinutil.1.html" class="man-ref">arinutil<span class="s">(1)</span></a>, <a href="https://www.arin.net/resources/whoisrws/index.html" class="man-ref">Whois-RWS<span class="s">(7)</span></a></p>
+<p><a class="man-ref" href="arinr.7.html">arinr<span class="s">(7)</span></a>, <a class="man-ref" href="arinutil.1.html">arinutil<span class="s">(1)</span></a>, <a class="man-ref" href="arininfo.1.html">arininfo<span class="s">(1)</span></a>, <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a></p>
 
 
   <ol class='man-decor man-foot man foot'>

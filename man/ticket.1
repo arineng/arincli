@@ -37,7 +37,7 @@ The \fB\-\-show\fR command option displays tickets from the internal ticket data
 The \fB\-\-remove\fR command option removes tickets from the internal ticket database\. If no ticket number is given, all tickets will be removed\. If a ticket number is given, just that ticket will be removed\.
 .
 .P
-The \fB\-\-message\fR command option sends a message to Reg\-RWS(7) to attach to a ticket\. An optional file may be passed to the \fB\-\-message\fR parameter which can specify the file with the message\. If no message file is specified, an editor will be invoked so that the user can create the message\.
+The \fB\-\-message\fR command option sends a message to Reg\-RWS(7) to attach to a ticket\. The \fB\-f\fR or \fB\-\-file\fR parameters can be used to specify a file to be attached as the message\. If no message file is specified, an editor will be invoked so that the user can create the message\.
 .
 .SH "TREE ADDRESSES"
 All the commands will produce a tree of results in the same way as arininfo(1)\. Numbered items in the tree with a trailing equal sign ("=") are addressable\. Consider the following tree:
@@ -99,58 +99,49 @@ Attachments can be copied out of the ticket by narrowing the tree address to an 
 .SH "OPTIONS"
 .
 .IP "\(bu" 4
-\fB\-r\fR, \fB\-\-related\fR TYPE
+\fB\-c\fR, \fB\-\-check\fR [TICKET_NUMBER]
 .
 .br
-Query for the specified type related to the query value: \fBnets\fR for query for the related networks, \fBdels\fR for query for the reverse DNS delegations, \fBorgs\fR for query for the related organizations, \fBpocs\fR for query for the related points of contact, \fBasns\fR for query for the related autonomous system numbers
+Checks for updated tickets\. If no ticket number is given, all tickets are checked\.
 .
 .IP "\(bu" 4
-\fB\-t\fR, \fB\-\-type\fR TYPE
+\fB\-u\fR, \fB\-\-update\fR [TICKET_NUMBER]
 .
 .br
-Specify type of the query value: \fBnethandle\fR for network handle, \fBpochandle\fR for point of contact handle, \fBorghandle\fR for organization handle, \fBip4addr\fR for IPv4 address, \fBip6addr\fR for IPv6 address, \fBip4cidr\fR for IPv4 cidr block, \fBip6cidr\fR for IPv6 cidr block, \fBasnumber\fR for autonomous system number, \fBdelegation\fR for reverse DNS delegation, \fBpocname\fR for name of a point of contact, \fBorgname\fR for name of an organization, \fBresult\fR for result from a previous query
+Updates tickets\. If no ticket number is given, all tickets are updated\.
 .
 .IP "\(bu" 4
-\fB\-\-pft\fR YES|NO|TRUE|FALSE
+\fB\-\-force\-update\fR
 .
 .br
-Use a PFT style query\.
+Forces an update not to skip the downloading of any attachments or messages or tickets\.
 .
 .IP "\(bu" 4
-\fB\-\-cidr\fR LESS|EXACT|MORE
+\fB\-s\fR, \fB\-\-show\fR [TICKET_NUMBER]
 .
 .br
-Type of matching to use for CIDR queries\.
+Shows ticket information\. If no ticket number is given, a summary tree of all tickets will be shown\.
 .
 .IP "\(bu" 4
-\fB\-\-substring\fR YES|NO|TRUE|FALSE
-.
-.br
-Use substring matching for name searches\.
+\fB\-m\fR, \fB\-\-message\fR TICKET_NUMBER Sends a message to be attached to a ticket\.
 .
 .IP "\(bu" 4
-\fB\-\-details\fR YES|NO|TRUE|FALSE
+\fB\-f\fR, \fB\-\-file\fR
 .
 .br
-Query for extra details\.
+Uses a file instead of invoking an editor for the message to attach to a ticket\.
+.
+.IP "\(bu" 4
+\fB\-A\fR, \fB\-\-apikey\fR API_KEY
+.
+.br
+The API_KEY to use\. API Keys are associated with ARIN Online accounts and are the methods used for authentication in Reg\-RWS(7)\.
 .
 .IP "\(bu" 4
 \fB\-U\fR, \fB\-\-url\fR URL
 .
 .br
-The base URL of the Whois\-RWS(7) system\.
-.
-.IP "\(bu" 4
-\fB\-\-cache\-expiry\fR SECONDS
-.
-.br
-Age in seconds of items in the cache to be considered expired\.
-.
-.IP "\(bu" 4
-\fB\-\-cache\fR YES|NO|TRUE|FALSE
-.
-.br
-Controls if the cache is used or not\.
+The base URL of the Reg\-RWS(7) system\.
 .
 .IP "\(bu" 4
 \fB\-\-messages\fR MESSAGE_LEVEL
@@ -193,21 +184,18 @@ Displays help\.
 .SH "EXAMPLES"
 .
 .IP "\(bu" 4
-\fBarininfo kosters\fR queries for a POC with the last name of "Kosters"\.
+\fBticket 20121018\-X1\fR shows the ticket 20121018\-X1\.
 .
 .IP "\(bu" 4
-\fBarininfo 2=\fR queries for the second value in a result from the previous query\.
+\fBticket \-s 20121018\-X1\fR does the same as above\.
 .
 .IP "\(bu" 4
-\fBarininfo \-t orghandle arin\fR queries for organizations with the handle "arin"\.
+\fBticket \-s 1=\fR shows the ticket in the tree addressed by 1=\.
 .
 .IP "\(bu" 4
-\fBarininfo arin\-o\fR is the same as above\.
-.
-.IP "\(bu" 4
-\fBarininfo 192\.136\.136\.51\fR queries for the most specific network enclosing 192\.136\.136\.51\.
+\fBticket \-u\fR updates all the tickets in the internal ticket database\.
 .
 .IP "" 0
 .
 .SH "SEE ALSO"
-arinr(7), arinutil(1), Whois\-RWS(7)
+arinr(7), arinutil(1), arininfo(1), Reg\-RWS(7)
