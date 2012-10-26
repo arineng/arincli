@@ -19,7 +19,7 @@ has not conducted any degree of quality assurance against them.
 
   * arininfo(1) queries ARIN's Whois-RWS(7) service.
 
-  * poc(1) createds, modifies, and deletes Point of Contacts (POCs).
+  * poc(1) creates, modifies, and deletes Point of Contacts (POCs).
 
   * ticket(1) downloads, displays and manages Reg-RWS(7) tickets.
 
