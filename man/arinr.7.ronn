@@ -48,7 +48,7 @@ The ARINr commands are Ruby programs, and Ruby 1.8.7 and above
 are needed.
 
 To get the code grom Git, clone the repository using the following command:
-_git clone http://stash-projects.arin.net:7990/scm/ARINR/arinr.git_. The
+_git clone http://anon:anon@stash-projects.arin.net:7990/scm/ARINR/arinr.git_. The
 commands are executables in the bin directory and should be usable straight
 away.
 
