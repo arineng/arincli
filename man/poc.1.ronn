@@ -74,4 +74,4 @@ without saving), then the action will be aborted.
 
 ## SEE ALSO
 
-arinr(7), Reg-RWS(7)
+arincli(7), Reg-RWS(7)

@@ -1,5 +1,5 @@
 # manuals
-arinr(7) arinr.7.ronn
+arincli(7) arincli.7.ronn
 arinutil(1) arinutil.1.ronn
 arininfo(1) arininfo.1.ronn
 poc(1) poc.1.ronn

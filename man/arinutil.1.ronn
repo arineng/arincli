@@ -28,4 +28,4 @@ This program performs maintenance tasks for the ARINr suite of commands.
 
 ## SEE ALSO
 
-arinr(7), arininfo(1)
+arincli(7), arininfo(1)

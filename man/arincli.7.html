@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv='content-type' value='text/html;charset=utf8'>
   <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
-  <title>arinr(7) - ARIN RESTful Commands in Ruby</title>
+  <title>arincli(7) - ARIN Command Line Interface</title>
   <style type='text/css' media='all'>
   /* style: man */
   body#manpage {margin:0}
@@ -79,19 +79,19 @@
   </div>
 
   <ol class='man-decor man-head man head'>
-    <li class='tl'>arinr(7)</li>
+    <li class='tl'>arincli(7)</li>
     <li class='tc'></li>
-    <li class='tr'>arinr(7)</li>
+    <li class='tr'>arincli(7)</li>
   </ol>
 
   <h2 id="NAME">NAME</h2>
 <p class="man-name">
-  <code>arinr</code> - <span class="man-whatis">ARIN RESTful Commands in Ruby</span>
+  <code>arincli</code> - <span class="man-whatis">ARIN Command Line Interface</span>
 </p>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
-<p>ARINr is a set of command line scripts, written in Ruby, that utilize both
+<p>ARINcli is a set of command line scripts, written in Ruby, that utilize both
 the <a class="man-ref" href="https://www.arin.net/resources/whoisrws/index.html">Whois-RWS<span class="s">(7)</span></a> service and the
 <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> service. <a class="man-ref" href="https://www.arin.net/resources/whoisrws/index.html">Whois-RWS<span class="s">(7)</span></a> is ARIN's Whois/NICNAME RESTful web service for
 exposing IP network and ASN registration data to the public (Note this service
@@ -99,7 +99,7 @@ pre-dates the IETF WEIRDS/RDAP service and is not yet compatible with that
 specification). <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> is ARIN's
 registration RESTful web service available to customers of ARIN.</p>
 
-<p>At the time of this writing, the ARINr scripts should be considered <strong>beta</strong>
+<p>At the time of this writing, the ARINcli scripts should be considered <strong>beta</strong>
 quality. A lot of functionality is still missing from the scripts, and ARIN
 has not conducted any degree of quality assurance against them.</p>
 
@@ -109,17 +109,17 @@ has not conducted any degree of quality assurance against them.</p>
 <li><p><a class="man-ref" href="arininfo.1.html">arininfo<span class="s">(1)</span></a> queries ARIN's <a class="man-ref" href="https://www.arin.net/resources/whoisrws/index.html">Whois-RWS<span class="s">(7)</span></a> service.</p></li>
 <li><p><a class="man-ref" href="poc.1.html">poc<span class="s">(1)</span></a> creates, modifies, and deletes Point of Contacts (POCs).</p></li>
 <li><p><a class="man-ref" href="ticket.1.html">ticket<span class="s">(1)</span></a> downloads, displays and manages <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> tickets.</p></li>
-<li><p><a class="man-ref" href="arinutil.1.html">arinutil<span class="s">(1)</span></a> is a utility for managing ARINr scripts.</p></li>
+<li><p><a class="man-ref" href="arinutil.1.html">arinutil<span class="s">(1)</span></a> is a utility for managing ARINcli scripts.</p></li>
 </ul>
 
 
 <h2 id="CONFIGURATION">CONFIGURATION</h2>
 
-<p>The ARINr commands all use an application data directory to store configuration
+<p>The ARINcli commands all use an application data directory to store configuration
 files, caches, etc. The <a class="man-ref" href="arinutil.1.html">arinutil<span class="s">(1)</span></a> command can be used to manipulate the caches
-and configuration. This application data directory is <code>$HOME/.ARINr</code> for Unix
-and Unix-like systems, and <code>%APPDATA%\ARINr</code> for Windows. This directory is
-created automatically the first time an ARINr command is run.</p>
+and configuration. This application data directory is <code>$HOME/.ARINcli</code> for Unix
+and Unix-like systems, and <code>%APPDATA%\ARINcli</code> for Windows. This directory is
+created automatically the first time an ARINcli command is run.</p>
 
 <p>Configuration is kept in the <code>config.yaml</code> file in the application data directory.
 This is a YAML file and so YAML syntax is required. YAML is designed to be human
@@ -130,18 +130,18 @@ via <a href="http://www.arin.net/public">ARIN Online</a>. An API Key is not need
 
 <h2 id="INSTALLATION">INSTALLATION</h2>
 
-<p>There are two ways to download the ARINr scripts: 1) via Git from ARIN's
+<p>There are two ways to download the ARINcli scripts: 1) via Git from ARIN's
 source code repository, or 2) downloading a zip file.
-The ARINr commands are Ruby programs, and Ruby 1.8.7 and above
+The ARINcli commands are Ruby programs, and Ruby 1.8.7 and above
 are needed.</p>
 
-<p>To get the code grom Git, clone the repository using the following command:
+<p>To get the code from Git, clone the repository using the following command:
 <em>git clone http://anon:anon@stash-projects.arin.net:7990/scm/ARINR/arinr.git</em>. The
 commands are executables in the bin directory and should be usable straight
 away.</p>
 
 <p>A zip of the scripts is available at
-<a data-bare-link="true" href="http://projects.arin.net/arinr/arinr.zip">http://projects.arin.net/arinr/arinr.zip</a>.</p>
+<a href="http://projects.arin.net/arinr/arincli.zip" data-bare-link="true">http://projects.arin.net/arinr/arincli.zip</a>.</p>
 
 <p>To verify compatibility and that everything is working, run the tests with
 the <code>run_all_tests</code> command.</p>
@@ -155,13 +155,13 @@ build the man pages with the following command: <em>ronn man/*.ronn</em>.</p>
 <p>Questions and comments regarding this software may be directed to ARIN's
 Technical Discussion mailing list (arin-tech-discuss@arin.net). Archives
 and subscription information are available at
-<a data-bare-link="true" href="http://lists.arin.net/pipermail/arin-tech-discuss/">http://lists.arin.net/pipermail/arin-tech-discuss/</a>.</p>
+<a href="http://lists.arin.net/pipermail/arin-tech-discuss/" data-bare-link="true">http://lists.arin.net/pipermail/arin-tech-discuss/</a>.</p>
 
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
-    <li class='tc'>October 2012</li>
-    <li class='tr'>arinr(7)</li>
+    <li class='tc'>February 2013</li>
+    <li class='tr'>arincli(7)</li>
   </ol>
 
   </div>
