@@ -16,7 +16,7 @@
 $LOAD_PATH << File.join( File.dirname( File.expand_path(File.dirname(__FILE__) ) ), 'lib' )
 
 require 'whois_main'
-app = ARINr::Whois::Main.new( ARGV )
+app = ARINcli::Whois::Main.new( ARGV )
 app.run()
 
 

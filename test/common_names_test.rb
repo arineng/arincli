@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -20,31 +20,31 @@ class CommonNamesTest < Test::Unit::TestCase
 
   def test_last_names
 
-    assert_equal( true, ARINr::is_last_name( "JOHNSON") )
-    assert_equal( true, ARINr::is_last_name( "NEWTON") )
-    assert_equal( true, ARINr::is_last_name( "KOSTERS") )
-    assert_equal( true, ARINr::is_last_name( "AALDERINK") )
-    assert_equal( false, ARINr::is_last_name( "..........") )
+    assert_equal( true, ARINcli::is_last_name( "JOHNSON") )
+    assert_equal( true, ARINcli::is_last_name( "NEWTON") )
+    assert_equal( true, ARINcli::is_last_name( "KOSTERS") )
+    assert_equal( true, ARINcli::is_last_name( "AALDERINK") )
+    assert_equal( false, ARINcli::is_last_name( "..........") )
 
   end
 
   def test_male_names
 
-    assert_equal( true, ARINr::is_male_name( "JOHN" ) )
-    assert_equal( true, ARINr::is_male_name( "JAMES" ) )
-    assert_equal( true, ARINr::is_male_name( "ANDREW" ) )
-    assert_equal( true, ARINr::is_male_name( "MARK" ) )
-    assert_equal( false, ARINr::is_male_name( ".........." ) )
+    assert_equal( true, ARINcli::is_male_name( "JOHN" ) )
+    assert_equal( true, ARINcli::is_male_name( "JAMES" ) )
+    assert_equal( true, ARINcli::is_male_name( "ANDREW" ) )
+    assert_equal( true, ARINcli::is_male_name( "MARK" ) )
+    assert_equal( false, ARINcli::is_male_name( ".........." ) )
 
   end
 
   def test_female_names
 
-    assert_equal( true, ARINr::is_female_name( "LINDA" ) )
-    assert_equal( true, ARINr::is_female_name( "MARY" ) )
-    assert_equal( true, ARINr::is_female_name( "GAIL" ) )
-    assert_equal( true, ARINr::is_female_name( "ALLYN" ) )
-    assert_equal( false, ARINr::is_female_name( "........" ) )
+    assert_equal( true, ARINcli::is_female_name( "LINDA" ) )
+    assert_equal( true, ARINcli::is_female_name( "MARY" ) )
+    assert_equal( true, ARINcli::is_female_name( "GAIL" ) )
+    assert_equal( true, ARINcli::is_female_name( "ALLYN" ) )
+    assert_equal( false, ARINcli::is_female_name( "........" ) )
 
   end
 

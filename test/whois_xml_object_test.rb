@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -48,7 +48,7 @@ TEXT_XML
 
   def test_xmlobject
 
-    a = ARINr::Whois::WhoisXmlObject.new( @document.root )
+    a = ARINcli::Whois::WhoisXmlObject.new( @document.root )
 
     assert_equal( "1", a.b.x )
     assert_equal( "Text", a.b.to_s )

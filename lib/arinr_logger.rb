@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any 
 # purpose with or without fee is hereby granted, provided that the above 
@@ -17,10 +17,10 @@
 
 require 'enum'
 
-module ARINr
+module ARINcli
 
   # Controls the type of informational messages that are about the function of the application.
-  class MessageLevel < ARINr::Enum
+  class MessageLevel < ARINcli::Enum
 
     # no messages
     MessageLevel.add_item(:NO_MESSAGES, "NONE")
@@ -34,7 +34,7 @@ module ARINr
   end
 
   # Controls the amount of data
-  class DataAmount < ARINr::Enum
+  class DataAmount < ARINcli::Enum
 
     # a terse amount of data
     DataAmount.add_item(:TERSE_DATA, "TERSE")

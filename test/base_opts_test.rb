@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -35,7 +35,7 @@ class BaseOptsTest < Test::Unit::TestCase
 
   end
 
-  class ExtendBaseOpts < ARINr::BaseOpts
+  class ExtendBaseOpts < ARINcli::BaseOpts
 
     def eval_opts( config, args )
 
@@ -65,7 +65,7 @@ class BaseOptsTest < Test::Unit::TestCase
   def test_base_opts
 
     dir = File.join( @work_dir, "test_base_opts" )
-    c = ARINr::Config.new( dir )
+    c = ARINcli::Config.new( dir )
 
     e = ExtendBaseOpts.new
     args = [ "--messages", "ALL", "-r", "FOO", "BAR" ]
@@ -80,7 +80,7 @@ class BaseOptsTest < Test::Unit::TestCase
   def test_help_option
 
     dir = File.join( @work_dir, "test_help_option" )
-    c = ARINr::Config.new( dir )
+    c = ARINcli::Config.new( dir )
 
     e = ExtendBaseOpts.new
     args = [ "-h" ]

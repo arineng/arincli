@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -30,11 +30,11 @@ require 'whois_rdns'
 require 'whois_trees'
 require 'common_names'
 
-module ARINr
+module ARINcli
 
   module Whois
 
-    class QueryType < ARINr::Enum
+    class QueryType < ARINcli::Enum
 
       QueryType.add_item :BY_NET_HANDLE, "NETHANDLE"
       QueryType.add_item :BY_POC_HANDLE, "POCHANDLE"
@@ -51,7 +51,7 @@ module ARINr
 
     end
 
-    class RelatedType < ARINr::Enum
+    class RelatedType < ARINcli::Enum
 
       RelatedType.add_item :NETS, "NETS"
       RelatedType.add_item :DELS, "DELS"
@@ -61,7 +61,7 @@ module ARINr
 
     end
 
-    class CidrMatching < ARINr::Enum
+    class CidrMatching < ARINcli::Enum
 
       CidrMatching.add_item :EXACT, "EXACT"
       CidrMatching.add_item :LESS,  "LESS"
@@ -70,14 +70,14 @@ module ARINr
     end
 
     # The main class for the arininfo command.
-    class Main < ARINr::BaseOpts
+    class Main < ARINcli::BaseOpts
 
       def initialize args, config = nil
 
         if config
           @config = config
         else
-          @config = ARINr::Config.new( ARINr::Config::formulate_app_data_dir() )
+          @config = ARINcli::Config.new( ARINcli::Config::formulate_app_data_dir() )
         end
 
         @opts = OptionParser.new do |opts|
@@ -200,7 +200,7 @@ module ARINr
 
           @config.logger.trace( "Issuing GET for " + url )
           req = Net::HTTP::Get.new( url )
-          req[ "User-Agent" ] = ARINr::VERSION
+          req[ "User-Agent" ] = ARINcli::VERSION
           uri = URI.parse( url )
           res = Net::HTTP.start( uri.host, uri.port ) do |http|
             http.request( req )
@@ -229,9 +229,9 @@ module ARINr
         end
 
         @config.logger.run_pager
-        @config.logger.mesg( ARINr::VERSION )
+        @config.logger.mesg( ARINcli::VERSION )
         @config.setup_workspace
-        @cache = ARINr::Whois::Cache.new( @config )
+        @cache = ARINcli::Whois::Cache.new( @config )
         @cache.clean if @config.config[ "whois" ][ "clean_cache" ]
 
         if( @config.options.query_type == nil )
@@ -275,19 +275,19 @@ module ARINr
         if( element.namespace == "http://www.arin.net/whoisrws/core/v1" )
           case element.name
             when "net"
-              net = ARINr::Whois::WhoisNet.new( element )
+              net = ARINcli::Whois::WhoisNet.new( element )
               net.to_log( @config.logger )
               has_results = true
             when "poc"
-              poc = ARINr::Whois::WhoisPoc.new( element )
+              poc = ARINcli::Whois::WhoisPoc.new( element )
               poc.to_log( @config.logger )
               has_results = true
             when "org"
-              org = ARINr::Whois::WhoisOrg.new( element )
+              org = ARINcli::Whois::WhoisOrg.new( element )
               org.to_log( @config.logger )
               has_results = true
             when "asn"
-              asn = ARINr::Whois::WhoisAsn.new( element )
+              asn = ARINcli::Whois::WhoisAsn.new( element )
               asn.to_log( @config.logger )
               has_results = true
             when "nets"
@@ -304,7 +304,7 @@ module ARINr
         elsif( element.namespace == "http://www.arin.net/whoisrws/rdns/v1" )
           case element.name
             when "delegation"
-              del = ARINr::Whois::WhoisRdns.new( element )
+              del = ARINcli::Whois::WhoisRdns.new( element )
               del.to_log( @config.logger )
               has_results = true
             when "delegations"
@@ -322,8 +322,8 @@ module ARINr
 
       def help
 
-        puts ARINr::VERSION
-        puts ARINr::COPYRIGHT
+        puts ARINcli::VERSION
+        puts ARINcli::COPYRIGHT
         puts <<HELP_SUMMARY
 
 This program uses ARIN's Whois-RWS RESTful API to query ARIN's Whois database.
@@ -353,55 +353,55 @@ HELP_SUMMARY
         if( args.length() == 1 )
 
           case args[ 0 ]
-            when ARINr::NET_HANDLE_REGEX
+            when ARINcli::NET_HANDLE_REGEX
               args[ 0 ] = args[ 0 ].upcase
               retval = QueryType::BY_NET_HANDLE
-            when ARINr::NET6_HANDLE_REGEX
+            when ARINcli::NET6_HANDLE_REGEX
               args[ 0 ] = args[ 0 ].upcase
               retval = QueryType::BY_NET_HANDLE
-            when ARINr::POC_HANDLE_REGEX
+            when ARINcli::POC_HANDLE_REGEX
               args[ 0 ] = args[ 0 ].upcase
               retval = QueryType::BY_POC_HANDLE
-            when ARINr::ORGL_HANDLE_REGEX
+            when ARINcli::ORGL_HANDLE_REGEX
               args[ 0 ] = args[ 0 ].upcase
               retval = QueryType::BY_ORG_HANDLE
-            when ARINr::ORGN_HANDLE_REGEX
+            when ARINcli::ORGN_HANDLE_REGEX
               args[ 0 ] = args[ 0 ].upcase
               retval = QueryType::BY_ORG_HANDLE
-            when ARINr::ORGS_HANDLE_REGEX
+            when ARINcli::ORGS_HANDLE_REGEX
               old = args[ 0 ]
               args[ 0 ] = args[ 0 ].sub( /-O$/i, "" )
               args[ 0 ].upcase!
               @config.logger.trace( "Interpretting " + old + " as organization handle for " + args[ 0 ] )
               retval = QueryType::BY_ORG_HANDLE
-            when ARINr::IPV4_REGEX
+            when ARINcli::IPV4_REGEX
               retval = QueryType::BY_IP4_ADDR
-            when ARINr::IPV6_REGEX
+            when ARINcli::IPV6_REGEX
               retval = QueryType::BY_IP6_ADDR
-            when ARINr::IPV6_HEXCOMPRESS_REGEX
+            when ARINcli::IPV6_HEXCOMPRESS_REGEX
               retval = QueryType::BY_IP6_ADDR
-            when ARINr::AS_REGEX
+            when ARINcli::AS_REGEX
               retval = QueryType::BY_AS_NUMBER
-            when ARINr::ASN_REGEX
+            when ARINcli::ASN_REGEX
               old = args[ 0 ]
               args[ 0 ] = args[ 0 ].sub( /^AS/i, "" )
               @config.logger.trace( "Interpretting " + old + " as autonomous system number " + args[ 0 ] )
               retval = QueryType::BY_AS_NUMBER
-            when ARINr::IP4_ARPA
+            when ARINcli::IP4_ARPA
               retval = QueryType::BY_DELEGATION
-            when ARINr::IP6_ARPA
+            when ARINcli::IP6_ARPA
               retval = QueryType::BY_DELEGATION
             when /(.*)\/\d/
               ip = $+
-              if ip =~ ARINr::IPV4_REGEX
+              if ip =~ ARINcli::IPV4_REGEX
                 retval = QueryType::BY_IP4_CIDR
-              elsif ip =~ ARINr::IPV6_REGEX || ip =~ ARINr::IPV6_HEXCOMPRESS_REGEX
+              elsif ip =~ ARINcli::IPV6_REGEX || ip =~ ARINcli::IPV6_HEXCOMPRESS_REGEX
                 retval = QueryType::BY_IP6_CIDR
               end
-            when ARINr::DATA_TREE_ADDR_REGEX
+            when ARINcli::DATA_TREE_ADDR_REGEX
               retval = QueryType::BY_RESULT
             else
-              if ARINr::is_last_name( args[ 0 ].upcase )
+              if ARINcli::is_last_name( args[ 0 ].upcase )
                 retval = QueryType::BY_POC_NAME
               else
                 retval = QueryType::BY_ORG_NAME
@@ -410,7 +410,7 @@ HELP_SUMMARY
 
         elsif( args.length() == 2 )
 
-          if ARINr::is_last_name( args[ 1 ].upcase ) && ( ARINr::is_male_name( args[ 0 ].upcase ) || ARINr::is_female_name( args[ 0 ].upcase ) )
+          if ARINcli::is_last_name( args[ 1 ].upcase ) && ( ARINcli::is_male_name( args[ 0 ].upcase ) || ARINcli::is_female_name( args[ 0 ].upcase ) )
             retval = QueryType::BY_POC_NAME
           else
             retval = QueryType::BY_ORG_NAME
@@ -418,7 +418,7 @@ HELP_SUMMARY
 
         elsif( args.length() == 3 )
 
-          if ARINr::is_last_name( args[ 2 ].upcase ) && ( ARINr::is_male_name( args[ 0 ].upcase ) || ARINr::is_female_name( args[ 0 ].upcase ) )
+          if ARINcli::is_last_name( args[ 2 ].upcase ) && ( ARINcli::is_male_name( args[ 0 ].upcase ) || ARINcli::is_female_name( args[ 0 ].upcase ) )
             retval = QueryType::BY_POC_NAME
           else
             retval = QueryType::BY_ORG_NAME
@@ -456,7 +456,7 @@ HELP_SUMMARY
           when QueryType::BY_DELEGATION
             path << "rest/rdns/" << args[ 0 ]
           when QueryType::BY_RESULT
-            tree = @config.load_as_yaml( ARINr::ARININFO_LASTTREE_YAML )
+            tree = @config.load_as_yaml( ARINcli::ARININFO_LASTTREE_YAML )
             path = tree.find_rest_ref( args[ 0 ] )
             raise ArgumentError.new( "Unable to find result for " + args[ 0 ] ) unless path
           when QueryType::BY_POC_NAME
@@ -576,15 +576,15 @@ HELP_SUMMARY
           obj = nil
           case ref.parent.name
             when "net"
-              obj = ARINr::Whois::WhoisNet.new( ref.parent )
+              obj = ARINcli::Whois::WhoisNet.new( ref.parent )
             when "poc"
-              obj = ARINr::Whois::WhoisPoc.new( ref.parent )
+              obj = ARINcli::Whois::WhoisPoc.new( ref.parent )
             when "org"
-              obj = ARINr::Whois::WhoisOrg.new( ref.parent )
+              obj = ARINcli::Whois::WhoisOrg.new( ref.parent )
             when "asn"
-              obj = ARINr::Whois::WhoisAsn.new( ref.parent )
+              obj = ARINcli::Whois::WhoisAsn.new( ref.parent )
             when "delegation"
-              obj = ARINr::Whois::WhoisRdns.new( ref.parent )
+              obj = ARINcli::Whois::WhoisRdns.new( ref.parent )
           end
           if( obj )
             copy_namespace_attributes( root, obj.element )
@@ -592,20 +592,20 @@ HELP_SUMMARY
             objs << obj
           end
         end
-        tree = ARINr::DataTree.new
+        tree = ARINcli::DataTree.new
         if( !objs.empty? )
           first = objs.first()
-          tree_root = ARINr::DataNode.new( first.to_s, first.ref.to_s )
-          tree_root.add_child( ARINr::Whois.make_orgs_tree( first.element ) )
-          tree_root.add_child( ARINr::Whois.make_pocs_tree( first.element ) )
-          tree_root.add_child( ARINr::Whois.make_asns_tree( first.element ) )
-          tree_root.add_child( ARINr::Whois.make_nets_tree( first.element ) )
-          tree_root.add_child( ARINr::Whois.make_delegations_tree( first.element ) )
+          tree_root = ARINcli::DataNode.new( first.to_s, first.ref.to_s )
+          tree_root.add_child( ARINcli::Whois.make_orgs_tree( first.element ) )
+          tree_root.add_child( ARINcli::Whois.make_pocs_tree( first.element ) )
+          tree_root.add_child( ARINcli::Whois.make_asns_tree( first.element ) )
+          tree_root.add_child( ARINcli::Whois.make_nets_tree( first.element ) )
+          tree_root.add_child( ARINcli::Whois.make_delegations_tree( first.element ) )
           tree.add_root( tree_root )
         end
         if !tree_root.empty?
           tree.to_normal_log( @config.logger, true )
-          @config.save_as_yaml( ARINr::ARININFO_LASTTREE_YAML, tree )
+          @config.save_as_yaml( ARINcli::ARININFO_LASTTREE_YAML, tree )
         end
         objs.each do |obj|
           obj.to_log( @config.logger )
@@ -621,15 +621,15 @@ HELP_SUMMARY
           obj = nil
           case ref.parent.name
             when "net"
-              obj = ARINr::Whois::WhoisNet.new( ref.parent )
+              obj = ARINcli::Whois::WhoisNet.new( ref.parent )
             when "poc"
-              obj = ARINr::Whois::WhoisPoc.new( ref.parent )
+              obj = ARINcli::Whois::WhoisPoc.new( ref.parent )
             when "org"
-              obj = ARINr::Whois::WhoisOrg.new( ref.parent )
+              obj = ARINcli::Whois::WhoisOrg.new( ref.parent )
             when "asn"
-              obj = ARINr::Whois::WhoisAsn.new( ref.parent )
+              obj = ARINcli::Whois::WhoisAsn.new( ref.parent )
             when "delegation"
-              obj = ARINr::Whois::WhoisRdns.new( ref.parent )
+              obj = ARINcli::Whois::WhoisRdns.new( ref.parent )
           end
           if( obj )
             copy_namespace_attributes( root, obj.element )
@@ -638,26 +638,26 @@ HELP_SUMMARY
           end
         end
 
-        tree = ARINr::DataTree.new
+        tree = ARINcli::DataTree.new
         objs.each do |obj|
-          tree_root = ARINr::DataNode.new( obj.to_s, obj.ref.to_s )
-          tree_root.add_child( ARINr::Whois.make_orgs_tree( obj.element ) )
-          tree_root.add_child( ARINr::Whois.make_pocs_tree( obj.element ) )
-          tree_root.add_child( ARINr::Whois.make_asns_tree( obj.element ) )
-          tree_root.add_child( ARINr::Whois.make_nets_tree( obj.element ) )
-          tree_root.add_child( ARINr::Whois.make_delegations_tree( obj.element ) )
+          tree_root = ARINcli::DataNode.new( obj.to_s, obj.ref.to_s )
+          tree_root.add_child( ARINcli::Whois.make_orgs_tree( obj.element ) )
+          tree_root.add_child( ARINcli::Whois.make_pocs_tree( obj.element ) )
+          tree_root.add_child( ARINcli::Whois.make_asns_tree( obj.element ) )
+          tree_root.add_child( ARINcli::Whois.make_nets_tree( obj.element ) )
+          tree_root.add_child( ARINcli::Whois.make_delegations_tree( obj.element ) )
           tree.add_root( tree_root )
         end
 
-        tree.add_children_as_root( ARINr::Whois.make_orgs_tree( root ) )
-        tree.add_children_as_root( ARINr::Whois.make_pocs_tree( root ) )
-        tree.add_children_as_root( ARINr::Whois.make_asns_tree( root ) )
-        tree.add_children_as_root( ARINr::Whois.make_nets_tree( root ) )
-        tree.add_children_as_root( ARINr::Whois.make_delegations_tree( root ) )
+        tree.add_children_as_root( ARINcli::Whois.make_orgs_tree( root ) )
+        tree.add_children_as_root( ARINcli::Whois.make_pocs_tree( root ) )
+        tree.add_children_as_root( ARINcli::Whois.make_asns_tree( root ) )
+        tree.add_children_as_root( ARINcli::Whois.make_nets_tree( root ) )
+        tree.add_children_as_root( ARINcli::Whois.make_delegations_tree( root ) )
 
         if !tree.empty?
           tree.to_terse_log( @config.logger, true )
-          @config.save_as_yaml( ARINr::ARININFO_LASTTREE_YAML, tree )
+          @config.save_as_yaml( ARINcli::ARININFO_LASTTREE_YAML, tree )
         end
         objs.each do |obj|
           obj.to_log( @config.logger )

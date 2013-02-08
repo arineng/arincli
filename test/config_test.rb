@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -39,7 +39,7 @@ class ConfigTest < Test::Unit::TestCase
 
     dir = File.join( @work_dir, "test_init_no_config_file" )
 
-    c = ARINr::Config.new( dir )
+    c = ARINcli::Config.new( dir )
     assert_equal( "SOME", c.config[ "output" ][ "messages" ] )
     assert_equal( "NORMAL", c.config[ "output" ][ "data" ] )
     assert_nil( c.config[ "output" ][ "messages_file" ] )
@@ -58,9 +58,9 @@ class ConfigTest < Test::Unit::TestCase
     not_default_config = <<NOT_DEFAULT_CONFIG
 output:
   messages: NONE
-  #messages_file: /tmp/ARINr.messages
+  #messages_file: /tmp/ARINcli.messages
   data: TERSE
-  #data_file: /tmp/ARINr.data
+  #data_file: /tmp/ARINcli.data
 whois:
   url: http://whois.test.arin.net
 NOT_DEFAULT_CONFIG
@@ -68,7 +68,7 @@ NOT_DEFAULT_CONFIG
     f.puts( not_default_config )
     f.close
 
-    c = ARINr::Config.new( dir )
+    c = ARINcli::Config.new( dir )
     assert_equal( "NONE", c.config[ "output" ][ "messages" ] )
     assert_equal( "TERSE", c.config[ "output" ][ "data" ] )
     assert_nil( c.config[ "output" ][ "messages_file" ] )
@@ -84,7 +84,7 @@ NOT_DEFAULT_CONFIG
 
     dir = File.join( @work_dir, "test_setup_workspace" )
 
-    c = ARINr::Config.new( dir )
+    c = ARINcli::Config.new( dir )
     c.logger.message_level = "NONE"
     c.setup_workspace
 

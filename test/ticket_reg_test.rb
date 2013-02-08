@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -41,15 +41,15 @@ class TicketRegTest < Test::Unit::TestCase
     doc = REXML::Document.new( file )
     element = doc.root
 
-    ticket = ARINr::Registration::element_to_ticket element
+    ticket = ARINcli::Registration::element_to_ticket element
     assert_equal( "20121012-X1", ticket.ticket_no )
     assert_equal( "2012-10-12T11:39:36.724-04:00", ticket.created_date )
     assert_equal( "2012-10-12T11:39:36.724-04:00", ticket.updated_date )
     assert_equal( "PENDING_REVIEW", ticket.ticket_status )
     assert_equal( "QUESTION", ticket.ticket_type )
 
-    element = ARINr::Registration::ticket_to_element ticket
-    ticket = ARINr::Registration::element_to_ticket element
+    element = ARINcli::Registration::ticket_to_element ticket
+    ticket = ARINcli::Registration::element_to_ticket element
     assert_equal( "20121012-X1", ticket.ticket_no )
     assert_equal( "2012-10-12T11:39:36.724-04:00", ticket.created_date )
     assert_equal( "2012-10-12T11:39:36.724-04:00", ticket.updated_date )
@@ -63,7 +63,7 @@ class TicketRegTest < Test::Unit::TestCase
     doc = REXML::Document.new( file )
     element = doc.root
 
-    message = ARINr::Registration::element_to_ticket_message element
+    message = ARINcli::Registration::element_to_ticket_message element
     assert_equal( "NONE", message.category )
     assert_equal( "4", message.id )
     assert_equal( "2012-10-12T11:48:50.281-04:00", message.created_date )
@@ -74,8 +74,8 @@ class TicketRegTest < Test::Unit::TestCase
     assert_equal( "oracle-driver-license.txt", message.attachments[0].file_name )
     assert_equal( "8a8180b13a5597b1013a55a9d42f0007", message.attachments[0].id )
 
-    element = ARINr::Registration::ticket_message_to_element message
-    message = ARINr::Registration::element_to_ticket_message element
+    element = ARINcli::Registration::ticket_message_to_element message
+    message = ARINcli::Registration::element_to_ticket_message element
     assert_equal( "NONE", message.category )
     assert_equal( "4", message.id )
     assert_equal( "2012-10-12T11:48:50.281-04:00", message.created_date )
@@ -90,13 +90,13 @@ class TicketRegTest < Test::Unit::TestCase
   def test_store_ticket_summary
 
     dir = File.join( @work_dir, "test_store_ticket_summary" )
-    c = ARINr::Config.new( dir )
+    c = ARINcli::Config.new( dir )
     c.logger.message_level = "NONE"
     c.setup_workspace
 
-    mgr = ARINr::Registration::TicketStorageManager.new c
+    mgr = ARINcli::Registration::TicketStorageManager.new c
 
-    ticket = ARINr::Registration::Ticket.new
+    ticket = ARINcli::Registration::Ticket.new
     ticket.ticket_no="XB85"
     ticket.created_date="July 18, 2011"
     ticket.resolved_date="July 19, 2011"
@@ -106,9 +106,9 @@ class TicketRegTest < Test::Unit::TestCase
     ticket.ticket_status="APPROVED"
     ticket.ticket_resolution="DENIED"
 
-    mgr.put_ticket ticket, ARINr::Registration::TicketStorageManager::SUMMARY_FILE_SUFFIX
+    mgr.put_ticket ticket, ARINcli::Registration::TicketStorageManager::SUMMARY_FILE_SUFFIX
 
-    ticket2 = mgr.get_ticket "XB85", ARINr::Registration::TicketStorageManager::SUMMARY_FILE_SUFFIX
+    ticket2 = mgr.get_ticket "XB85", ARINcli::Registration::TicketStorageManager::SUMMARY_FILE_SUFFIX
 
     assert_equal( "XB85", ticket2.ticket_no )
     assert_equal( "July 18, 2011", ticket2.created_date )
@@ -124,12 +124,12 @@ class TicketRegTest < Test::Unit::TestCase
   def test_store_ticket_message
 
     dir = File.join( @work_dir, "test_store_ticket_summary" )
-    c = ARINr::Config.new( dir )
+    c = ARINcli::Config.new( dir )
     c.logger.message_level = "NONE"
     c.setup_workspace
 
-    mgr = ARINr::Registration::TicketStorageManager.new c
-    message = ARINr::Registration::TicketMessage.new
+    mgr = ARINcli::Registration::TicketStorageManager.new c
+    message = ARINcli::Registration::TicketMessage.new
     message.subject="Test"
     message.text=[ "This is line 1", "This is line 2" ]
     message.category="NONE"
@@ -141,21 +141,21 @@ class TicketRegTest < Test::Unit::TestCase
   def test_out_of_date_ticket
     # initialize ticket_tree_manager
     dir = File.join( @work_dir, "test_out_of_date" )
-    c = ARINr::Config.new( dir )
+    c = ARINcli::Config.new( dir )
     c.logger.message_level = "NONE"
     c.setup_workspace
-    tree_mgr = ARINr::Registration::TicketTreeManager.new c
+    tree_mgr = ARINcli::Registration::TicketTreeManager.new c
 
     # create a ticket and save it
     file = File.new( File.join( File.dirname( __FILE__ ) , "ticket-summary.xml" ), "r" )
     doc = REXML::Document.new( file )
     element = doc.root
-    ticket = ARINr::Registration::element_to_ticket element
+    ticket = ARINcli::Registration::element_to_ticket element
     tree_mgr.put_ticket ticket
     tree_mgr.save
 
     # initialize new ticket_tree_manager
-    tree_mgr = ARINr::Registration::TicketTreeManager.new c
+    tree_mgr = ARINcli::Registration::TicketTreeManager.new c
 
     # load ticket_tree_manager
     tree_mgr.load
@@ -188,30 +188,30 @@ class TicketRegTest < Test::Unit::TestCase
   def test_update_ticket
     # setup workspace
     dir = File.join( @work_dir, "test_update_ticket" )
-    c = ARINr::Config.new( dir )
+    c = ARINcli::Config.new( dir )
     c.logger.message_level = "NONE"
     c.setup_workspace
 
     # initialize the managers
-    store_mgr = ARINr::Registration::TicketStorageManager.new c
-    tree_mgr = ARINr::Registration::TicketTreeManager.new c
+    store_mgr = ARINcli::Registration::TicketStorageManager.new c
+    tree_mgr = ARINcli::Registration::TicketTreeManager.new c
     tree_mgr.load
 
     # get a ticket_msgrefs
     summary_file = File.new( File.join( File.dirname( __FILE__ ) , "ticket-msgrefs.xml" ), "r" )
     doc = REXML::Document.new( summary_file )
     element = doc.root
-    ticket = ARINr::Registration::element_to_ticket element
+    ticket = ARINcli::Registration::element_to_ticket element
 
     # put the ticket-msgrefs
-    ticket_file = store_mgr.put_ticket ticket, ARINr::Registration::TicketStorageManager::MSGREFS_FILE_SUFFIX
+    ticket_file = store_mgr.put_ticket ticket, ARINcli::Registration::TicketStorageManager::MSGREFS_FILE_SUFFIX
     ticket_node = tree_mgr.put_ticket ticket, ticket_file, "http://ticket/" + ticket.ticket_no
 
     # get a ticket messasge
     message_file = File.new( File.join( File.dirname( __FILE__ ) , "ticket_message.xml" ), "r" )
     doc = REXML::Document.new( message_file )
     element = doc.root
-    message = ARINr::Registration::element_to_ticket_message element
+    message = ARINcli::Registration::element_to_ticket_message element
 
     # put the ticket message
     message_file = store_mgr.put_ticket_message ticket, message
@@ -232,8 +232,8 @@ class TicketRegTest < Test::Unit::TestCase
     tree_mgr.save
 
     # Get new managers
-    store_mgr2 = ARINr::Registration::TicketStorageManager.new c
-    tree_mgr2 = ARINr::Registration::TicketTreeManager.new c
+    store_mgr2 = ARINcli::Registration::TicketStorageManager.new c
+    tree_mgr2 = ARINcli::Registration::TicketTreeManager.new c
     tree_mgr2.load
 
     # test the ticket retrieval
@@ -261,29 +261,29 @@ class TicketRegTest < Test::Unit::TestCase
   end
 
   def test_sort_messages
-    ticket_node = ARINr::DataNode.new( "ticket", "X1" )
-    mesg_node5 = ARINr::DataNode.new( "mesg5", "5", nil, {} )
+    ticket_node = ARINcli::DataNode.new( "ticket", "X1" )
+    mesg_node5 = ARINcli::DataNode.new( "mesg5", "5", nil, {} )
     mesg_node5.data[ "created_date" ] = "2011-10-12T11:48:50.303-04:00"
     ticket_node.add_child( mesg_node5 )
-    mesg_node1 = ARINr::DataNode.new( "mesg1", "1", nil, {} )
+    mesg_node1 = ARINcli::DataNode.new( "mesg1", "1", nil, {} )
     mesg_node1.data[ "created_date" ] = "2011-10-12T11:48:50.303-04:00"
     ticket_node.add_child( mesg_node1 )
-    mesg_node2 = ARINr::DataNode.new( "mesg2", "2", nil, {} )
+    mesg_node2 = ARINcli::DataNode.new( "mesg2", "2", nil, {} )
     mesg_node2.data[ "created_date" ] = "2011-10-12T11:48:50.303-04:00"
     ticket_node.add_child( mesg_node2 )
-    mesg_node3 = ARINr::DataNode.new( "mesg3", "3", nil, {} )
+    mesg_node3 = ARINcli::DataNode.new( "mesg3", "3", nil, {} )
     mesg_node3.data[ "created_date" ] = "2010-10-12T11:48:50.303-04:00"
     ticket_node.add_child( mesg_node3 )
-    mesg_node4 = ARINr::DataNode.new( "mesg4", "4", nil, {} )
+    mesg_node4 = ARINcli::DataNode.new( "mesg4", "4", nil, {} )
     mesg_node4.data[ "created_date" ] = "2010-10-12T11:48:50.303-04:00"
     ticket_node.add_child( mesg_node4 )
 
     dir = File.join( @work_dir, "test_sort_messages" )
-    c = ARINr::Config.new( dir )
+    c = ARINcli::Config.new( dir )
     c.logger.message_level = "NONE"
     c.setup_workspace
 
-    tree_mgr = ARINr::Registration::TicketTreeManager.new c
+    tree_mgr = ARINcli::Registration::TicketTreeManager.new c
     tree_mgr.sort_messages( ticket_node )
     assert_equal( ticket_node.children[ 0 ].handle, "3" )
     assert_equal( ticket_node.children[ 1 ].handle, "4" )

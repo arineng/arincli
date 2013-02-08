@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -21,7 +21,7 @@ class PocRegTest < Test::Unit::TestCase
 
   def test_poc_template
 
-    poc = ARINr::Registration::Poc.new
+    poc = ARINcli::Registration::Poc.new
     poc.handle="MAK21"
     poc.type="person"
     poc.last_name="Kosters"
@@ -37,11 +37,11 @@ class PocRegTest < Test::Unit::TestCase
     poc.emails=[ "mark@arin.net", "pbh@arin.net" ]
     poc.comments=[ "this isn't", "an appropriate comment" ]
 
-    template = ARINr::Registration::poc_to_template( poc )
+    template = ARINcli::Registration::poc_to_template( poc )
 
-    poc2 = ARINr::Registration::yaml_to_poc( template )
+    poc2 = ARINcli::Registration::yaml_to_poc( template )
 
-    template2 = ARINr::Registration::poc_to_template( poc2 )
+    template2 = ARINcli::Registration::poc_to_template( poc2 )
 
     assert_equal( template, template2 )
 
@@ -91,11 +91,11 @@ POC_XML
 
     element = REXML::Document.new( xml ).root
 
-    poc = ARINr::Registration::element_to_poc( element )
+    poc = ARINcli::Registration::element_to_poc( element )
 
-    element2 = ARINr::Registration::poc_to_element( poc )
+    element2 = ARINcli::Registration::poc_to_element( poc )
 
-    poc2 = ARINr::Registration::element_to_poc( element2 )
+    poc2 = ARINcli::Registration::element_to_poc( element2 )
 
     assert_equal( poc, poc2 )
 

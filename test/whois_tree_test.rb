@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -39,11 +39,11 @@ POCLINKREF_XML
     assert_not_nil( org )
     assert_equal( "org", org.name )
 
-    node = ARINr::Whois::make_pocs_tree( org )
+    node = ARINcli::Whois::make_pocs_tree( org )
     assert_not_nil( node )
     assert_equal( 3, node.children.length )
 
-    node = ARINr::Whois::make_pocs_tree( org.elements[ "pocs" ] )
+    node = ARINcli::Whois::make_pocs_tree( org.elements[ "pocs" ] )
     assert_not_nil( node )
     assert_equal( 3, node.children.length )
   end
@@ -83,7 +83,7 @@ POCREF_XML
 
     doc = REXML::Document.new( xml )
 
-    node = ARINr::Whois::make_pocs_tree( doc.root )
+    node = ARINcli::Whois::make_pocs_tree( doc.root )
     assert_not_nil( node )
     assert_equal( 25, node.children.length )
 
@@ -94,25 +94,25 @@ POCREF_XML
     assert_equal( [ "AS0", "AS1","AS10745", "AS12", "AS200", "AS21", "AS393220", "AS393225", "AS53535" ], arry.sort )
     assert_equal( [ "AS0", "AS1", "AS12", "AS200", "AS21", "AS10745", "AS393220", "AS393225", "AS53535" ], arry )
 
-    new_arry = ARINr::Whois::sort_asns arry
+    new_arry = ARINcli::Whois::sort_asns arry
     assert_equal( [ "AS0", "AS1", "AS12", "AS21", "AS200", "AS10745","AS53535", "AS393220", "AS393225" ], new_arry )
   end
 
   def test_sort_nets
     arry = [ "NET6-2001-1800-0","NET6-2001-400-0","NET6-2001-4800-0", "NET-208-0-0-0-0","NET-209-0-0-0-0","NET-216-0-0-0-0","NET-23-0-0-0-0","NET-24-0-0-0-0" ]
-    new_arry = ARINr::Whois::sort_nets arry
+    new_arry = ARINcli::Whois::sort_nets arry
     assert_equal( [ "NET-23-0-0-0-0","NET-24-0-0-0-0","NET-208-0-0-0-0","NET-209-0-0-0-0","NET-216-0-0-0-0","NET6-2001-400-0","NET6-2001-1800-0","NET6-2001-4800-0"], new_arry )
   end
 
   def test_sort_nets2
     arry = [ "NET6-2001-1800-0","NET-208-0-0-0-0", "NET6-2001-400-0","NET6-2001-4800-0", "NET-209-0-0-0-0","NET-216-0-0-0-0","NET-23-0-0-0-0","NET-24-0-0-0-0" ]
-    new_arry = ARINr::Whois::sort_nets arry
+    new_arry = ARINcli::Whois::sort_nets arry
     assert_equal( [ "NET-23-0-0-0-0","NET-24-0-0-0-0","NET-208-0-0-0-0","NET-209-0-0-0-0","NET-216-0-0-0-0","NET6-2001-400-0","NET6-2001-1800-0","NET6-2001-4800-0"], new_arry )
   end
 
   def test_sort_dels
     arry = ["189.184.in-addr.arpa.","176.184.in-addr.arpa.","181.184.in-addr.arpa.","183.184.in-addr.arpa.","185.184.in-addr.arpa.","187.184.in-addr.arpa."]
-    new_arry = ARINr::Whois::sort_dels arry
+    new_arry = ARINcli::Whois::sort_dels arry
     assert_equal( ["176.184.in-addr.arpa.","181.184.in-addr.arpa.","183.184.in-addr.arpa.","185.184.in-addr.arpa.","187.184.in-addr.arpa.","189.184.in-addr.arpa."], new_arry)
   end
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -16,12 +16,12 @@
 require 'whois_xml_object'
 require 'arinr_logger'
 
-module ARINr
+module ARINcli
 
   module Whois
 
     # Represents a Network in Whois-RWS
-    class WhoisNet < ARINr::Whois::WhoisXmlObject
+    class WhoisNet < ARINcli::Whois::WhoisXmlObject
 
       # Returns a multiline string for long output
       def to_log( logger )

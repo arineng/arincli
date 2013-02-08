@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -13,21 +13,21 @@
 # IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-module ARINr
+module ARINcli
 
-  def ARINr::is_last_name name
+  def ARINcli::is_last_name name
     is_name "last-names.txt", name
   end
 
-  def ARINr::is_male_name name
+  def ARINcli::is_male_name name
     is_name "male-first-names.txt", name
   end
 
-  def ARINr::is_female_name name
+  def ARINcli::is_female_name name
     is_name "female-first-names.txt", name
   end
 
-  def ARINr::is_name file_name, name
+  def ARINcli::is_name file_name, name
     retval = false
 
     file = File.new( File.join( File.dirname( __FILE__ ) , file_name ), "r" )

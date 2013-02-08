@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -62,24 +62,24 @@ NET_XML
   end
 
   def test_instantion
-    net = ARINr::Whois::WhoisNet.new( @net_element )
+    net = ARINcli::Whois::WhoisNet.new( @net_element )
   end
 
   def test_get_handle
-    net = ARINr::Whois::WhoisNet.new( @net_element )
+    net = ARINcli::Whois::WhoisNet.new( @net_element )
     assert_equal( "NET-192-136-136-0-1", net.handle.to_s )
   end
 
   def test_no_element
-    net = ARINr::Whois::WhoisNet.new( @net_element )
+    net = ARINcli::Whois::WhoisNet.new( @net_element )
     assert_nil( net.noElement )
   end
 
   def test_to_log
-    net = ARINr::Whois::WhoisNet.new( @net_element )
-    logger = ARINr::Logger.new
+    net = ARINcli::Whois::WhoisNet.new( @net_element )
+    logger = ARINcli::Logger.new
     logger.data_out = StringIO.new
-    logger.data_amount = ARINr::DataAmount::EXTRA_DATA
+    logger.data_amount = ARINcli::DataAmount::EXTRA_DATA
     net.to_log( logger )
 
     expected = <<EXPECTED_LOG
@@ -113,7 +113,7 @@ EXPECTED_LOG
   end
 
   def test_to_s
-    net = ARINr::Whois::WhoisNet.new( @net_element )
+    net = ARINcli::Whois::WhoisNet.new( @net_element )
     assert_equal( "NET-192-136-136-0-1 ( 192.136.136.0 - 192.136.136.255 )", net.to_s )
   end
 

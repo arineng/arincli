@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -18,7 +18,7 @@ require 'yaml'
 require 'rexml/document'
 require 'utils'
 
-module ARINr
+module ARINcli
 
   module Registration
 
@@ -33,7 +33,7 @@ module ARINr
       end
 
       def ==(another_poc)
-        return false unless another_poc.instance_of?( ARINr::Registration::Poc )
+        return false unless another_poc.instance_of?( ARINcli::Registration::Poc )
         instance_variables.each do |var|
           a = instance_variable_get( var )
           b = another_poc.instance_variable_get( var )
@@ -59,7 +59,7 @@ module ARINr
     # Takes a string containing YAML and converts it to a POC
     def Registration::yaml_to_poc yaml_str
       struct = YAML.load( yaml_str )
-      poc = ARINr::Registration::Poc.new
+      poc = ARINcli::Registration::Poc.new
       poc.handle=struct[ "handle" ]
       poc.type=struct[ "type" ]
       poc.last_name=struct[ "last name" ]
@@ -82,22 +82,22 @@ module ARINr
     def Registration::poc_to_element poc
       element = REXML::Element.new( "poc" )
       element.add_namespace( "http://www.arin.net/regrws/core/v1" )
-      element.add_element( ARINr::new_element_with_text( "iso3166-2", poc.state.to_s ) ) if poc.state
+      element.add_element( ARINcli::new_element_with_text( "iso3166-2", poc.state.to_s ) ) if poc.state
       if poc.country
         iso3166_1 = REXML::Element.new( "iso3166-1" )
-        iso3166_1.add_element( ARINr::new_element_with_text( "code2", poc.country.to_s ) )
+        iso3166_1.add_element( ARINcli::new_element_with_text( "code2", poc.country.to_s ) )
         element.add_element( iso3166_1 )
       end
-      element.add_element( ARINr::new_wrapped_element( "emails", "email", poc.emails ) ) if poc.emails
-      element.add_element( ARINr::new_number_wrapped_element( "streetAddress", poc.street_address ) ) if poc.street_address
-      element.add_element( ARINr::new_element_with_text( "city", poc.city ) ) if poc.city
-      element.add_element( ARINr::new_element_with_text( "postalCode", poc.postal_code ) ) if poc.postal_code
-      element.add_element( ARINr::new_number_wrapped_element( "comment", poc.comments ) ) if poc.comments
-      element.add_element( ARINr::new_element_with_text( "contactType", poc.type ) )
-      element.add_element( ARINr::new_element_with_text( "companyName", poc.company_name ) ) if poc.company_name
-      element.add_element( ARINr::new_element_with_text( "firstName", poc.first_name ) ) if poc.first_name
-      element.add_element( ARINr::new_element_with_text( "middleName", poc.middle_name ) ) if poc.middle_name
-      element.add_element( ARINr::new_element_with_text( "lastName", poc.last_name ) )
+      element.add_element( ARINcli::new_wrapped_element( "emails", "email", poc.emails ) ) if poc.emails
+      element.add_element( ARINcli::new_number_wrapped_element( "streetAddress", poc.street_address ) ) if poc.street_address
+      element.add_element( ARINcli::new_element_with_text( "city", poc.city ) ) if poc.city
+      element.add_element( ARINcli::new_element_with_text( "postalCode", poc.postal_code ) ) if poc.postal_code
+      element.add_element( ARINcli::new_number_wrapped_element( "comment", poc.comments ) ) if poc.comments
+      element.add_element( ARINcli::new_element_with_text( "contactType", poc.type ) )
+      element.add_element( ARINcli::new_element_with_text( "companyName", poc.company_name ) ) if poc.company_name
+      element.add_element( ARINcli::new_element_with_text( "firstName", poc.first_name ) ) if poc.first_name
+      element.add_element( ARINcli::new_element_with_text( "middleName", poc.middle_name ) ) if poc.middle_name
+      element.add_element( ARINcli::new_element_with_text( "lastName", poc.last_name ) )
       if poc.phones
         phones = REXML::Element.new( "phones" )
         element.add_element( phones )
@@ -106,25 +106,25 @@ module ARINr
           type = REXML::Element.new( "type" )
           case k
             when /office/i
-              type.add_element( ARINr::new_element_with_text( "code", "O" ) )
+              type.add_element( ARINcli::new_element_with_text( "code", "O" ) )
             when /mobile/i
-              type.add_element( ARINr::new_element_with_text( "code", "M" ) )
+              type.add_element( ARINcli::new_element_with_text( "code", "M" ) )
             when /fax/i
-              type.add_element( ARINr::new_element_with_text( "code", "F" ) )
+              type.add_element( ARINcli::new_element_with_text( "code", "F" ) )
           end
           phone.add_element( type )
-          phone.add_element( ARINr::new_element_with_text( "number", v[ 0 ] ) )
-          phone.add_element( ARINr::new_element_with_text( "extension", v[ 1 ] ) ) if v[ 1 ]
+          phone.add_element( ARINcli::new_element_with_text( "number", v[ 0 ] ) )
+          phone.add_element( ARINcli::new_element_with_text( "extension", v[ 1 ] ) ) if v[ 1 ]
           phones.add_element( phone )
         end
       end
-      element.add_element( ARINr::new_element_with_text( "handle", poc.handle ) ) if poc.handle
-      element.add_element( ARINr::new_element_with_text( "registrationDate", poc.registration_date ) ) if poc.registration_date
+      element.add_element( ARINcli::new_element_with_text( "handle", poc.handle ) ) if poc.handle
+      element.add_element( ARINcli::new_element_with_text( "registrationDate", poc.registration_date ) ) if poc.registration_date
       return element
     end
 
     def Registration::element_to_poc element
-      poc = ARINr::Registration::Poc.new
+      poc = ARINcli::Registration::Poc.new
       poc.state=element.elements[ "iso3166-2" ].text if element.elements[ "iso3166-2" ]
       poc.country=element.elements.to_a( "iso3166-1/code2" )[ 0 ].text
       poc.emails=[]

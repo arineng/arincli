@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -15,7 +15,7 @@
 
 require 'optparse'
 
-module ARINr
+module ARINcli
 
   # A class to be inherited from for added the standard optons
   class BaseOpts
@@ -66,8 +66,8 @@ module ARINr
 
       opts.on( "-V",
                "Equivalent to --messages all and --data extra" ) do |v|
-        config.logger.data_amount = ARINr::DataAmount::EXTRA_DATA
-        config.logger.message_level = ARINr::MessageLevel::ALL_MESSAGES
+        config.logger.data_amount = ARINcli::DataAmount::EXTRA_DATA
+        config.logger.message_level = ARINcli::MessageLevel::ALL_MESSAGES
       end
 
       opts.separator ""

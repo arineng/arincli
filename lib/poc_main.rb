@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -23,18 +23,18 @@ require 'poc_reg'
 require 'editor'
 require 'data_tree'
 
-module ARINr
+module ARINcli
 
   module Registration
 
-    class PocMain < ARINr::BaseOpts
+    class PocMain < ARINcli::BaseOpts
 
       def initialize args, config = nil
 
         if config
           @config = config
         else
-          @config = ARINr::Config.new( ARINr::Config::formulate_app_data_dir() )
+          @config = ARINcli::Config.new( ARINcli::Config::formulate_app_data_dir() )
         end
 
         @opts = OptionParser.new do |opts|
@@ -122,13 +122,13 @@ module ARINr
 
       def modify_poc
         if !@config.options.data_file
-          @config.options.data_file = @config.make_file_name( ARINr::MODIFY_POC_FILE )
+          @config.options.data_file = @config.make_file_name( ARINcli::MODIFY_POC_FILE )
           data_to_send = make_yaml_template(@config.options.data_file, @config.options.argv[0])
         else
           data_to_send = true
         end
         if ! @config.options.data_file_specified && data_to_send
-          editor = ARINr::Editor.new(@config)
+          editor = ARINcli::Editor.new(@config)
           edited = editor.edit(@config.options.data_file)
           if ! edited
             @config.logger.mesg( "No changes were made to POC data file. Aborting." )
@@ -136,13 +136,13 @@ module ARINr
           end
         end
         if data_to_send
-          reg = ARINr::Registration::RegistrationService.new(@config, ARINr::POC_TX_PREFIX)
+          reg = ARINcli::Registration::RegistrationService.new(@config, ARINcli::POC_TX_PREFIX)
           file = File.new(@config.options.data_file, "r")
           data = file.read
           file.close
-          poc = ARINr::Registration.yaml_to_poc(data)
-          poc_element = ARINr::Registration.poc_to_element(poc)
-          return_data = ARINr::pretty_print_xml_to_s(poc_element)
+          poc = ARINcli::Registration.yaml_to_poc(data)
+          poc_element = ARINcli::Registration.poc_to_element(poc)
+          return_data = ARINcli::pretty_print_xml_to_s(poc_element)
           if reg.modify_poc(poc.handle, return_data)
             @config.logger.mesg(poc.handle + " has been modified.")
           else
@@ -164,7 +164,7 @@ module ARINr
           return
         end
 
-        @config.logger.mesg( ARINr::VERSION )
+        @config.logger.mesg( ARINcli::VERSION )
         @config.setup_workspace
 
         # If no action is given, then the default action is to modify a POC
@@ -179,13 +179,13 @@ module ARINr
         # a POC handle is given, see if it is a tree reference and dereference it,
         # then make sure it looks like a POC handle.
         if !@config.options.help && args != nil && args != []
-          if args[ 0 ] =~ ARINr::DATA_TREE_ADDR_REGEX
-            tree = @config.load_as_yaml( ARINr::ARININFO_LASTTREE_YAML )
+          if args[ 0 ] =~ ARINcli::DATA_TREE_ADDR_REGEX
+            tree = @config.load_as_yaml( ARINcli::ARININFO_LASTTREE_YAML )
             handle = tree.find_handle( args[ 0 ] )
             raise ArgumentError.new( "Unable to find handle for " + args[ 0 ] ) unless handle
             args[ 0 ] = handle
           end
-          if ! args[ 0 ] =~ ARINr::POC_HANDLE_REGEX
+          if ! args[ 0 ] =~ ARINcli::POC_HANDLE_REGEX
             raise ArgumentError.new(args[ 0 ] + " does not look like a POC Handle.")
           end
         end
@@ -195,7 +195,7 @@ module ARINr
           if @config.options.make_template
             make_yaml_template( @config.options.template_file, args[ 0 ] )
           elsif @config.options.modify_poc
-            last_modified = @config.make_file_name( ARINr::MODIFY_POC_FILE )
+            last_modified = @config.make_file_name( ARINcli::MODIFY_POC_FILE )
             if File.exists?( last_modified ) && (!args[ 0 ])
               @config.options.data_file = last_modified
               @config.logger.mesg( "Re-using data from last modify POC action." )
@@ -204,11 +204,11 @@ module ARINr
             end
             modify_poc()
           elsif @config.options.delete_poc
-            reg = ARINr::Registration::RegistrationService.new( @config )
+            reg = ARINcli::Registration::RegistrationService.new( @config )
             element = reg.delete_poc( args[ 0 ] )
             @config.logger.mesg( args[ 0 ] + " deleted." ) if element
           elsif @config.options.create_poc
-            last_created = @config.make_file_name( ARINr::CREATE_POC_FILE )
+            last_created = @config.make_file_name( ARINcli::CREATE_POC_FILE )
             if File.exists?( last_created ) && !args[ 0 ]
               @config.options.data_file = last_created
               @config.logger.mesg( "Re-using data from last create POC action." )
@@ -230,8 +230,8 @@ module ARINr
 
       def help
 
-        puts ARINr::VERSION
-        puts ARINr::COPYRIGHT
+        puts ARINcli::VERSION
+        puts ARINcli::COPYRIGHT
         puts <<HELP_SUMMARY
 
 This program uses ARIN's Reg-RWS RESTful API to query ARIN's Registration database.
@@ -247,12 +247,12 @@ HELP_SUMMARY
 
       def make_yaml_template file_name, poc_handle
         success = false
-        reg = ARINr::Registration::RegistrationService.new @config, ARINr::POC_TX_PREFIX
+        reg = ARINcli::Registration::RegistrationService.new @config, ARINcli::POC_TX_PREFIX
         element = reg.get_poc( poc_handle )
         if element
-          poc = ARINr::Registration.element_to_poc( element )
+          poc = ARINcli::Registration.element_to_poc( element )
           file = File.new( file_name, "w" )
-          file.puts( ARINr::Registration.poc_to_template( poc ) )
+          file.puts( ARINcli::Registration.poc_to_template( poc ) )
           file.close
           success = true
           @config.logger.trace( poc_handle + " saved to " + file_name )
@@ -262,7 +262,7 @@ HELP_SUMMARY
 
       def create_poc
         if ! @config.options.data_file
-          poc = ARINr::Registration::Poc.new
+          poc = ARINcli::Registration::Poc.new
           poc.first_name="PUT FIRST NAME HERE"
           poc.middle_name="PUT MIDDLE NAME HERE"
           poc.last_name="PUT LAST NAME HERE"
@@ -276,32 +276,32 @@ HELP_SUMMARY
           poc.emails=["YOUR_EMAIL_ADDRESS_HERE@SOME_COMPANY.NET"]
           poc.phones={ "office" => ["1-XXX-XXX-XXXX", "x123"]}
           poc.comments=["PUT FIRST LINE OF COMMENTS HEERE", "PUT SECOND LINE OF COMMENTS HERE"]
-          @config.options.data_file = @config.make_file_name( ARINr::CREATE_POC_FILE )
+          @config.options.data_file = @config.make_file_name( ARINcli::CREATE_POC_FILE )
           file = File.new( @config.options.data_file, "w" )
-          file.puts( ARINr::Registration.poc_to_template( poc ) )
+          file.puts( ARINcli::Registration.poc_to_template( poc ) )
           file.close
         end
         if ! @config.options.data_file_specified
-          editor = ARINr::Editor.new( @config )
+          editor = ARINcli::Editor.new( @config )
           edited = editor.edit( @config.options.data_file )
           if ! edited
             @config.logger.mesg( "No modifications made to POC data file. Aborting." )
             return
           end
         end
-        reg = ARINr::Registration::RegistrationService.new(@config,ARINr::POC_TX_PREFIX)
+        reg = ARINcli::Registration::RegistrationService.new(@config,ARINcli::POC_TX_PREFIX)
         file = File.new(@config.options.data_file, "r")
         data = file.read
         file.close
-        poc = ARINr::Registration.yaml_to_poc( data )
-        poc_element = ARINr::Registration.poc_to_element(poc)
-        send_data = ARINr::pretty_print_xml_to_s(poc_element)
+        poc = ARINcli::Registration.yaml_to_poc( data )
+        poc_element = ARINcli::Registration.poc_to_element(poc)
+        send_data = ARINcli::pretty_print_xml_to_s(poc_element)
         element = reg.create_poc( send_data )
         if element
-          new_poc = ARINr::Registration.element_to_poc( element )
+          new_poc = ARINcli::Registration.element_to_poc( element )
           @config.logger.mesg( "New point of contact created with handle " + new_poc.handle )
           @config.logger.mesg( 'Use "poc ' + new_poc.handle + '" to modify this point of contact.')
-          last_created = @config.make_file_name( ARINr::CREATE_POC_FILE )
+          last_created = @config.make_file_name( ARINcli::CREATE_POC_FILE )
           if File.exists?( last_created )
             File.delete( last_created )
           end

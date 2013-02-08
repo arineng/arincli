@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -19,11 +19,11 @@ require 'uri'
 require 'rexml/document'
 require 'utils'
 
-module ARINr
+module ARINcli
 
   module Registration
 
-    class RegistrationService < ARINr::RestService
+    class RegistrationService < ARINcli::RestService
 
       def initialize config, log_suffix=nil
         super()
@@ -114,7 +114,7 @@ module ARINr
         if @log_suffix
           if data
             if data.kind_of?( REXML::Node)
-              data = ARINr::pretty_print_xml_to_s( data )
+              data = ARINcli::pretty_print_xml_to_s( data )
             end
             @log_file.puts
             @log_file.puts "===BEGIN RETURN DATA===="

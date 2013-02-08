@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -27,18 +27,18 @@ require 'time'
 require 'tempfile'
 require 'uri'
 
-module ARINr
+module ARINcli
 
   module Registration
 
-    class TicketMain < ARINr::BaseOpts
+    class TicketMain < ARINcli::BaseOpts
 
       def initialize args, config = nil
 
         if config
           @config = config
         else
-          @config = ARINr::Config.new( ARINr::Config::formulate_app_data_dir() )
+          @config = ARINcli::Config.new( ARINcli::Config::formulate_app_data_dir() )
         end
 
         @opts = OptionParser.new do |opts|
@@ -120,16 +120,16 @@ module ARINr
           return
         end
 
-        @config.logger.mesg( ARINr::VERSION )
+        @config.logger.mesg( ARINcli::VERSION )
         @config.setup_workspace
-        @store_mgr = ARINr::Registration::TicketStorageManager.new @config
+        @store_mgr = ARINcli::Registration::TicketStorageManager.new @config
 
-        if @config.options.argv[ 0 ] && @config.options.argv[ 0 ] =~ ARINr::DATA_TREE_ADDR_REGEX
-          tree = @config.load_as_yaml( ARINr::TICKET_LASTTREE_YAML )
+        if @config.options.argv[ 0 ] && @config.options.argv[ 0 ] =~ ARINcli::DATA_TREE_ADDR_REGEX
+          tree = @config.load_as_yaml( ARINcli::TICKET_LASTTREE_YAML )
           v = nil
           # this is a short cut that basically says go consult the ticket tree db
           # it is an optimization to stop from saving the ticket tree db as the last ticket/ticket lis
-          if tree != nil && tree.roots != nil && tree.roots[ 0 ].rest_ref == ARINr::TICKET_TREE_YAML
+          if tree != nil && tree.roots != nil && tree.roots[ 0 ].rest_ref == ARINcli::TICKET_TREE_YAML
             tree = get_tree_mgr.get_ticket_tree
           end
           v = tree.find_node @config.options.argv[ 0 ]
@@ -160,7 +160,7 @@ module ARINr
 
       def get_tree_mgr
         if @tree_mgr == nil
-          @tree_mgr = ARINr::Registration::TicketTreeManager.new @config
+          @tree_mgr = ARINcli::Registration::TicketTreeManager.new @config
           @tree_mgr.load
         end
         @tree_mgr
@@ -168,8 +168,8 @@ module ARINr
 
       def help
 
-        puts ARINr::VERSION
-        puts ARINr::COPYRIGHT
+        puts ARINcli::VERSION
+        puts ARINcli::COPYRIGHT
         puts <<HELP_SUMMARY
 
 This program uses ARIN's Reg-RWS RESTful API to query ARIN's Registration database.
@@ -184,12 +184,12 @@ HELP_SUMMARY
 
       def check_tickets
 
-        if @config.options.argv[ 0 ] != nil && @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
+        if @config.options.argv[ 0 ] != nil && @config.options.argv[ 0 ].is_a?( ARINcli::DataNode )
           @config.options.argv[ 0 ] = @config.options.argv[ 0 ].handle
         end
-        last_tree = ARINr::DataTree.new
+        last_tree = ARINcli::DataTree.new
 
-        reg = ARINr::Registration::RegistrationService.new @config, ARINr::TICKET_TX_PREFIX
+        reg = ARINcli::Registration::RegistrationService.new @config, ARINcli::TICKET_TX_PREFIX
         element = reg.get_ticket_summary( @config.options.argv[ 0 ] )
         if ! element
           @config.logger.mesg( "Unable to get ticket summary information." )
@@ -205,7 +205,7 @@ HELP_SUMMARY
 
         if !last_tree.empty?
           last_tree.to_terse_log( @config.logger, true )
-          @config.save_as_yaml( ARINr::TICKET_LASTTREE_YAML, last_tree )
+          @config.save_as_yaml( ARINcli::TICKET_LASTTREE_YAML, last_tree )
         else
           @config.logger.mesg( "No tickets have been updated." )
         end
@@ -213,10 +213,10 @@ HELP_SUMMARY
       end
 
       def check_ticket( element, last_tree )
-        ticket = ARINr::Registration.element_to_ticket element
+        ticket = ARINcli::Registration.element_to_ticket element
         if get_tree_mgr.out_of_date?( ticket.ticket_no, ticket.updated_date ) || @config.options.force_update
           s = format( "%-20s %-15s %-15s", ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
-          ticket_node = ARINr::DataNode.new( s, ticket.ticket_no )
+          ticket_node = ARINcli::DataNode.new( s, ticket.ticket_no )
           last_tree.add_root( ticket_node )
         end
       end
@@ -224,7 +224,7 @@ HELP_SUMMARY
       def remove_tickets
         if @config.options.argv[ 0 ] != nil
           ticket_no = @config.options.argv[ 0 ]
-          if @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
+          if @config.options.argv[ 0 ].is_a?( ARINcli::DataNode )
             ticket_no = @config.options.argv[ 0 ].handle
           end
           @config.logger.mesg( "Removing #{ticket_no}" )
@@ -242,7 +242,7 @@ HELP_SUMMARY
           @config.logger.mesg( "A ticket must be specified." )
         else
           ticket_no = @config.options.argv[ 0 ]
-          if @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
+          if @config.options.argv[ 0 ].is_a?( ARINcli::DataNode )
             ticket_no = @config.options.argv[ 0 ].handle
           end
           ticket_node = get_tree_mgr.get_ticket_node ticket_no
@@ -251,7 +251,7 @@ HELP_SUMMARY
           else
             if !@config.options.data_file_specified
               create_data_file()
-              editor = ARINr::Editor.new( @config )
+              editor = ARINcli::Editor.new( @config )
               edited = editor.edit( @config.options.data_file )
               if ! edited
                 @config.logger.mesg( "No modifications made to message file. Aborting." )
@@ -260,11 +260,11 @@ HELP_SUMMARY
             end
             @config.logger.mesg( "Sending message for #{ticket_no}")
             message = parse_data_file
-            message_xml = ARINr::Registration::ticket_message_to_element message, false
-            send_data = ARINr::pretty_print_xml_to_s( message_xml )
-            reg = ARINr::Registration::RegistrationService.new @config, ARINr::TICKET_TX_PREFIX
+            message_xml = ARINcli::Registration::ticket_message_to_element message, false
+            send_data = ARINcli::pretty_print_xml_to_s( message_xml )
+            reg = ARINcli::Registration::RegistrationService.new @config, ARINcli::TICKET_TX_PREFIX
             new_message_xml = reg.put_ticket_message ticket_no, send_data
-            new_message = ARINr::Registration::element_to_ticket_message new_message_xml
+            new_message = ARINcli::Registration::element_to_ticket_message new_message_xml
             message.created_date=new_message.created_date
             message.id=new_message.id
             @config.logger.mesg( "Message assigned ID #{message.id}" )
@@ -276,12 +276,12 @@ HELP_SUMMARY
       end
 
       def parse_data_file
-        message = ARINr::Registration::TicketMessage.new
+        message = ARINcli::Registration::TicketMessage.new
         file = File.new( @config.options.data_file, "r" )
         file.each_line do |line|
-          if line.start_with?( ARINr::SUBJECT_HEADER ) && message.subject == nil
-            s = line.sub( ARINr::SUBJECT_HEADER, "" ).strip
-            message.subject=s if s != ARINr::SUBJECT_DEFAULT
+          if line.start_with?( ARINcli::SUBJECT_HEADER ) && message.subject == nil
+            s = line.sub( ARINcli::SUBJECT_HEADER, "" ).strip
+            message.subject=s if s != ARINcli::SUBJECT_DEFAULT
           else
             message.text = [] if message.text == nil
             message.text << line
@@ -300,7 +300,7 @@ HELP_SUMMARY
         file.close
         erb_template = ERB.new(template, 0, "<>")
         s = erb_template.result( binding )
-        @config.options.data_file = @config.make_file_name(ARINr::TICKET_MESSAGE_FILE)
+        @config.options.data_file = @config.make_file_name(ARINcli::TICKET_MESSAGE_FILE)
         file = File.new(@config.options.data_file, "w")
         file.puts( s )
         file.close
@@ -308,13 +308,13 @@ HELP_SUMMARY
 
       def update_tickets
         updated = check_tickets
-        reg = ARINr::Registration::RegistrationService.new @config, ARINr::TICKET_TX_PREFIX
+        reg = ARINcli::Registration::RegistrationService.new @config, ARINcli::TICKET_TX_PREFIX
         updated.roots.each do |ticket|
           ticket_no = ticket.handle
           @config.logger.mesg( "Getting ticket #{ticket_no}" )
           ticket_uri = reg.ticket_uri ticket_no
           element = reg.get_data ticket_uri
-          new_ticket = ARINr::Registration.element_to_ticket element
+          new_ticket = ARINcli::Registration.element_to_ticket element
           new_ticket_file = @store_mgr.put_ticket new_ticket
           new_ticket_node = get_tree_mgr.put_ticket( new_ticket, new_ticket_file, ticket_uri )
           sort_needed = false
@@ -324,7 +324,7 @@ HELP_SUMMARY
               @config.logger.mesg( "Getting message #{ticket_no} : #{message.id}" )
               message_uri = reg.ticket_message_uri( ticket_no, message.id )
               message_element = reg.get_data message_uri
-              message_xml = ARINr::Registration::element_to_ticket_message message_element
+              message_xml = ARINcli::Registration::element_to_ticket_message message_element
               message_file = @store_mgr.put_ticket_message( new_ticket, message_xml )
               message_node =
                       get_tree_mgr.put_ticket_message(
@@ -357,7 +357,7 @@ HELP_SUMMARY
 
       def show_tickets
         if @config.options.argv[ 0 ]
-          if @config.options.argv[ 0 ].is_a?( ARINr::DataNode )
+          if @config.options.argv[ 0 ].is_a?( ARINcli::DataNode )
             node = @config.options.argv[ 0 ]
             if node.data == nil || node.data[ "node_type" ] == nil
               show_ticket_by_no( node.handle )
@@ -381,10 +381,10 @@ HELP_SUMMARY
           else
             tree.to_terse_log( @config.logger, true )
             # instruct the load of the last tree to look at the ticket tree on next invokation
-            fake_tree = ARINr::DataTree.new
-            redirect_node = ARINr::DataNode.new( "redirect to ticket db", nil, ARINr::TICKET_TREE_YAML, nil )
+            fake_tree = ARINcli::DataTree.new
+            redirect_node = ARINcli::DataNode.new( "redirect to ticket db", nil, ARINcli::TICKET_TREE_YAML, nil )
             fake_tree.add_root( redirect_node )
-            @config.save_as_yaml( ARINr::TICKET_LASTTREE_YAML, fake_tree )
+            @config.save_as_yaml( ARINcli::TICKET_LASTTREE_YAML, fake_tree )
           end
         end
       end
@@ -399,10 +399,10 @@ HELP_SUMMARY
       end
 
       def show_ticket( ticket_node )
-        last_tree = ARINr::DataTree.new
+        last_tree = ARINcli::DataTree.new
         last_tree.add_root(ticket_node)
         if last_tree.to_normal_log(@config.logger, true)
-          @config.save_as_yaml(ARINr::TICKET_LASTTREE_YAML, last_tree)
+          @config.save_as_yaml(ARINcli::TICKET_LASTTREE_YAML, last_tree)
         end
         ticket = @store_mgr.get_ticket(ticket_node.handle)
         @config.logger.start_data_item
@@ -431,11 +431,11 @@ HELP_SUMMARY
         log_banner "BEGIN MESSAGE #{message_banner_index}"
         subject = "Subject:    " + message.subject if message.subject
         subject = "Subject:    ( NO SUBJECT GIVEN )" if !message.subject
-        @config.logger.raw ARINr::DataAmount::TERSE_DATA, subject
-        @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Category:   " + message.category if message.category
-        @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Date:       " + Time.parse(message.created_date).rfc2822 if message.created_date
-        @config.logger.raw ARINr::DataAmount::TERSE_DATA, "Message Id: " + message.id if message.id
-        @config.logger.raw ARINr::DataAmount::TERSE_DATA, ""
+        @config.logger.raw ARINcli::DataAmount::TERSE_DATA, subject
+        @config.logger.raw ARINcli::DataAmount::TERSE_DATA, "Category:   " + message.category if message.category
+        @config.logger.raw ARINcli::DataAmount::TERSE_DATA, "Date:       " + Time.parse(message.created_date).rfc2822 if message.created_date
+        @config.logger.raw ARINcli::DataAmount::TERSE_DATA, "Message Id: " + message.id if message.id
+        @config.logger.raw ARINcli::DataAmount::TERSE_DATA, ""
         message.text.each do |line|
           line = "" if !line
           auto_wrap = @config.config["output"]["auto_wrap"]
@@ -443,20 +443,20 @@ HELP_SUMMARY
             while line.length > auto_wrap
               cutoff = line.rindex(" ", auto_wrap)
               cutoff = auto_wrap if cutoff == 0
-              @config.logger.raw ARINr::DataAmount::TERSE_DATA, line[0..cutoff]
+              @config.logger.raw ARINcli::DataAmount::TERSE_DATA, line[0..cutoff]
               line = line[(cutoff+1)..-1]
             end
-            @config.logger.raw ARINr::DataAmount::TERSE_DATA, line
+            @config.logger.raw ARINcli::DataAmount::TERSE_DATA, line
           else
-            @config.logger.raw ARINr::DataAmount::TERSE_DATA, line
+            @config.logger.raw ARINcli::DataAmount::TERSE_DATA, line
           end
         end if message.text
-        @config.logger.raw ARINr::DataAmount::TERSE_DATA, ""
+        @config.logger.raw ARINcli::DataAmount::TERSE_DATA, ""
         if message_node.children && message_node.children.size > 0
           log_banner "ATTACHMENTS"
           message_node.children.each_with_index do |attachment_node, attachment_index|
             s = format("%2d. %s", attachment_index + 1, attachment_node)
-            @config.logger.raw ARINr::DataAmount::TERSE_DATA, s
+            @config.logger.raw ARINcli::DataAmount::TERSE_DATA, s
           end
         end
         log_banner "END MESSAGE #{message_banner_index}"
@@ -475,7 +475,7 @@ HELP_SUMMARY
       def log_banner banner, fill_char = "-"
         s = fill_char*30 + " " + banner + " "
         (s.length..80).each {|x| s << fill_char}
-        @config.logger.raw ARINr::DataAmount::TERSE_DATA, s
+        @config.logger.raw ARINcli::DataAmount::TERSE_DATA, s
       end
 
     end

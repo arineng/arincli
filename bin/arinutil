@@ -16,7 +16,7 @@
 $LOAD_PATH << File.join( File.dirname( File.expand_path(File.dirname(__FILE__) ) ), 'lib' )
 
 require 'utility_main'
-app = ARINr::Utility.new
+app = ARINcli::Utility.new
 app.run( ARGV )
 
 

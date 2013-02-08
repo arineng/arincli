@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -18,15 +18,15 @@ require 'config'
 require 'constants'
 require 'yaml'
 
-module ARINr
+module ARINcli
 
   class Utility
 
     def run args
 
-      puts ARINr::VERSION
-      puts "ARINr Utility Program"
-      puts ARINr::COPYRIGHT
+      puts ARINcli::VERSION
+      puts "ARINcli Utility Program"
+      puts ARINcli::COPYRIGHT
 
       case args[ 0 ]
         when "-h"
@@ -53,7 +53,7 @@ module ARINr
 
       help_summary = <<HELP_SUMMARY
 
-This program is for maintenance of the ARINr program files.
+This program is for maintenance of the ARINcli program files.
 
 Usage is "arinutil COMMAND" where COMMAND is one of the following:
 
@@ -70,25 +70,25 @@ HELP_SUMMARY
     end
 
     def clean_cache
-      config = ARINr::Config.new( ARINr::Config::formulate_app_data_dir() )
+      config = ARINcli::Config.new( ARINcli::Config::formulate_app_data_dir() )
       config.setup_workspace
-      cache = ARINr::Whois::Cache.new( config )
+      cache = ARINcli::Whois::Cache.new( config )
       evicts = cache.clean
       puts "Cache reports " + evicts.to_s + " files evicted (removed)."
     end
 
     def cache_count
-      config = ARINr::Config.new( ARINr::Config::formulate_app_data_dir() )
+      config = ARINcli::Config.new( ARINcli::Config::formulate_app_data_dir() )
       config.setup_workspace
-      cache = ARINr::Whois::Cache.new( config )
+      cache = ARINcli::Whois::Cache.new( config )
       count = cache.count
       puts "Cache reports " + count.to_s + " files in cache."
     end
 
     def cached_last
-      config = ARINr::Config.new( ARINr::Config::formulate_app_data_dir() )
+      config = ARINcli::Config.new( ARINcli::Config::formulate_app_data_dir() )
       config.setup_workspace
-      cache = ARINr::Whois::Cache.new( config )
+      cache = ARINcli::Whois::Cache.new( config )
       arry = cache.get_last
       if arry == nil
         puts "Either there is nothing in the cache or the last cache file can't be found."
@@ -104,8 +104,8 @@ HELP_SUMMARY
     end
 
     def config
-      config = ARINr::Config.new( ARINr::Config::formulate_app_data_dir() )
-      puts "Data directory: " + ARINr::Config::formulate_app_data_dir
+      config = ARINcli::Config.new( ARINcli::Config::formulate_app_data_dir() )
+      puts "Data directory: " + ARINcli::Config::formulate_app_data_dir
       puts YAML::dump( config.config )
     end
 

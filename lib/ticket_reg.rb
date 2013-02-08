@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -22,7 +22,7 @@ require "utils"
 require "config"
 require "constants"
 
-module ARINr
+module ARINcli
 
   module Registration
 
@@ -44,7 +44,7 @@ module ARINr
     end
 
     def Registration::element_to_ticket element
-      ticket = ARINr::Registration::Ticket.new
+      ticket = ARINcli::Registration::Ticket.new
       ticket.ticket_no=element.elements[ "ticketNo" ].text
       ticket.created_date=element.elements[ "createdDate" ].text
       ticket.resolved_date=element.elements[ "resolvedDate" ].text if element.elements[ "resolvedDate" ]
@@ -64,14 +64,14 @@ module ARINr
       element = REXML::Element.new( "ticket" )
       element.add_namespace( "http://www.arin.net/regrws/core/v1" )
       element.add_namespace( "http://www.arin.net/regrws/messages/v1" )
-      element.add_element( ARINr::new_element_with_text( "ticketNo", ticket_summary.ticket_no ) )
-      element.add_element( ARINr::new_element_with_text( "createdDate", ticket_summary.created_date ) )
-      element.add_element( ARINr::new_element_with_text( "resolvedDate", ticket_summary.resolved_date ) ) if ticket_summary.resolved_date
-      element.add_element( ARINr::new_element_with_text( "closedDate", ticket_summary.closed_date ) ) if ticket_summary.closed_date
-      element.add_element( ARINr::new_element_with_text( "updatedDate", ticket_summary.updated_date ) ) if ticket_summary.updated_date
-      element.add_element( ARINr::new_element_with_text( "webTicketType", ticket_summary.ticket_type ) )
-      element.add_element( ARINr::new_element_with_text( "webTicketStatus", ticket_summary.ticket_status ) )
-      element.add_element( ARINr::new_element_with_text( "webTicketResolution", ticket_summary.ticket_resolution ) ) if ticket_summary.ticket_resolution
+      element.add_element( ARINcli::new_element_with_text( "ticketNo", ticket_summary.ticket_no ) )
+      element.add_element( ARINcli::new_element_with_text( "createdDate", ticket_summary.created_date ) )
+      element.add_element( ARINcli::new_element_with_text( "resolvedDate", ticket_summary.resolved_date ) ) if ticket_summary.resolved_date
+      element.add_element( ARINcli::new_element_with_text( "closedDate", ticket_summary.closed_date ) ) if ticket_summary.closed_date
+      element.add_element( ARINcli::new_element_with_text( "updatedDate", ticket_summary.updated_date ) ) if ticket_summary.updated_date
+      element.add_element( ARINcli::new_element_with_text( "webTicketType", ticket_summary.ticket_type ) )
+      element.add_element( ARINcli::new_element_with_text( "webTicketStatus", ticket_summary.ticket_status ) )
+      element.add_element( ARINcli::new_element_with_text( "webTicketResolution", ticket_summary.ticket_resolution ) ) if ticket_summary.ticket_resolution
       if ticket_summary.messages && !ticket_summary.messages.empty?
         msg_ref_wrapper = REXML::Element.new( "messageReferences" )
         ticket_summary.messages.each do |msg_ref|
@@ -83,7 +83,7 @@ module ARINr
     end
 
     def Registration::element_to_ticket_message element
-      msg = ARINr::Registration::TicketMessage.new
+      msg = ARINcli::Registration::TicketMessage.new
       element.elements.each do |e|
         case e.name
           when "subject"
@@ -116,11 +116,11 @@ module ARINr
         element = REXML::Element.new( "message" )
       end
       element.add_namespace( "http://www.arin.net/regrws/core/v1" )
-      element.add_element( ARINr::new_element_with_text( "subject", msg.subject ) ) if msg.subject
-      element.add_element( ARINr::new_number_wrapped_element( "text", msg.text ) ) if msg.text
-      element.add_element( ARINr::new_element_with_text( "category", msg.category ) ) if msg.category
-      element.add_element( ARINr::new_element_with_text( "messageId", msg.id ) ) if msg.id
-      element.add_element( ARINr::new_element_with_text( "createdDate", msg.created_date ) ) if msg.created_date
+      element.add_element( ARINcli::new_element_with_text( "subject", msg.subject ) ) if msg.subject
+      element.add_element( ARINcli::new_number_wrapped_element( "text", msg.text ) ) if msg.text
+      element.add_element( ARINcli::new_element_with_text( "category", msg.category ) ) if msg.category
+      element.add_element( ARINcli::new_element_with_text( "messageId", msg.id ) ) if msg.id
+      element.add_element( ARINcli::new_element_with_text( "createdDate", msg.created_date ) ) if msg.created_date
       if msg.attachments && !msg.attachments.empty?
         attachment_wrapper = REXML::Element.new( "attachmentReferences" )
         msg.attachments.each do |attachment_ref|
@@ -132,7 +132,7 @@ module ARINr
     end
 
     def Registration::element_to_ticket_attachment_ref element
-      ref = ARINr::Registration::TicketAttachment.new
+      ref = ARINcli::Registration::TicketAttachment.new
       ref.file_name=element.elements[ "attachmentFilename" ].text
       ref.id=element.elements[ "attachmentId" ].text
       return ref
@@ -140,8 +140,8 @@ module ARINr
 
     def Registration::ticket_attachment_ref_to_element attachment_ref
       element = REXML::Element.new( "attachmentReference" )
-      element.add_element( ARINr.new_element_with_text( "attachmentFilename", attachment_ref.file_name ) )
-      element.add_element( ARINr.new_element_with_text( "attachmentId", attachment_ref.id ) )
+      element.add_element( ARINcli.new_element_with_text( "attachmentFilename", attachment_ref.file_name ) )
+      element.add_element( ARINcli.new_element_with_text( "attachmentId", attachment_ref.id ) )
       return element
     end
 
@@ -167,7 +167,7 @@ module ARINr
       end
 
       def get_ticket ticket_no, suffix = nil
-        if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
+        if( ticket_no.is_a?( ARINcli::Registration::Ticket ) )
           ticket_no = ticket_no.ticket_no
         end
         suffix = MSGREFS_FILE_SUFFIX if suffix == nil
@@ -182,7 +182,7 @@ module ARINr
           end
           f.close
           doc = REXML::Document.new( data )
-          return ARINr::Registration::element_to_ticket doc.root
+          return ARINcli::Registration::element_to_ticket doc.root
         end
         return nil
       end
@@ -191,8 +191,8 @@ module ARINr
         suffix = MSGREFS_FILE_SUFFIX if suffix == nil
         file_name = File.join( @config.tickets_dir, ticket.ticket_no + suffix )
         @config.logger.trace( "Storing ticket to " + file_name )
-        element = ARINr::Registration::ticket_to_element( ticket )
-        xml_as_s = ARINr::pretty_print_xml_to_s( element )
+        element = ARINcli::Registration::ticket_to_element( ticket )
+        xml_as_s = ARINcli::pretty_print_xml_to_s( element )
         f = File.open( file_name, "w" )
         f.puts xml_as_s
         f.close
@@ -200,7 +200,7 @@ module ARINr
       end
 
       def remove_ticket ticket_no
-        if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
+        if( ticket_no.is_a?( ARINcli::Registration::Ticket ) )
           ticket_no = ticket_no.ticket_no
         end
         dir = Dir.new( @config.tickets_dir )
@@ -245,15 +245,15 @@ module ARINr
       end
 
       def put_ticket_message ticket_no, ticket_message
-        if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
+        if( ticket_no.is_a?( ARINcli::Registration::Ticket ) )
           ticket_no = ticket_no.ticket_no
         end
         prepare_ticket_area(ticket_no)
         file_name =
           File.join( @config.tickets_dir, ticket_no, ticket_message.id + ".xml" )
         @config.logger.trace( "Storing ticket message to " + file_name )
-        element = ARINr::Registration::ticket_message_to_element( ticket_message )
-        xml_as_s = ARINr::pretty_print_xml_to_s( element )
+        element = ARINcli::Registration::ticket_message_to_element( ticket_message )
+        xml_as_s = ARINcli::pretty_print_xml_to_s( element )
         f = File.open( file_name, "w" )
         f.puts xml_as_s
         f.close
@@ -263,7 +263,7 @@ module ARINr
       # returns an array of paths which can be used to get ticket messages
       # or to dive further down and get the attachments
       def get_ticket_message_entries ticket_no
-        if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
+        if( ticket_no.is_a?( ARINcli::Registration::Ticket ) )
           ticket_no = ticket_no.ticket_no
         end
         ticket_area = prepare_ticket_area(ticket_no)
@@ -283,18 +283,18 @@ module ARINr
         end
         f.close
         doc = REXML::Document.new( data )
-        return ARINr::Registration::element_to_ticket_message( doc.root )
+        return ARINcli::Registration::element_to_ticket_message( doc.root )
       end
 
       def prepare_file_attachment ticket_no, ticket_message, attachment_name
-        if( ticket_no.is_a?( ARINr::Registration::Ticket ) )
+        if( ticket_no.is_a?( ARINcli::Registration::Ticket ) )
           ticket_no = ticket_no.ticket_no
         end
         prepare_ticket_area(ticket_no)
         file_name =
             File.join( @config.tickets_dir, ticket_no, ticket_message.id )
         Dir.mkdir( file_name ) if ! File.exist?( file_name )
-        return File.join( file_name, ARINr::make_safe( attachment_name ) )
+        return File.join( file_name, ARINcli::make_safe( attachment_name ) )
       end
 
       def get_attachment_entries ticket_message_entry
@@ -322,12 +322,12 @@ module ARINr
       end
     end
 
-    # Manages an ARINr::DataTree for tickets
+    # Manages an ARINcli::DataTree for tickets
     class TicketTreeManager
 
       def initialize config
         @config = config
-        @ticket_tree = ARINr::DataTree.new
+        @ticket_tree = ARINcli::DataTree.new
         @dirty = false
       end
 
@@ -347,10 +347,10 @@ module ARINr
       end
 
       def get_ticket_node ticket
-        if ticket.is_a?( ARINr::Registration::Ticket )
+        if ticket.is_a?( ARINcli::Registration::Ticket )
           ticket = ticket.ticket_no
         end
-        if ticket.is_a?( ARINr::DataNode )
+        if ticket.is_a?( ARINcli::DataNode )
           ticket = ticket.handle
         end
         retval = nil
@@ -367,18 +367,18 @@ module ARINr
       end
 
       def remove_all_tickets
-        @ticket_tree = ARINr::DataTree.new
+        @ticket_tree = ARINcli::DataTree.new
         @dirty = true
       end
 
       def get_ticket_message ticket, message
         orig_ticket = ticket
-        ticket = get_ticket_node( ticket ) if !ticket.is_a?( ARINr::DataNode )
+        ticket = get_ticket_node( ticket ) if !ticket.is_a?( ARINcli::DataNode )
         raise "no ticket found for #{orig_ticket}" if ticket == nil
-        if message.is_a?( ARINr::Registration::TicketMessage )
+        if message.is_a?( ARINcli::Registration::TicketMessage )
           message = message.id
         end
-        if message.is_a?( ARINr::DataNode )
+        if message.is_a?( ARINcli::DataNode )
           message = message.handle
         end
         retval = nil
@@ -391,12 +391,12 @@ module ARINr
       def get_ticket_attachment ticket, message, attachment
         orig_ticket = ticket
         orig_message = message
-        message = get_ticket_message( ticket, message ) if !message.is_a?( ARINr::DataNode )
+        message = get_ticket_message( ticket, message ) if !message.is_a?( ARINcli::DataNode )
         raise "no message found for #{orig_ticket} - #{orig_message}" if message == nil
-        if attachment.is_a?( ARINr::Registration::TicketAttachment )
+        if attachment.is_a?( ARINcli::Registration::TicketAttachment )
           attachment = attachment.id
         end
-        if attachment.is_a?( ARINr::DataNode )
+        if attachment.is_a?( ARINcli::DataNode )
           attachment = attachment.handle
         end
         retval = nil
@@ -421,7 +421,7 @@ module ARINr
         ticket_node = get_ticket_node( ticket.ticket_no )
         if ticket_node == nil
           s = format( "%-20s %-15s %-15s", ticket.ticket_no, ticket.ticket_type, ticket.ticket_status )
-          ticket_node = ARINr::DataNode.new( s, ticket.ticket_no )
+          ticket_node = ARINcli::DataNode.new( s, ticket.ticket_no )
           ticket_node.data = {}
           @ticket_tree.add_root( ticket_node )
           @dirty = true
@@ -440,14 +440,14 @@ module ARINr
       end
 
       def put_ticket_message ticket, message, storage_file = nil, rest_ref = nil
-        ticket = get_ticket_node ticket if !ticket.is_a?( ARINr::DataNode )
+        ticket = get_ticket_node ticket if !ticket.is_a?( ARINcli::DataNode )
         message_node = get_ticket_message( ticket, message )
         if message_node == nil
           message_name = message.subject
           if message_name == nil
             message_name = "(no subject)"
           end
-          message_node = ARINr::DataNode.new( message_name, message.id )
+          message_node = ARINcli::DataNode.new( message_name, message.id )
           message_node.data = {}
           message_node.data[ "created_date" ] = message.created_date
           message_node.data[ "node_type" ] = "message"
@@ -474,10 +474,10 @@ module ARINr
       end
 
       def put_ticket_attachment ticket, message, attachment, storage_file = nil, rest_ref = nil
-        message = get_ticket_message( ticket, message ) if !message.is_a?( ARINr::DataNode )
+        message = get_ticket_message( ticket, message ) if !message.is_a?( ARINcli::DataNode )
         attachment_node = get_ticket_attachment( ticket, message, attachment )
         if attachment_node == nil
-          attachment_node = ARINr::DataNode.new( attachment.file_name, attachment.id )
+          attachment_node = ARINcli::DataNode.new( attachment.file_name, attachment.id )
           attachment_node.data = {}
           attachment_node.data[ "node_type" ] = "attachment"
           message.add_child attachment_node

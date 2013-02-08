@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -16,7 +16,7 @@
 require 'yaml'
 require 'arinr_logger'
 
-module ARINr
+module ARINcli
 
   class DataNode
 
@@ -98,7 +98,7 @@ module ARINr
     end
 
     def find_node data_address
-      node = ARINr::DataNode.new( "fakeroot" )
+      node = ARINcli::DataNode.new( "fakeroot" )
       node.children=roots
       data_address.split( /\D/ ).each do |index_str|
         index = index_str.to_i - 1

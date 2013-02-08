@@ -16,10 +16,10 @@
 # IPv4 and IPv6 regular expressions are credited to Mike Poulson and are found here:
 #   http://blogs.msdn.com/b/mpoulson/archive/2005/01/10/350037.aspx
 
-module ARINr
+module ARINcli
 
-  VERSION = "ARINr v.1000.0.0-SNAPSHOT"
-  COPYRIGHT = "Copyright (c) 2011,2012 American Registry for Internet Numbers (ARIN)"
+  VERSION = "ARINcli v.1000.0.0-SNAPSHOT"
+  COPYRIGHT = "Copyright (c) 2011,2012,2013 American Registry for Internet Numbers (ARIN)"
 
   # regular expressions
   NET_HANDLE_REGEX = /^NET-.*/i

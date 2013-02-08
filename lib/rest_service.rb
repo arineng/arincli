@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -18,12 +18,12 @@ require 'net/https'
 require 'uri'
 require 'constants'
 
-module ARINr
+module ARINcli
 
   class RestService
 
     def initialize
-      @headers = { "User-Agent" => ARINr::VERSION, "Content-Type" => "application/xml" }
+      @headers = { "User-Agent" => ARINcli::VERSION, "Content-Type" => "application/xml" }
     end
 
     def get url

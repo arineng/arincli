@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -18,7 +18,7 @@ require 'enum'
 
 class EnumTest < Test::Unit::TestCase
 
-  class Color < ARINr::Enum
+  class Color < ARINcli::Enum
 
     Color.add_item :BLUE, 1
     Color.add_item :RED, 2
@@ -26,7 +26,7 @@ class EnumTest < Test::Unit::TestCase
 
   end
 
-  class Level < ARINr::Enum
+  class Level < ARINcli::Enum
 
     Level.add_item :HIGH, "HIGH"
     Level.add_item :LOW, "LOW"

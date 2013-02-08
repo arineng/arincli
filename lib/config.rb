@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -18,7 +18,7 @@ require 'arinr_logger'
 require 'yaml'
 require 'ostruct'
 
-module ARINr
+module ARINcli
 
   # Handles configuration of the application
   class Config
@@ -27,12 +27,12 @@ module ARINr
 
     # Intializes the configuration with a place to look for the config file
     # If the file doesn't exist, a default is used.
-    # Main routines will do something like ARINr::Config.new( ARINr::Config.formulate_app_data_dir() )
+    # Main routines will do something like ARINcli::Config.new( ARINcli::Config.formulate_app_data_dir() )
     def initialize app_data
 
       @options = OpenStruct.new
       @app_data = app_data
-      @logger = ARINr::Logger.new
+      @logger = ARINcli::Logger.new
 
       config_file_name = Config.formulate_config_file_name( @app_data )
       if File.exist?( config_file_name )
@@ -141,13 +141,13 @@ module ARINr
 
     def self.formulate_app_data_dir
       if RUBY_PLATFORM =~ /win32/
-        data_dir = File.join(ENV['APPDATA'], "ARINr")
+        data_dir = File.join(ENV['APPDATA'], "ARINcli")
       elsif RUBY_PLATFORM =~ /linux/
-        data_dir = File.join(ENV['HOME'], ".ARINr")
+        data_dir = File.join(ENV['HOME'], ".ARINcli")
       elsif RUBY_PLATFORM =~ /darwin/
-        data_dir = File.join(ENV['HOME'], ".ARINr")
+        data_dir = File.join(ENV['HOME'], ".ARINcli")
       elsif RUBY_PLATFORM =~ /freebsd/
-        data_dir = File.join(ENV['HOME'], ".ARINr")
+        data_dir = File.join(ENV['HOME'], ".ARINcli")
       else
         raise ScriptError, "system platform is not recognized."
       end
@@ -166,14 +166,14 @@ output:
 
   # If specified, messages goes to this file
   # otherwise, leave it commented out to go to stderr
-  #messages_file: /tmp/ARINr.messages
+  #messages_file: /tmp/ARINcli.messages
 
   # possible values are TERSE, NORMAL, EXTRA
   data: NORMAL
 
   # If specified, data goest to this file
   # otherwise, leave it commented out to go to stdout
-  #data_file: /tmp/ARINr.data
+  #data_file: /tmp/ARINcli.data
 
   # Page output with system pager when appropriate.
   pager: true

@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -17,7 +17,7 @@ require 'rexml/document'
 require 'data_tree'
 
 
-module ARINr
+module ARINcli
 
   module Whois
 
@@ -29,11 +29,11 @@ module ARINr
         asns = REXML::XPath.first(element, "asns")
       end
       if (asns != nil && asns.elements[ "asnRef" ])
-        retval = ARINr::DataNode.new("Autonomous Systems Blocks")
+        retval = ARINcli::DataNode.new("Autonomous Systems Blocks")
         asns.elements.each( "asnRef" ) do |asn|
           handle = asn.attribute( "handle" ).to_s
           rest_ref = asn.text()
-          retval.add_child(ARINr::DataNode.new( handle, handle, rest_ref, nil ) )
+          retval.add_child(ARINcli::DataNode.new( handle, handle, rest_ref, nil ) )
         end
         new_children = sort_asns( retval.children )
         retval.children=new_children
@@ -50,7 +50,7 @@ module ARINr
         pocs = REXML::XPath.first(element, "pocs")
       end
       if (pocs != nil && REXML::XPath.first( pocs, "pocLinkRef|pocRef" ) )
-        retval = ARINr::DataNode.new("Points of Contact")
+        retval = ARINcli::DataNode.new("Points of Contact")
         pocs.elements.each( "pocLinkRef|pocRef" ) do |poc|
           handle = poc.attribute( "handle" ).to_s
           rest_ref = poc.text()
@@ -61,7 +61,7 @@ module ARINr
           else
             s = format( "%s (%s)", name, handle )
           end
-          retval.add_child(ARINr::DataNode.new(s, handle, rest_ref, nil ))
+          retval.add_child(ARINcli::DataNode.new(s, handle, rest_ref, nil ))
         end
         retval.children.sort!
         check_limit_exceeded( pocs, retval )
@@ -77,13 +77,13 @@ module ARINr
         orgs = REXML::XPath.first(element, "orgs")
       end
       if (orgs != nil && REXML::XPath.first( orgs, "orgRef" ) )
-        retval = ARINr::DataNode.new("Organizations")
+        retval = ARINcli::DataNode.new("Organizations")
         orgs.elements.each( "orgRef" ) do |org|
           handle = org.attribute( "handle" ).to_s
           name = org.attribute( "name" ).to_s
           rest_ref = org.text()
           s = format( "%s (%s)", name, handle )
-          retval.add_child(ARINr::DataNode.new(s, handle, rest_ref, nil))
+          retval.add_child(ARINcli::DataNode.new(s, handle, rest_ref, nil))
         end
         retval.children.sort!
         check_limit_exceeded( orgs, retval )
@@ -99,14 +99,14 @@ module ARINr
         nets = REXML::XPath.first(element, "nets")
       end
       if (nets != nil && nets.elements[ "netRef" ] )
-        retval = ARINr::DataNode.new("Networks")
+        retval = ARINcli::DataNode.new("Networks")
         nets.elements.each( "netRef" ) do |net|
           handle = net.attribute( "handle" ).to_s
           start_address = net.attribute( "startAddress" ).to_s
           end_address = net.attribute( "endAddress" ).to_s
           rest_ref = net.text()
           s = format("%-24s ( %15s - %-15s )", handle, start_address, end_address )
-          retval.add_child(ARINr::DataNode.new(s, handle, rest_ref, nil ))
+          retval.add_child(ARINcli::DataNode.new(s, handle, rest_ref, nil ))
         end
         new_children = sort_nets( retval.children )
         retval.children=new_children
@@ -123,11 +123,11 @@ module ARINr
         dels = REXML::XPath.first(element, "ns2:delegations", "ns2"=>"http://www.arin.net/whoisrws/rdns/v1" )
       end
       if (dels != nil && dels.elements[ dels.prefix + ":delegationRef" ])
-        retval = ARINr::DataNode.new("Reverse DNS Delegations")
+        retval = ARINcli::DataNode.new("Reverse DNS Delegations")
         dels.elements.each( dels.prefix + ":delegationRef" ) do |del|
           handle = del.attribute( "name" ).to_s
           rest_ref = del.text();
-          retval.add_child(ARINr::DataNode.new( handle, handle, rest_ref, nil ) )
+          retval.add_child(ARINcli::DataNode.new( handle, handle, rest_ref, nil ) )
         end
         new_children = sort_dels( retval.children )
         retval.children=new_children
@@ -140,7 +140,7 @@ module ARINr
       e = REXML::XPath.first( list_element, "limitExceeded")
       if e and e.text() == "true"
         limit = e.attribute( "limit" )
-        alert = ARINr::DataNode.new( "Results limited to " + limit.to_s )
+        alert = ARINcli::DataNode.new( "Results limited to " + limit.to_s )
         alert.alert=true
         node.add_child( alert )
       end
