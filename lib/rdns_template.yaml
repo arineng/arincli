@@ -1,0 +1,21 @@
+# Reverse DNS Template
+#
+# NOTE: This is a YAML file. You must follow YAML syntax. See the example at the end.
+
+
+handle: <%= name %>
+
+name servers:
+<% nameservers.each do |ns| %>
+  - <%= ns %>
+<% end %>
+
+delegation signers:
+<% signers.each do |ds| %>
+  -
+    <%= ds.algorithm %>
+    <%= ds.digest %>
+    <%= ds.digest_type %>
+    <%= ds.key_tag %>
+<% end %>
+
