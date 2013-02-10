@@ -1,21 +1,48 @@
 # Reverse DNS Template
+# This file holds templates for one or more reverse DNS zones.
+# See the examples at the end.
 #
-# NOTE: This is a YAML file. You must follow YAML syntax. See the example at the end.
+# NOTE: This is a YAML file. You must follow YAML syntax.
 
-
-handle: <%= name %>
-
-name servers:
+<% zones.each do |zone| %>
+- delegation name: <%= name %>
+  name servers:
 <% nameservers.each do |ns| %>
-  - <%= ns %>
+    - <%= ns %>
+<% end %>
+  delegation signers:
+<% signers.each do |ds| %>
+    - algorithm: <%= ds.algorithm %>
+      digest: <%= ds.digest %>
+      digest type: <%= ds.digest_type %>
+      key tag: <%= ds.key_tag %>
+<% end %>
 <% end %>
 
-delegation signers:
-<% signers.each do |ds| %>
-  -
-    <%= ds.algorithm %>
-    <%= ds.digest %>
-    <%= ds.digest_type %>
-    <%= ds.key_tag %>
-<% end %>
+
+# EXAMPLES
+#
+#- delegation name: 192.in-addr.arpa
+#  name servers:
+#    - ns1.example.com
+#    - ns2.example.com
+#  delegation signers:
+#    - algorithm: RSASHA1 # can either be integer or mnemonic
+#      digest: ABCDEF
+#      digest type: 5
+#      key tag: 1
+#
+#- delegation name: 168.192.in-addr.arpa
+#  name servers:
+#    - ns3.example.com
+#    - ns4.example.com
+#  delegation signers:
+#    - algorithm: RSASHA1
+#      digest: ABCDEF
+#      digest type: 5
+#      key tag: 1
+#    - algorithm: RSAMD5
+#      digest: 012345
+#      digest type: 5
+#      key tag: 1
 

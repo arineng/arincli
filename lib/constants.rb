@@ -54,4 +54,9 @@ module ARINcli
   SUBJECT_HEADER         = "Subject:"
   SUBJECT_DEFAULT        = "(Place Message Subject Here)"
 
+  #DNSSEC Record Algorithm Mapping
+  # in index order for the mapping:
+  #      DNSSEC_ALGORITHMS.index( "RSASHA1" ) + 1 = 5, 5 is the IETF value for RSASHA1
+  DNSSEC_ALGORITHMS = [ "RSAMD5", "DH", "DSA", "ECC", "RSASHA1" ]
+
 end
