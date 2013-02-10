@@ -65,6 +65,15 @@ module ARINcli
       def algorithm_name
         ARINcli::DNSSEC_ALGORITHMS[ @algorithm - 1 ]
       end
+      def ==(another_signer)
+        return false unless another_signer.instance_of?( ARINcli::Registration::Signer )
+        instance_variables.each do |var|
+          a = instance_variable_get( var )
+          b = another_signer.instance_variable_get( var )
+          return false unless a == b
+        end
+        return true
+      end
     end
 
     # Takes Zones and returns a string full of YAML goodness
@@ -92,9 +101,9 @@ module ARINcli
       end
       struct.each do |zone|
         rdns = ARINcli::Registration::Rdns.new
-        rdns.name=zone[ "name" ]
+        rdns.name=zone[ "delegation name" ]
         rdns.name_servers=zone[ "name servers" ]
-        zone[ "signers" ].each do |signer|
+        zone[ "delegation signers" ].each do |signer|
           ds = ARINcli::Registration::Signer.new
           ds.algorithm=signer[ "algorithm" ]
           ds.digest=signer[ "digest" ]
@@ -143,7 +152,6 @@ module ARINcli
           dk.add_element( ARINcli::new_element_with_text( "digestType", signer.digest_type ) )
           dks.add_element( dk )
         end
-        element.add_element( dks )
       end
       return element
     end
@@ -156,10 +164,10 @@ module ARINcli
       end
       element.elements.each( "delegationKeys/delegationKey" ) do |dk_e|
         signer = ARINcli::Registration::Signer.new
-        signer.algorithm = dk_e.elements[ "algorithm" ].text
+        signer.algorithm = dk_e.elements[ "algorithm" ].text.to_i
         signer.digest = dk_e.elements[ "digest" ].text
-        signer.digest_type = dk_e.elements[ "digestType" ].text
-        signer.key_tag = dk_e.elements[ "keyTag" ].text
+        signer.digest_type = dk_e.elements[ "digestType" ].text.to_i
+        signer.key_tag = dk_e.elements[ "keyTag" ].text.to_i
         rdns.signers << signer
       end
       return rdns

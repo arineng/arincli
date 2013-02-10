@@ -4,14 +4,14 @@
 #
 # NOTE: This is a YAML file. You must follow YAML syntax.
 
-<% zones.each do |zone| %>
-- delegation name: <%= name %>
+<% self.each do |zone| %>
+- delegation name: <%= zone.name %>
   name servers:
-<% nameservers.each do |ns| %>
+<% zone.name_servers.each do |ns| %>
     - <%= ns %>
 <% end %>
   delegation signers:
-<% signers.each do |ds| %>
+<% zone.signers.each do |ds| %>
     - algorithm: <%= ds.algorithm %>
       digest: <%= ds.digest %>
       digest type: <%= ds.digest_type %>
