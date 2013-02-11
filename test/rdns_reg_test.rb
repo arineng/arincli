@@ -74,4 +74,18 @@ RDNS_XML
     assert_equal( zones[ 0 ], rdns2 )
   end
 
+  def test_find_rdns
+    element = REXML::Document.new( @rdns_xml ).root
+    rdns1 = ARINcli::Registration::element_to_rdns( element )
+    rdns2 = ARINcli::Registration::element_to_rdns( element )
+    rdns2.name="1.0.76.in-addr.arpa"
+    zones = ARINcli::Registration::Zones.new
+    zones << rdns1
+    zones << rdns2
+    assert_equal( rdns1, zones.find_rdns( "0.76.in-addr.arpa." ) )
+    assert_equal( rdns1, zones.find_rdns( "0.76.in-addr.arpa" ) )
+    assert_equal( rdns2, zones.find_rdns( "1.0.76.in-addr.arpa" ) )
+    assert_equal( rdns2, zones.find_rdns( "1.0.76.in-addr.arpa." ) )
+  end
+
 end
