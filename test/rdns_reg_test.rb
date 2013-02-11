@@ -115,4 +115,14 @@ RDNS_XML
     assert_equal( "BF4CE575DA72A81263B09AD81826D013B91A4BC1925722FD22FF174500C6B351", zones[0].signers[1].digest )
   end
 
+  def test_154_in_addr
+    zones = ARINcli::Registration::Zones.new
+    file = File.new( File.join( File.dirname( __FILE__ ) , "154.in-addr.arpa" ), "r" )
+    zf = Zonefile.new( file.read )
+    zf.ns.each do |ns|
+      zones.add_ns ns
+    end
+    assert_equal( 65, zones.size )
+  end
+
 end

@@ -1,0 +1,738 @@
+; File written on Tue Jul 14 12:21:29 2009
+; dnssec_signzone version 9.3.4-P1
+1.154.in-addr.arpa.	86400	IN NS	cbru.br.ns.els-gms.att.net.
+			86400	IN NS	cmtu.mt.ns.els-gms.att.net.
+			86400	IN NS	auth03.ns.uu.net.
+			86400	IN NS	auth50.ns.uu.net.
+			10800	NSEC	10.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					zwxWGdmDgmc0EOv4HWd7m20CohZsAGlVzvFr
+					ybXgT8DEQ3MaQp80E7JGlTLph9PYGPBgyoSW
+					QhVfw61z7rePdONj7aI1eC5xps+a8yR5qTNW
+					C63fOaJKV6h2qljLD3+zCKqBhK1gVadUdDhx
+					L7FX2hqcZkuwqNDWPbrTY7d7fh0= )
+10.154.in-addr.arpa.	86400	IN NS	b.dns.kr.
+			86400	IN NS	c.dns.kr.
+			86400	IN NS	d.dns.kr.
+			86400	IN NS	e.dns.kr.
+			86400	IN NS	f.dns.kr.
+			86400	IN NS	g.dns.kr.
+			10800	NSEC	11.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					6FAmwgXl6Ls9leF+1rrZd2yO9ZvWvYebwuPs
+					5293N35hEgCUG9Kh3qM5pS+RjgMsEt8rLjYb
+					MPZeani9D6Iwge46+WCmXKzb8pcDsnUQse0x
+					P3yQW6UczlT92MCTX7dLrKoISGoWoLqLJ+rj
+					3SDuPSwcGeQXYO56D3Hzc99sQis= )
+11.154.in-addr.arpa.	86400	IN NS	pri3.dns.ca.telus.com.
+			86400	IN NS	pri4.dns.ca.telus.com.
+			10800	NSEC	12.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					yF8HHuWMsO5G9kPs58fDzpcPhdEyJ3/sEG5D
+					caKxS5/nDLqbGO2ESk24Ey61z7p9iTOLOzNV
+					cWQqd7PhIcwWUyz6E+DapWp3JHmFlymX+AIn
+					kPNozxBUHJl9FCUfp/XLEk0UFxVA+Wg+Mflb
+					woQ5ZenhkIXo5E4/mV082HhyTMQ= )
+12.154.in-addr.arpa.	86400	IN NS	auth1.dns.cogentco.com.
+			86400	IN NS	auth2.dns.cogentco.com.
+			10800	NSEC	13.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					GdPUYa01lRDtJOPTLDgqmJ0LtzTzyAIp+/ZS
+					KhxhpnouPJPxpNqNRKaGAxrOKQ3Z+ETgv7Bq
+					ei70EqrOj0u+E/hyDLN18jcaeCCehyMk8l1Z
+					oSkeb+nHa+3evXkWzQvtgqPtRx9dJRaW6ASC
+					l9HsinNdHOiNOJR7I+nUyH2rQFs= )
+13.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	14.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					wll3dpEKdTNmLwEA+Mri2vtAECU+D8kRxw3N
+					GLzJqI/s0WF+eIuVK/uXwmkw1PCnBCwnN0q3
+					D2DNUY3ErsoLJL+qLV66eZNd4ZXBka9Z82AY
+					cyEKEaEeHrun6Ts4hfgHXFki5tkpz5maYwH+
+					ZzrQmyHXJP9qH+qhrFr4Qbbm1RI= )
+14.154.in-addr.arpa.	86400	IN NS	pri1.dns.psinet.ch.
+			86400	IN NS	pri2.dns.psinet.ch.
+			86400	IN NS	pri3.dns.psinet.ch.
+			10800	NSEC	15.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					wAWzDOdS6Wn4inldeugC/3eKu39ELBgw6njK
+					EDvgICwdRmBCVtAZHSJF74pzwsuRpJKZhck7
+					Yt8vjXnLI6+gkPutRxs87tO9b+9q7nLmI1UP
+					cmCwvDHfrTyS8uEEUgsieNCYeQQPLILnMRdl
+					P7/+eBbNV1ISqY8uy0U9u9z7hFQ= )
+15.154.in-addr.arpa.	86400	IN NS	pri1.dns.psinet.ch.
+			86400	IN NS	pri2.dns.psinet.ch.
+			86400	IN NS	pri3.dns.psinet.ch.
+			10800	NSEC	16.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					yexRb/BfCOKyZyJROpSPVYYfuRvisFyhrru3
+					/4O5lBxTtm1NJg/VUKVHYkyUOxnXt+iCQemQ
+					xzhb36uJz1M9La3Xq3fhT1Chcf9eLQvbCboM
+					waulCayckeLaidNSccs15MY8wPilO0vxjsEW
+					miuIn4GQAacqcb5lw7BvoE3SkNQ= )
+16.154.in-addr.arpa.	86400	IN NS	pri1.dns.psinet.ch.
+			86400	IN NS	pri2.dns.psinet.ch.
+			86400	IN NS	pri3.dns.psinet.ch.
+			10800	NSEC	17.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					BPThE1czG9UA4og0dv9aeLlDNx4/mFgjhExN
+					OL11oM4CSCuuY4ZCjEotW46ZQQ+HP9zEx193
+					Cwrfp1CvzH5eSdn/X7ZDM+tNKlbNK+KKbdIC
+					lidRjoDeViIkaax39i+Iu2YRQbz2QvAOW7DL
+					45BREh2wrXnKTbB+tG77xZOQZ8U= )
+17.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	18.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					H5ol4fklTzsQWrvIU89vCXDyVXHHMe1pUCqq
+					qMuQhcD8eTSGa0JgtSbg2L+wdrf5pKlhOnDV
+					R3ha3x4/z3T1IIKkAkTl4r/UqdxfZGMlUlor
+					yHQvkgVM5JX/vsfJgtvZyYnbdGKob9w+AzgW
+					G/s1GmHR72NrpaTyq3rhEOB5mbg= )
+18.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	19.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					NWRKthAJF2+/GZ7mM8nu1XvQldirFfWt/COj
+					ZInWIFxbgpP+E2qr9RXIsmjY9pZcw9jd98Sj
+					pX+GHc1//yZa+TWktG4DWvvzlOP22A4UJ5ro
+					Xvfdh87+ykEW32+hM8J9J8Xet7S6rgz3PRrM
+					sXDTGe+vNYsM/hpF0wyU7NGNJHk= )
+19.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	2.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					fLa56Vhpw3DBJN9sqhDdGRFwgk8GA54WLseM
+					moL6KoScSXJMfO2oh1vpMU/tvasRESpPkC+p
+					JPiCPSSs0MKYBT+AG6DWpQCND/zOLHznn0zU
+					gFhUbP43D91FuD0fhAml5NTj6RMjhA72p5uw
+					ceIJ0nF2kELm2tTLDnVIRhWiGGY= )
+2.154.in-addr.arpa.	86400	IN NS	southern1.scsnet.com.
+			86400	IN NS	southern2.scsnet.com.
+			10800	NSEC	20.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					ICnxsVq6KuWm26QtKyOONz8ocHXdyVkrIU/B
+					rXiD5aj9jfW5oHcJveM1zNjMeQFlRXumxQG0
+					w1dJ/R75LRZzhJ2WKp7sjkfptNUop8cnXt8j
+					i9Uvm8Cd9KlH9e0YMj8EbZeV5QwV+Pah0CtJ
+					3/8uaRde11S97uL2LlEfo1KUYtE= )
+20.154.in-addr.arpa.	86400	IN NS	neon.bc.tac.net.
+			86400	IN NS	helium.bc.tac.net.
+			10800	NSEC	21.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					E9byZapI2QQVFR/0LS7erz/nueTvswfZwpiA
+					x5trkuIFQ1dM5WkRDnIxPkGEfeM4IfarI4oA
+					VJa6GgKn1H0G7KmxSBD0HjvxLiRbQYB2Lhf8
+					cf32Ch5FuyXwzm5QMRfTVujTGA4MWA8VJXhD
+					K/MFkBEUhaABBU0MYla3JIy+QNA= )
+21.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	22.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					8IG3rR25ZKYHA/UOtxGPAsQteIOqH1pwmAnF
+					zVJ7t2JXmnSj2rNWIzf8oUI7BgRv/1XP2J9K
+					2SCJEZpMwco8j+DXZqyX0zX7VdVyBONN2E3k
+					niSN48v8k8FPG5sypbYxhHC1LFXj+GMLZH8w
+					n4pZ+4om5nc06PwRkDQSnNfC6uY= )
+22.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	23.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					pashX47sBPzMs+yN7xrQsPvV4NRY8Tr/ULrG
+					cF910ZFe1GFfZrbzuIErpHefSHnsQ6J2+15C
+					/1i0CAA+uDGMQaObFpf+9SBoaJZd0SxxXuiU
+					Ub1FGZMVVA20Y8IqHMvN8nky6r8iEiPa5WkI
+					8SPnEMyNJrOs7ukfrWY1UytaErM= )
+23.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	24.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					xr7fnXW0nBGfFQRk5LPgBPvO7CtgrAF37/Dq
+					7+C115l3kTL9x/w+MYSbjmS4yk4x8qmJjMs+
+					dSDSNXJD5ykGtAF13JbFx/FkCVfijDQnQH32
+					6Co9reI66Sn4Wp+9Zen6gkMfSUlW2RiX0T+X
+					LKAUZpFOfKs2hx0S9LPMSfRQztQ= )
+24.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	25.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					rxSLf2tW8LP9bTfnOAC9SjFguLsMW7bLGwvW
+					0C3VhOYMPp02TXx4/juiJFmY8ZfAk7+0gX0H
+					xhkquzz5lN0BGwKPHStGrHxuPuClWcgsNCOj
+					LGkaWOj7Ucaxm/7Tbd/QKxIoElkxc65R/CvH
+					HC3lK7hmWFUU9s8O/Q4tI9yNz7k= )
+25.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	26.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					k5Xz/ShmfIISDGdcxqTYAlnWp02zs/1Yqr4U
+					Aia/JCYhQjV5CyVCsyi5fo58w9lhXR5KWjMU
+					6+PteMPG4DT64qdNxegQwLYg6MMBLDOiJRtC
+					Cj03b5Qi6AwY+K6/umRh4z+UaID/TgyjmxBZ
+					XbUs8aUslk7etjF3iWwbycOj5IY= )
+26.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	27.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					VnUr0WSXFz3s0/xmuz5XWHAsReJ2BAnXIxd2
+					3QR+POzHw9/EHJo1pBBgnewb9LejcPXY4C3I
+					U1ELHclPGILGMICvYTrrFvqCRkwRDe6hkcIz
+					YyoX+Xykr8G/lMBxXjofCvtJ7Zem+Vy6jFIc
+					oilu9BrbJJF+seql9xjo6esdDTE= )
+27.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	28.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					FQsNTf/Zx9nq5Nk8utQMXIRNCU0DJamQKpyS
+					mhtFtYOu1pB6hIyPoxtwskdPwy8LbwAWPQhE
+					NfiA0o38mbj/rsBICaGff1EMfvgHGR6F5/UC
+					xD2UXr4nlXQWO4ZK+mxT36FoqLFJGs/m0O4i
+					ZUr6nUci43bEd3CXKzzn03mosUI= )
+28.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	29.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					wxDZMGgHv7D6RMZ/Wop3ySMVKy/DaUj7WGpO
+					I9ewcLOgVd3p0UwBfNQev7I2z71lGzhpK4J2
+					skq5XolkGOUdw7CQ45Yaj0qLllqq57fZXgAo
+					BkQLiPcKgcMq3WmGnx8e3kajZ18oEOafkNcr
+					3GOIAbHMNdqLpPRT/1BLuK2R1mQ= )
+29.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	3.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					KtPYCqyd6LAv9QwAfERM1YAZ+rcmz1RqYU6a
+					jiAhqWuRX145b/mcw8Ia7XSQltJgv+h3aeId
+					9gnhpk2/dhBtvFPp1T04HNWWBe4o86sULo/n
+					B90NFgphnrIIznD8dsAe++u0t3bhaCm8H95w
+					P2P5hiIPooZ/gY0hw7c0+speVUI= )
+3.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	30.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					OjtXRsjteQOrK2HHysOtQnrd8MPhfuXRJ0nY
+					SdZaZxVykV9XB4JBsLqXsQVaZC+Tyu2trPqx
+					Kx5ZnBQzTLCQRCPu5i6OIxQ0wKWHF1H0ZtCR
+					rg2A59yGcW2JD0n5jiulAIRben5uTCT6HJfl
+					Xm5DtbxsGBvqPNtUGwrFKhqBrOM= )
+30.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	31.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					HMhrHJuG8wicU5tsfwu/bfd+wiBXBnLLG8ti
+					PGTbxfqmgspmuS3z0mWkq2jegytDv3DQ83vB
+					Mel3asYq8u+VXIkb6uAWuwtsMHkEEYG8w9ly
+					veATmvyoe6qkJHG5tBuFVfD/quTNz25eRdHO
+					Or4G1atn24pvte9OgCghoiNVyPY= )
+31.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	32.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					hMUALOeHhQJFIvalZoNMxR3gy8MLMTYnoVPy
+					AdXuJeq1ms6uOzgRe7mwzlYV133pkTcwaaZ7
+					P6T/h+g+Ff8Gk0+c6T40Xdr4XkXvLw9M8PYL
+					vaPO7omObWaQDdFWjmRjLep0/Ma5ZbkX+ej3
+					z/r6D0+wy2jvPsNR0XFtOHryfdY= )
+32.154.in-addr.arpa.	86400	IN NS	ns.ripe.net.
+			86400	IN NS	pri1.dns.uk.psi.net.
+			86400	IN NS	pri2.dns.uk.psi.net.
+			86400	IN NS	pri3.dns.uk.psi.net.
+			10800	NSEC	33.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					y6Na179qtMQngB2K9vGFu9oAEOyBKqczfDQd
+					mD62qT5ViZeNYysC2NtP0M6XcjiW5RFRu3lc
+					AgS3FHROs3+gxCdXk6rrJtZMQUV5YHOHL8Vd
+					ByEo9G4SdptiwKIz5NS9RFJuykfiMHZnw7Ud
+					+8AzBuLeSvhcdOryWlMAZJiI6qk= )
+33.154.in-addr.arpa.	86400	IN NS	ns01.idc.jp.
+			86400	IN NS	ns02.idc.jp.
+			86400	IN NS	ns03.idc.jp.
+			10800	NSEC	34.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					GNX9xlURBenAbU/KQuCptmqoKJ/6LyArspQ7
+					mkru3qU4EjmsnT7dBDJEDfXUPjZJLJDRT2Is
+					pnDah4+RC6BTUB6XdtmQAQ4L/Qk27an05GvH
+					x49QBGm4u6p4FwYshUZBuKZsMB3gz4fyRCZq
+					cfsW5/bDw3RAKNo7/dW3xMilImE= )
+34.154.in-addr.arpa.	86400	IN NS	ns01.idc.jp.
+			86400	IN NS	ns02.idc.jp.
+			86400	IN NS	ns03.idc.jp.
+			10800	NSEC	35.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					2LHX4+r88Y232rDb1a4KTRe/ecji/8Tpy2FL
+					6L/rYt9t6bEttCelwG+6QqZr7Wlmgg7aHOxv
+					4O4dtvTRDHOt+v3pUWAz3fkUCS0VhrQBJTHa
+					tKagurYDU9Wf1KLbBycMtAZvZ+hMYbDm8zqt
+					T1R5ewk4b+1XHAiZFVz88JB8CZo= )
+154.in-addr.arpa.	86400	IN SOA	chia.arin.net. dns-ops.arin.net. (
+					2009071413 ; serial
+					1800       ; refresh (30 minutes)
+					900        ; retry (15 minutes)
+					691200     ; expire (1 week 1 day)
+					10800      ; minimum (3 hours)
+					)
+			86400	RRSIG	SOA 5 3 86400 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					KCz4JdVm2nIBt6ZeJrdCOgmep0AJ3I+8Xd/w
+					E6Ymh4o3gl713DJZuynUi9GLuiDFp40eSoYq
+					RR9FOGCw5qXwfhuNHihzqOuSTORlFEOC9Ffr
+					hWRs6uBGUVWy5PaQYPd1ttmtqaiVkQ+HOTri
+					8CG4wuHKOJ2EaCWDEf3dQCf+j2Q= )
+			86400	NS	ns1.afrinic.net.
+			86400	NS	ns2.lacnic.net.
+			86400	NS	sec1.apnic.net.
+			86400	NS	sec3.apnic.net.
+			86400	NS	ns-sec.ripe.net.
+			86400	NS	tinnie.arin.net.
+			86400	RRSIG	NS 5 3 86400 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					EBK0NuK1b4TvQAcdDZTJjYS2yn/PxDaSxELY
+					m5eixhPZoWAdCebA2xaaeLMurTRKAWnZzGws
+					zT5sl5RPRW3zUKg/lq5M+zJetfCOWpFja7Zp
+					LnLEYvx5WvNN9oks9TblDfWTa5BK4sZiRvKB
+					FuEeS7o9SzreU08EU55ExBVlvsk= )
+			86400	TXT	"Generated at 2009-07-14 16:21:15Z including 12 NS records from APNIC, 17 NS records from RIPE."
+			86400	RRSIG	TXT 5 3 86400 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					Pn6AxGSeYuVAl+zMb+x0oQTFr2BR2T9TH7Zs
+					6UV0V3m+DEj9UGvtcI5naWc+MpPNfwnwxnBA
+					J7Fa8nEP5qldBauZui9Rt4NIkG33WxX7CjtJ
+					3GkYyjycDlHquUzGU8EYdyQDbXZMJMhqyEtb
+					7bLxmRfsFNg3tJQJE4yx5lNL7xI= )
+			10800	NSEC	1.154.in-addr.arpa. NS SOA TXT RRSIG NSEC DNSKEY
+			10800	RRSIG	NSEC 5 3 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					6GU+Q5V3IRAvPoBctgsB+kUPSRF43mwYxXSr
+					hx8aJRE8K0prFZPBGqkiVVZM1LXdhOpYscY1
+					jdZxprRN6EziXed/JBKzgPfij0zNEZJE0e94
+					mV4kLpwbdNa62pUS+MmLAg3wyheiPRQQCAYz
+					rg/vkHCNboGxOa+lUzwVm5qCTDg= )
+			14400	DNSKEY	256 3 5 (
+					BQEAAAAB9PLgyegmXArdGIOjiV9sufXZ2nMz
+					sCslHZS7RFuTFp6aZXQgZrl4nm4KH1YJOt89
+					IOF4A7u9tOdpoeHe+8PDKSmDus5jtM6v6O3I
+					S8pGFwVmkru+jDJS1QO9GyDnLBKlgg2sOrhX
+					MnI9cWzb7FAVDstgMAULEGcCYQB0d3PdW4k=
+					) ; key id = 1535
+			14400	DNSKEY	257 3 5 (
+					BQEAAAABuyA/mSG7xpiFiUASPeyVSzW7xahh
+					ssD8EhDkcdCtPhsFcn/X+EdCjUmzpBzqxhyq
+					SKkr5vbNOIkWcgxBTEaYi7dZs4pXnSr6u2yX
+					SnQO0M75sUj/MRJtX9ibe3uftw7OLJWnMIC5
+					60hBI7tUebrZewwpMITW5ogd2A+6gk4F65qO
+					gfoHs2Xy9zTLG5u6iODOzSJVfd1BemR49k7m
+					ZwEqlkPRGofln8v4AUCVn/LBPSKGTBG792sE
+					mVcuBc+369Te5eyoMPYDERN6A08oHQyp+mlV
+					OANX8+E0sxqZBcj4fD5TLj01dRFW+sEyS3WT
+					h/Nv1P6C/yS3r6GrfGpr3u42kQ==
+					) ; key id = 34101
+			14400	RRSIG	DNSKEY 5 3 14400 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					YrT3ze7VXerNYgvawhcepKThTAhAx2gaS+oN
+					bcyszoX6SX9PvDxeM/9Qe68axO65GhYVtLBG
+					tvGSNXY8kilAOCL229nsTuJbZO2CKYgXZUYt
+					cQmcVCDNsxJzIJUQXfW6xxUXofgJCzYyFeQK
+					QaLWsSEI4O/RR0yTsWW8scYHkf4= )
+			14400	RRSIG	DNSKEY 5 3 14400 20090724152129 (
+					20090714152129 34101 154.in-addr.arpa.
+					om01kLeL4QzpumxNsysVA65NWekInI516Fox
+					5citFn6i8cpsLIR+uUccVjndlfYjllj2MtOE
+					90lgORuUmPXTH91hI0TpmMv0VYIgynkiuL+b
+					HgdCdCPU6vroW3clOPK5aMEyb2p5Rkz4RZrK
+					DHTSuEjhRvg2u5X1UfqGNYqTITBYDzlr5Muo
+					r0beYYG8n8eVDfBNx+cn1ufu7Bx8/kY/e5l/
+					PoEG0b/QXYt0GKUqXkHhsihgSofFptw5I/Lv
+					3EUr4LYEi9pxqzY8ZNnp9yXApN4yDdYffCzJ
+					SCoTgH7CyhrEKWE7LoizubgW83w7tSh9LF9k
+					plbmqVBQOBbYHM4Oyg== )
+35.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	36.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					bw01gsYb0i2+LiOv/qfRKr83tGQE9m+aPSrG
+					QqP9TkMaHlcs1gVGhEwZeRP1nhVOLbY8OvUE
+					O0sX0jmnO7SfwcuDOAoCI//IQUHgBzf8JaCX
+					3hgMguiLJcQQ+PKPegLz+8ln0t+W89m8Ownl
+					u2TdFuimugwRoy51DY3lOF2b/lE= )
+36.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	37.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					jU8MFhauTYoJHCC9G2Z9B9NZwRg/ZyJihRwY
+					AyxKn9g+9VfndPRX+0sSUg8gViIxZwyNJUy2
+					36qVyO7tjz7f/tc1x1gBhZ/yE3lHFbrEym81
+					dn4BqfdmhE/5vfFWXd2MGYWPWgfwh+IWsK3K
+					sxNKh+6LYa6Ea/5lS9JwUSwJKZ8= )
+37.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	38.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					79wRlldRNhqkrsaECgNYJWnUFeqsbm16CO/i
+					F7ELe52LBX6BTrpiQZiQLXoIX+xRpDDcoSrx
+					IpUYMmR7KNSY+/8o63QAnBzOVU1t6HbU6uBa
+					XL2OAbniwjfI1z/YFq8dnzLwNUbIyu6cTeOy
+					rA9dGdUearxwv6HzeOaRZATbHZQ= )
+38.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	39.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					R1/YDd5g5Jkoqk5W1ea8szz0cV8JkIlbRR1B
+					qxemlk49GPreM6mBkl+aVnK4yM4v99bntESM
+					QFntIV0pOyhsWjaBAWKN4AutHTDP7DSleMto
+					OdRbKkwgKosa9vOymiw6WQehU0SX5axtVTIK
+					ON7bG4FRl5ensdWW3psLoUgT11U= )
+39.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	4.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					rjD1fm04VrVhYCxi4Tq1RrkW3xdSSNcTPCIw
+					1B5vsdTTjyjuTnlxfWTun/T/XU+URXjVQo/c
+					tjzF0TAbg97nR2bVigmLmDCtBpsd+Av+3Asg
+					KDpcIGM2nxW6bvzi8ZMEVDtjXICMDxyyUySo
+					xHqhyRAOT5Li7qlDXvC3Vh18xyg= )
+4.154.in-addr.arpa.	86400	IN NS	auth1.dns.cogentco.com.
+			86400	IN NS	auth2.dns.cogentco.com.
+			10800	NSEC	40.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					yx+13BsgAh6aGrg7BTRPVTrseFrhXEFCOTu8
+					2+vwH5X/DI8iNQoRZ4B7D538z2kXeoZITFi5
+					w3MOciriwLO36mPMdKQuMMxn1Z9YI64blqw7
+					bmp5o8YADgBHY+GB/5RXSQwnhFxNM7o3JpFO
+					hN1k8myxLfwUOF/sDRlrkYlYk3Y= )
+40.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	41.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					vMGDYoOCXfWtI4mkjRC2WHSb+6AI7HPrglAn
+					Z4rkjvl45bUA/YTducaeV7YB2NxBZLNgr7Gz
+					7W+u0PBc/dXqHpdz/GLL05EXt+/3Srd8MgVa
+					KREgWJSOrSbpwyj3f7wkuAB6mYLk09q7IjEq
+					0fpZb2M07wkBA+GACNGMvJGS+jM= )
+41.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	42.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					ZhbIIipDMzxYYMNnTGeP2xrv8bi49VCDG6v2
+					aA10NAml8RHgxSqh/AyRmCkKqzN4XBnYrZ3Z
+					udLcgGt4wD7zAMlsBC+8hA46Coaqirclfxde
+					nzXeOZSkomuLKNQGefW4aeA15WrWxA7pz1h2
+					aGbUXE5KMoDyUzhf8SpxMV2kNkg= )
+42.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	43.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					cCAPC3jxO8P72IHmiLP6EIxgomGl4pcBLtdb
+					lbBKU8jrKVOOg1000SEOR3FD0mKH6lASGThK
+					i6+Zg7peJDS8MTp2PZX8V4+Ohd3ieWSoBVYW
+					wVWCf2Cusgqrv88Cz94ww0WpmcCXzBKuX1hj
+					BXr9wdQ/VgKe2pWkF2GmqDqQd/o= )
+43.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	44.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					J5Pepk47GOLWTqRaSC7RbjXSNXzGqoex4vVV
+					YtKKs6UyPhHDXdU2x2S5VZ7RXI5mx/XAO1Sn
+					GLyKzACCBIODxhnT+UN801ihctW438H92NQI
+					kgLOEmHhOFEnYFEU6Q37vsNoJwm6/kQATigy
+					/BEzWPe7ywQPcITZtdA9OHhGn8Y= )
+44.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	45.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					1pyFpW4MW9PXeHrNaqzUUv/9Tgnk2rCXZ9I/
+					mpLDrsl4MuwnK1oq9HKyACfOiVIcCjAZuQLR
+					gyVKXdBXEwl9T+ANQ5bCXajcWmk6M9wRDnHR
+					F/H5o+53yWCLMFWXz6WKlsqUhd0H+4punfXk
+					aONSIJOkOiZpH8EgOaKgroByVCo= )
+45.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	46.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					aQOsq0HQiJOc2vyA1ijemZbiKTh/QTNNr/Qb
+					1/8Du5MsgHxEceIDI0TqEpjoid718QBzDOhp
+					FxYd7K52XPmW+plwG6MfadDE21yThNY/s9eC
+					kYbyO4HVPf4J44slel2zLb5EkdI3v7EBPKAO
+					9byRWVrTIC7nH4w/xLyYo9xMlfw= )
+46.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	47.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					EjKVyc8XWuyzs268iNkZkLiVNQumXmMJNGVR
+					5mpSAEb/sxXncxu3cSMWXA4qUR0WaXh19ebB
+					DJ6u3PIcE3/gPEbz6bI4RWWnK8Z1j6TeGme4
+					cm3ZLTAGn91tQMKspN0NFqnx9dqjG9AEA335
+					RD86JCgQJDEZnwF3jKJND0LzkH8= )
+47.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	48.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					tXIBDS7YFE8iefXnC7AaVuu4f7kxeqc4ew8F
+					g70HjITUpM0ZkMnlBY8GBp9KrumZ+e7zsckN
+					pU+4kzySvRNgV72WGQji3ga4dM2oDLDnVa1J
+					Zp52zdq0YYd+IotM3s1Lh0kjO3+rxZ7xUdlp
+					8PlFO7wFMH+xlnnRta2UId+U5RU= )
+48.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	49.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					tKOTYsUBr8BCWieFqPIprPDDzdmCOejga0Xw
+					ns5rdIFS9UnN4Mi9S/nP9h1Hsi6gLTGOg6J7
+					XZr8L+7jsHzQhbMv6ga0ikJPX8St00TfmTrM
+					a+PusMLqwyhYdK2SgCiLhn1LOovrP37lqlVk
+					NAarv37L2hSA4N6HvIWXvDeEUUU= )
+49.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	5.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					ykaCFKE/bwZ7BJ7RmnYrPdN2BxGkkVE1adY+
+					Nwm5zqEkrFz90zCyG8dfA1pD1bCmT4Qlz+9i
+					Qj0zIZtdzp1MKKsTrJy74rfkV+1LIaCF4tGE
+					a2D0gPkBxu32mOOFW91u0NIZ1N6vEhx252yg
+					+yUXbNZy9ZOZGCY22zkG7+/7AqM= )
+5.154.in-addr.arpa.	86400	IN NS	pri1.dns.ca.telus.com.
+			86400	IN NS	pri2.dns.ca.telus.com.
+			10800	NSEC	50.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					OoD8zbc6t+tGO9C5raMLPQ0Nf7yWszYc21o+
+					voLSZ+YefjuhXanhFc0YHunXEjDdndFMU/5K
+					79u4t0yAAngpS0bBOFeS1HVRKIAuowHHl1CQ
+					TVLNOp2Jd4jfTaiJry+GrERrKr9SvtnT0Sv/
+					zpt7B4DmiNzlkksfM0vIDa1B26Y= )
+50.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	51.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					4NFFPrQMSp8y97Idc1L/zwr2teadcxIcslR8
+					OpCZwzjFvn1k1d1XwgfQ/+6i1aO8LrO1Jjaf
+					13eop+wgGsB4uVqcwQF/XsymH4Nb+N2dyCJ9
+					X2xXFHW/cDOqJGtGi0CmzMJBKqf7v2NDtcBU
+					fGMP1rm6ZlcoBI9HaKUNx8To0Dw= )
+51.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	52.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					0Bmk/vKIrClFDFIHCJiRcJ9eM7AvOsT6J8LF
+					7m/bCNNGvPvsX3iZ4InTb8nsFvYh44nzEkHe
+					qWhIfogX8MAO5WI9vJjYDE6u2F0SuhhG2UQY
+					JCWIYBn8yONxvAaaPgCM9ZYZ19SVVWlKk2ke
+					FVHhDBj/AR1tjvF7Vs+zyr3ntjc= )
+52.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	53.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					OVQHnqyqw8NMJPNz42VggQ09NKqOBo65vHvp
+					gKLg5jB7RrFnqd2m89cDJfax5NIDj2kiDv3+
+					fDAFBdEfurxRQc4jjLw8Lyf4Le4CSm4oBVSD
+					o+BeoM7Qi0MAICvexY8l5OwZTLuNkrVNqyfb
+					VsWyd2kVmmo9lpwAWkSwwQNSOgg= )
+53.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	54.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					Pxa9Bx7jioBWHQvSVLt7U/5KFI/U6keJBD1d
+					2Nb0XuFec994MPfFY8UmUyECj7OkR5AcIEfb
+					xczsRFbg49J0SvbDYrMRRI+JO+JVoLS7P0nc
+					0dt30neqOdRTUw1Ttw6Dac7cOVsAOIDxAvD7
+					zr8oPEqqokdokOVRazg/337aDBQ= )
+54.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	55.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					NJ4Xgcw4NMTSKjFPk1XFRZ0N74asNXKhD+WQ
+					ZVQ/MO84eSNsWxEhQJs8nwVeC24rt5tf1H5F
+					PXX0DE/RvpSSjJLw7ttcH9nS/MxpdctEEl4h
+					CpvbrEGQNIxkbxytIeYNwGAhBZJpf4bDyBvp
+					1vOZ3HvBnOVF3vdM6rBHH+ouymg= )
+55.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	56.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					1kuDRYWI+c9B6a0u5lav9ZzE5X+gPvK6Vpis
+					0VEOAg8lggbx0F2jg3dsjQCKb/wnDIBXV3df
+					/EtYlYHnXslykhcVbK/x3PxIIe+uuzhVPi1O
+					mbuCCyrpb+8eAhAnQcK9yX9vTRGXxxP+nkTH
+					lNdPkzvQlIAT8TGgLa+HnBgNs34= )
+56.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	57.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					c6Aviromss/ptJ4SKSud6GaE8svP65GEL6Ec
+					rUlBjKw4EZOnNpRrCS04waxGV13dWvNQOd7H
+					+cZmloKIFU/jc/XP+88wvtHaEMZxl7vzjmn9
+					eO69G+ohJvLcYiy9MKwHNwc8OO3w2IK28jZa
+					8R/3Eh62pJCLvIdAgNImfapjhOM= )
+57.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	58.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					BLsdSS/jMDfwNke3GYk26qL0deTZAeQO+5n3
+					XX5vwUF7zFpVej6Eey42M2ImW2VfemhKXKz9
+					iaGjuq9CDLADneJkU6Muhx23ttn0X6mW3RqR
+					J+Y426YzYLhjtRWn2+5P4cxVupwLy+zfNPiu
+					p4uHTrC0uf8eNOciK1y3ZodNS8U= )
+58.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	59.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					6wgLy5C5e8+9VyuuKZgVHxJltnZEntzgwwRD
+					PaI30Ixo3cJJ9rbT2uRKISNKZ7NmpMt8RZ5C
+					keiASpWVEcbmZuh/UnUl4zpuJLRdm/oy4cdx
+					EzRrpccWxkIKCE0FRBNz42tXE6IClTCgNTyG
+					GC0cE2KlGxl6kDlWoyNwOjcf9w0= )
+59.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	6.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					o9aC6Zk/kLSF8myhAnaaMvBJmUKhPZkmdjZs
+					SxQ23DP5Yn1ePrA+K3znT30CZPYzJaN8+NGG
+					M4u0nL4vxIikTc8kSerTd/xf+QAIhm+4v7db
+					kvtCPTFUEpeSIOLwflD/azi0BcaY7yorLjce
+					d5pRunz4oIEjbpIeqCqXtmSae4Q= )
+6.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	60.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					UT+RmUe6UM04zXQ5a4Qb9BMJO3r7lWSUEjIU
+					SIWI/1w5CXZgJeQwSitKOEGCs+fNz4GkV2Cd
+					l5AR9fxb9jAeqHrAfN18druyRPcU4sDp6mrt
+					p4qWUwDoZumarpNrkq78W20mbU2J/CB31rsW
+					yP5ErKxb0mIVaDm3TYA18tU6JPw= )
+60.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	61.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					ERdku0N00lOjoldUuvLH+tqqt7qMJp2P7Yaf
+					brmyHKxQ1HiUYQZ1vX+xzSJ18YFAbqodieL5
+					yVN0X8Yeh5PmvlyamFv48hj4O/POcTwTKVNx
+					7Y0ZZcrA9UZgxFN9pRUwYv0z31SEWmew93F+
+					L7NwSp6FFBWdNTSX4qkHHFHx3ak= )
+61.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	62.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					b2CP/cfFemR6DbnzzIdbjzamaEpfjp6VC9iy
+					QA206yv3ZkNRR03opM1FIV/laYAB/a8ZAmYj
+					DqF/a/YXm1a+vbqfpvpWN/oWz36o4PBcsshD
+					lrhBTHaaGE/cgZzPS92Pl/u9fRDhyqmAQe/8
+					/fIV4goANnkBSZiWAt/1hDHxosI= )
+62.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	63.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					mF29xWUVvkAKUAiOpALafKottV6+MMnZC34J
+					BfbwwvGXjmcC4lZ8T4pexKWZp9kNZWEvZkZi
+					WI+A4UVKeXLMcjAKlDtIuL83rjM9WBRdGbKM
+					Pl+tur4L8NNcOV41CCzcszr9IELAwk9UczT8
+					t/YUgB0HJ84i7cUG35Sb6AMNZd0= )
+63.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	64.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					7W22uNcE33a0oxkX3Whg0gVOuxuU4+oZqp4J
+					13Pccgi7HHtQbjwKlPkC/ch4gAgCE1hgWMnH
+					NmuDvNaYpSA4Nqv16tdkW9z9NFVzkKGz+xy/
+					NDUsGBB6nXZDL1704U6QH/Xa9JzlH/iYfwG8
+					SLY2HwVDQAvyh60gTr34/xpjFoA= )
+64.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	7.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					wietEuHcKZnP0GBIdmt4HhX1xP+6bq4RS6y3
+					SWG9wzrEmbr7vmhNpwo6wRg3YH+sw7HsgqCF
+					brG7e6Qap0QI+1PhT2jY8oHJbhwmZz4Eku1+
+					Dah5ACncoxjTnLbg5ygyLQnQ82DDKHegpRxp
+					vTnGE7ihqjUhA/AJRtbXwPLNT6Y= )
+7.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	8.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					qfnde+3/XBrBEMPIZmrLvDvV3q3LC8aM2ma9
+					LqOmVULTg6h/SqDvwQU84ciMY/abW3CVTWBZ
+					2JBlRIe6lGu3Kczm7JdsULKKyJ1ydSw9KRdZ
+					PH6/1FOBKHTUJmxmuEA03OKMYGC4B8fzdkXO
+					JpBdBf8adja018CzEAGbhb9jp6A= )
+8.154.in-addr.arpa.	86400	IN NS	ns.ripe.net.
+			86400	IN NS	pri1.dns.uk.psi.net.
+			86400	IN NS	pri2.dns.uk.psi.net.
+			86400	IN NS	pri3.dns.uk.psi.net.
+			10800	NSEC	9.154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					EfFq2iPwooqfwI1xWMZAZomKu9N/anZMBLDe
+					rWnHxkgVah7POfTGSvlffilcvVrlQX0dndJg
+					7CKk4GnM78BKxysoqKF29yZ+ppksqGjRNv8d
+					ikd0AYpx9ybyJ43/IJ1Ej8Z+uW+WO7pKPZ/u
+					E4THYiRdS8g7seZSrfCculrSMTo= )
+9.154.in-addr.arpa.	86400	IN NS	ns.psi.net.
+			86400	IN NS	ns2.psi.net.
+			10800	NSEC	154.in-addr.arpa. NS RRSIG NSEC
+			10800	RRSIG	NSEC 5 4 10800 20090724152129 (
+					20090714152129 1535 154.in-addr.arpa.
+					gu2xzp69Ul8sjBi9PZ6Hz62MlrnUVrI747TJ
+					GZq60H43VlFGcsQHH0WeBiitX7D7LP7hkOgD
+					iBntRlnr1+PD4NUcDB0iOPESM2u1p5abuVjZ
+					DDhQ2e90bYIL8A/J6/SwAAIxjfHSRmmTzozU
+					JwYc6L4WXk9fmuk8dgQH85n9ITU= )
