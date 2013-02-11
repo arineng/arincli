@@ -18,15 +18,18 @@ require 'yaml'
 require 'rexml/document'
 require 'utils'
 require 'constants'
+require 'zonefile'
 
 module ARINcli
 
   module Registration
 
     class Zones < Array
+
       def get_binding
         return binding
       end
+
       def find_rdns zone_name
         self.each do |rdns|
           return rdns if rdns.name.eql? zone_name
@@ -35,6 +38,31 @@ module ARINcli
         end
         #else
         return nil
+      end
+
+      def add_ns ns_hash
+        rdns = find_rdns( ns_hash[:name] )
+        if rdns == nil
+          rdns = ARINcli::Registration::Rdns.new
+          rdns.name= ns_hash[ :name ]
+          self << rdns
+        end
+        rdns.name_servers << ns_hash[ :host ]
+      end
+
+      def add_ds ds_hash
+        rdns = find_rdns( ds_hash[:name] )
+        if rdns == nil
+          rdns = ARINcli::Registration::Rdns.new
+          rdns.name= ds_hash[ :name ]
+          self << rdns
+        end
+        signer = ARINcli::Registration::Signer.new
+        signer.algorithm=ds_hash[ :algorithm ]
+        signer.digest=ds_hash[ :digest ]
+        signer.digest_type=ds_hash[ :digest_type ]
+        signer.key_tag=ds_hash[ :key_tag ]
+        rdns.signers << signer
       end
     end
 
@@ -66,7 +94,8 @@ module ARINcli
       end
       def algorithm=(val)
         if val.instance_of? String
-          @algorithm = ARINcli::DNSSEC_ALGORITHMS.index( val ) + 1
+          @algorithm = val.to_i if val.match( /\d+/ )
+          @algorithm = ARINcli::DNSSEC_ALGORITHMS.index( val ) + 1 if @algorithm == nil
         else
           @algorithm = val
         end

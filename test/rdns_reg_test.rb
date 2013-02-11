@@ -88,4 +88,31 @@ RDNS_XML
     assert_equal( rdns2, zones.find_rdns( "1.0.76.in-addr.arpa." ) )
   end
 
+  def test_example_com
+    zones = ARINcli::Registration::Zones.new
+    file = File.new( File.join( File.dirname( __FILE__ ) , "example.com.signed" ), "r" )
+    zf = Zonefile.new( file.read )
+    zf.ns.each do |ns|
+      zones.add_ns ns
+    end
+    file = File.new( File.join( File.dirname( __FILE__ ) , "dsset-example.com." ), "r" )
+    zf = Zonefile.new( file.read )
+    zf.ds.each do |ds|
+      zones.add_ds ds
+    end
+    assert_equal( 1, zones.size )
+    assert_equal( "example.com.", zones[0].name )
+    assert_equal( 1, zones[0].name_servers.size )
+    assert_equal( "ns1.example.com.", zones[0].name_servers[ 0 ] )
+    assert_equal( 2, zones[0].signers.size )
+    assert_equal( 31528, zones[0].signers[0].key_tag )
+    assert_equal( 5, zones[0].signers[0].algorithm )
+    assert_equal( 1, zones[0].signers[0].digest_type )
+    assert_equal( "2274EACD70C5CD6862E1C0262E99D48D9FDEC271", zones[0].signers[0].digest )
+    assert_equal( 31528, zones[0].signers[1].key_tag )
+    assert_equal( 5, zones[0].signers[1].algorithm )
+    assert_equal( 2, zones[0].signers[1].digest_type )
+    assert_equal( "BF4CE575DA72A81263B09AD81826D013B91A4BC1925722FD22FF174500C6B351", zones[0].signers[1].digest )
+  end
+
 end
