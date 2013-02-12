@@ -33,7 +33,7 @@ module ARINcli
       def find_rdns zone_name
         self.each do |rdns|
           return rdns if rdns.name.eql? zone_name
-          return rdns if rdns.name.eql? ( zone_name + "." )
+          return rdns if rdns.name.eql?( zone_name + "." )
           return rdns if ( rdns.name + "." ).eql?  zone_name
         end
         #else
