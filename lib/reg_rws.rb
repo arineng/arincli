@@ -154,6 +154,12 @@ module ARINcli
         return uri
       end
 
+      def delegation_service_uri
+        uri = URI.parse @config.config[ "registration" ][ "url" ]
+        uri.path <<= "/rest/delegation/"
+        return uri
+      end
+
       def ticket_summary_uri ticket_no = nil
         uri = URI.parse @config.config[ "registration" ][ "url" ]
         uri.path <<= "/rest/ticket/"
