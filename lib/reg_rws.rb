@@ -82,6 +82,23 @@ module ARINcli
         handle_resp( resp, uri )
       end
 
+      def get_rdns delegation_name
+        uri = delegation_service_uri
+        uri.path << delegation_name
+        uri = add_api_key( uri )
+        begin_log "GET", uri
+        handle_resp( get( uri ), uri )
+      end
+
+      def modify_rdns delegation_name, data
+        uri = delegation_service_uri
+        uri.path << delegation_name
+        uri = add_api_key( uri )
+        begin_log "PUT", uri, data
+        resp = put( uri, data )
+        handle_resp( resp, uri )
+      end
+
       def get_data uri
         uri = add_api_key( uri )
         begin_log "GET", uri

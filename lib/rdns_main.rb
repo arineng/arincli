@@ -118,15 +118,7 @@ module ARINcli
         args = @config.options.argv
 
         if @config.options.edit_rdns
-          if args[ 0 ] =~ ARINcli::DATA_TREE_ADDR_REGEX
-            tree = @config.load_as_yaml( ARINcli::ARININFO_LASTTREE_YAML )
-            handle = tree.find_handle( args[ 0 ] )
-            raise ArgumentError.new( "Unable to find reverse delegation name for " + args[ 0 ] ) unless handle
-            args[ 0 ] = handle
-          end
-          if ! ( args[ 0 ] =~ ARINcli::IP4_ARPA && args[ 0 ] =~ ARINcli::IP6_ARPA )
-            raise ArgumentError.new( "#{args[0]} does not appear to be a valid reverse delegation name." )
-          end
+          do_edit_rdns
         end
 
         @config.logger.end_run
@@ -158,6 +150,84 @@ HELP_SUMMARY
         puts @opts.help
         exit
 
+      end
+
+      def do_edit_rdns
+        if @config.options.argv[ 0 ] =~ ARINcli::DATA_TREE_ADDR_REGEX
+          tree = @config.load_as_yaml( ARINcli::ARININFO_LASTTREE_YAML )
+          handle = tree.find_handle( @config.options.argv[ 0 ] )
+          raise ArgumentError.new( "Unable to find reverse delegation name for " + @config.options.argv[ 0 ] ) unless handle
+          @config.options.argv[ 0 ] = handle
+        end
+        if ! ( @config.options.argv[ 0 ] =~ ARINcli::IP4_ARPA && args[ 0 ] =~ ARINcli::IP6_ARPA )
+          raise ArgumentError.new( "#{@config.options.argv[ 0 ]} does not appear to be a valid reverse delegation name." )
+        end
+        reg = ARINcli::Registration::RegistrationService.new @config, ARINcli::RDNS_TX_PREFIX
+        element = reg.get_poc( @config.options.argv[ 0 ] )
+        if element
+          file_name = @config.make_file_name( ARINcli::EDIT_RDNS_FILE )
+          rdns = ARINcli::Registration.element_to_rdns( element )
+          file = File.new( file_name, "w" )
+          file.puts( ARINcli::Registration.zones_to_template( rdns ) )
+          file.close
+          @config.logger.trace( "#{@config.options.argv[ 0 ]} saved to #{file_name}" )
+          editor = ARINcli::Editor.new(@config)
+          edited = editor.edit( file_name )
+          if ! edited
+            @config.logger.mesg( "No changes were made to the RDNS template. Aborting." )
+            return
+          else
+            file = File.new( file_name, "r")
+            data = file.read
+            file.close
+            zones = ARINcli::Registration::yaml_to_zones( data )
+            zones.each do |rdns|
+              rdns_element = ARINcli::Registration::rdns_to_element( rdns )
+              send_data = ARINcli::pretty_print_xml_to_s( rdns_element )
+              reg.modify_rdns( rdns.name, send_data )
+            end
+          end
+        else
+          raise ArgumentError.new( "Unable to parse answer from server for #{@config.options.argv[ 0 ]}" )
+        end
+      end
+
+      def do_modify_zonefile
+        zones = ARINcli::Registration::Zones.new
+        @config.options.argv.each do |arg|
+          @config.logger.mesg( "Parsing #{arg}.")
+          file = File.new( arg, "r" )
+          zf = Zonefile.new( file.read )
+          zf.ns.each do |ns|
+            zones.add_ns ns
+          end
+          zf.ds.each do |ds|
+            zones.add_ds ds
+          end
+          file.close
+          ds_filename = File.join( File.dirname( arg ) , "dsset-" + File.basename( arg ) )
+          if File.exists?( ds_filename )
+            @config.logger.mesg( "Parsing #{arg}.")
+            file = File.new( ds_filename, "r" )
+            zf = Zonefile.new( file.read )
+            zf.ns.each do |ns|
+              zones.add_ns ns
+            end
+            zf.ds.each do |ds|
+                zones.add_ds ds
+            end
+            file.close
+          end
+          file_name = @config.make_file_name( ARINcli::MODIFY_RDNS_FILE )
+          file = File.new( file_name, "w" )
+          file.puts( ARINcli::Registration.zones_to_template( rdns ) )
+          file.close
+          @config.logger.trace( "Zone information saved to #{file_name}" )
+          if ! @config.options.no_verify
+            editor = ARINcli::Editor.new(@config)
+            edited = editor.edit( file_name )
+          end
+        end
       end
 
     end
