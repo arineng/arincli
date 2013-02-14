@@ -182,6 +182,7 @@ HELP_SUMMARY
             file.close
             zones = ARINcli::Registration::yaml_to_zones( data )
             zones.each do |rdns|
+              @config.logger.mesg( "Modifying reverse DNS delegation #{rdns.name}")
               rdns_element = ARINcli::Registration::rdns_to_element( rdns )
               send_data = ARINcli::pretty_print_xml_to_s( rdns_element )
               reg.modify_rdns( rdns.name, send_data )
@@ -225,7 +226,18 @@ HELP_SUMMARY
           @config.logger.trace( "Zone information saved to #{file_name}" )
           if ! @config.options.no_verify
             editor = ARINcli::Editor.new(@config)
-            edited = editor.edit( file_name )
+            editor.edit( file_name )
+          end
+          file = File.new( file_name, "r")
+          data = file.read
+          file.close
+          zones = ARINcli::Registration::yaml_to_zones( data )
+          reg = ARINcli::Registration::RegistrationService.new @config, ARINcli::RDNS_TX_PREFIX
+          zones.each do |rdns|
+            @config.logger.mesg( "Modifying reverse DNS delegation #{rdns.name}")
+            rdns_element = ARINcli::Registration::rdns_to_element( rdns )
+            send_data = ARINcli::pretty_print_xml_to_s( rdns_element )
+            reg.modify_rdns( rdns.name, send_data )
           end
         end
       end
