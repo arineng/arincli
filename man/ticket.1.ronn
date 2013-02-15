@@ -1,5 +1,5 @@
-ticket(1) -- ARINr ticket Command
-=================================
+ticket(1) -- ARINcli ticket Command
+===================================
 
 ## SYNOPSIS
 

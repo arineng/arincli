@@ -1,5 +1,5 @@
-poc(1) -- ARINr Point of Contact Program
-========================================
+poc(1) -- ARINcli Point of Contact Program
+==========================================
 
 ## SYNOPSIS
 

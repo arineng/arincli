@@ -21,6 +21,8 @@ has not conducted any degree of quality assurance against them.
 
   * poc(1) creates, modifies, and deletes Point of Contacts (POCs).
 
+  * rdns(1) modifies reverse DNS delegations.
+
   * ticket(1) downloads, displays and manages Reg-RWS(7) tickets.
 
   * arinutil(1) is a utility for managing ARINcli scripts.

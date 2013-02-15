@@ -1,5 +1,5 @@
-arinutil(1) -- ARINr Utility Command
-====================================
+arinutil(1) -- ARINcli Utility Command
+======================================
 
 ## SYNOPSIS
 
@@ -7,7 +7,7 @@ arinutil COMMAND
 
 ## DESCRIPTION
 
-This program performs maintenance tasks for the ARINr suite of commands.
+This program performs maintenance tasks for the ARINcli suite of commands.
 
 ## COMMANDS
 

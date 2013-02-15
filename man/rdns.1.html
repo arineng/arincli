@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv='content-type' value='text/html;charset=utf8'>
   <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
-  <title>arinutil(1) - ARINcli Utility Command</title>
+  <title>rdns(1) - ARINcli Reverse DNS</title>
   <style type='text/css' media='all'>
   /* style: man */
   body#manpage {margin:0}
@@ -73,54 +73,93 @@
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
     <a href="#DESCRIPTION">DESCRIPTION</a>
-    <a href="#COMMANDS">COMMANDS</a>
+    <a href="#OPTIONS">OPTIONS</a>
     <a href="#SEE-ALSO">SEE ALSO</a>
   </div>
 
   <ol class='man-decor man-head man head'>
-    <li class='tl'>arinutil(1)</li>
+    <li class='tl'>rdns(1)</li>
     <li class='tc'></li>
-    <li class='tr'>arinutil(1)</li>
+    <li class='tr'>rdns(1)</li>
   </ol>
 
   <h2 id="NAME">NAME</h2>
 <p class="man-name">
-  <code>arinutil</code> - <span class="man-whatis">ARINcli Utility Command</span>
+  <code>rdns</code> - <span class="man-whatis">ARINcli Reverse DNS</span>
 </p>
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p>arinutil COMMAND</p>
+<p>rdns <a href="#OPTIONS" title="OPTIONS" data-bare-link="true">options</a> --edit DELEGATION_NAME<br />
+rdns <a href="#OPTIONS" title="OPTIONS" data-bare-link="true">options</a> --zonefile ZONE_FILE1 [ZONE_FILE2, ....]</p>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
-<p>This program performs maintenance tasks for the ARINcli suite of commands.</p>
+<p>This program uses ARIN's <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> service to modify reverse DNS delegations.</p>
 
-<h2 id="COMMANDS">COMMANDS</h2>
+<p>There are two actions specified with either the --edit or --zonefile options.</p>
+
+<p>The --edit option requires the name of a reverse DNS delegation name (or zone) as an
+argument. It will fetch that delegation from ARIN and allow the user to edit it
+in a YAML file and then modify the delegation in ARIN's database if the YAML
+file has been modified.</p>
+
+<p>When the editor is invoked, if no changes are made (i.e. the editor quits
+without saving), then the action will be aborted.</p>
+
+<p>The --zonefile option takes one or more zone file names as arguments. It will parse
+the zone files and modify the corresponding reverse DNS delegations based on the
+zone files. If the --no-verify is not specified, the delegation information will be
+put into a YAML file and the user will be allowed to edit it before the delegations
+are modified.</p>
+
+<p>Unlike the --edit action, when the --zonefile action invokes the editor, the
+actions will be performed even if no changes are made.</p>
+
+<h2 id="OPTIONS">OPTIONS</h2>
 
 <ul>
-<li><p><code>help</code><br />
-Shows a help screen.</p></li>
-<li><p><code>clean_cache</code><br />
-Forces the cleaning of the <a class="man-ref" href="arininfo.1.html">arininfo<span class="s">(1)</span></a> cache.</p></li>
-<li><p><code>cache_count</code><br />
-Reports the number of files in the <a class="man-ref" href="arininfo.1.html">arininfo<span class="s">(1)</span></a> cache.</p></li>
-<li><p><code>cached_last</code><br />
-Shows details on the last file cached.</p></li>
-<li><p><code>config</code><br />
-Show the interpretted configuration for ARINr commands.</p></li>
+<li><p><code>--edit DELEGATION_NAME</code>
+Retrieves the reverse DNS information for editing, and then submits the
+modifications.</p></li>
+<li><p><code>--zonefile ZONEFILES...</code>
+Parses DNS zone files and modifies the reverse DNS delegation information
+accordingly.</p></li>
+<li><p>`--no-verify
+When used in conjuction with the --zonefile action, it instructs the program
+to bypass the editing/verification phase and to modify the reverse DNS
+information immediately after parsing.</p></li>
+<li><p><code>-A</code>, <code>--apikey</code> API_KEY
+The API_KEY to use. API Keys are associated with ARIN Online accounts and
+are the methods used for authentication in <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a>.</p></li>
+<li><p><code>-U</code>, <code>--url</code> URL<br />
+The base URL of the <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> system.</p></li>
+<li><p><code>--messages</code> MESSAGE_LEVEL<br />
+Specify one of the message levels: <code>none</code> for no messages are to be output,
+<code>some</code> for some messages to be output, or <code>all</code> for all messages to be output.</p></li>
+<li><p><code>--messages-out</code> FILE<br />
+Specifies that messages are to be written to the given file.</p></li>
+<li><p><code>--data</code> DATA_AMOUNT<br />
+Specifies the amount of data to be output. Use of of: <code>terse</code>, <code>normal</code>,
+or <code>extra</code>.</p></li>
+<li><p><code>--data-out</code> FILE<br />
+File where data is to be written if specified.</p></li>
+<li><p><code>-V</code><br />
+Equivalent to <code>--messages all</code> and <code>--data extra</code></p></li>
+<li><p><code>-h</code><br />
+Displays help.</p></li>
 </ul>
 
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
-<p><a class="man-ref" href="arincli.7.html">arincli<span class="s">(7)</span></a>, <a class="man-ref" href="arininfo.1.html">arininfo<span class="s">(1)</span></a></p>
+<p><a class="man-ref" href="arincli.7.html">arincli<span class="s">(7)</span></a>, <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a></p>
 
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
     <li class='tc'>February 2013</li>
-    <li class='tr'>arinutil(1)</li>
+    <li class='tr'>rdns(1)</li>
   </ol>
 
   </div>

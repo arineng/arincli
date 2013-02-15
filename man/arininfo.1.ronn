@@ -1,5 +1,5 @@
-arininfo(1) -- ARINr Whois Command
-==================================
+arininfo(1) -- ARINcli Whois Command
+====================================
 
 ## SYNOPSIS
 

@@ -1,0 +1,76 @@
+rdns(1) -- ARINcli Reverse DNS
+==============================
+
+## SYNOPSIS
+
+rdns [options] --edit DELEGATION_NAME  
+rdns [options] --zonefile ZONE_FILE1 [ZONE_FILE2, ....]  
+
+## DESCRIPTION
+
+This program uses ARIN's Reg-RWS(7) service to modify reverse DNS delegations.
+
+There are two actions specified with either the --edit or --zonefile options.
+
+The --edit option requires the name of a reverse DNS delegation name (or zone) as an
+argument. It will fetch that delegation from ARIN and allow the user to edit it
+in a YAML file and then modify the delegation in ARIN's database if the YAML
+file has been modified.
+
+When the editor is invoked, if no changes are made (i.e. the editor quits
+without saving), then the action will be aborted.
+
+The --zonefile option takes one or more zone file names as arguments. It will parse
+the zone files and modify the corresponding reverse DNS delegations based on the
+zone files. If the --no-verify is not specified, the delegation information will be
+put into a YAML file and the user will be allowed to edit it before the delegations
+are modified.
+
+Unlike the --edit action, when the --zonefile action invokes the editor, the
+actions will be performed even if no changes are made.
+
+## OPTIONS
+
+  * `--edit DELEGATION_NAME`
+    Retrieves the reverse DNS information for editing, and then submits the
+    modifications.
+
+  * `--zonefile ZONEFILES...`
+    Parses DNS zone files and modifies the reverse DNS delegation information
+    accordingly.
+
+  * `--no-verify
+    When used in conjuction with the --zonefile action, it instructs the program
+    to bypass the editing/verification phase and to modify the reverse DNS
+    information immediately after parsing.
+
+  * `-A`, `--apikey` API_KEY
+    The API_KEY to use. API Keys are associated with ARIN Online accounts and
+    are the methods used for authentication in Reg-RWS(7).
+
+  * `-U`, `--url` URL  
+    The base URL of the Reg-RWS(7) system.
+
+  * `--messages` MESSAGE_LEVEL  
+    Specify one of the message levels: `none` for no messages are to be output,
+    `some` for some messages to be output, or `all` for all messages to be output.
+
+  * `--messages-out` FILE  
+    Specifies that messages are to be written to the given file.
+
+  * `--data` DATA_AMOUNT  
+    Specifies the amount of data to be output. Use of of: `terse`, `normal`,
+    or `extra`.
+ 
+  * `--data-out` FILE  
+    File where data is to be written if specified.
+
+  * `-V`  
+    Equivalent to `--messages all` and `--data extra`
+
+  * `-h`  
+    Displays help.
+
+## SEE ALSO
+
+arincli(7), Reg-RWS(7)
