@@ -41,20 +41,22 @@ module ARINcli
       end
 
       def add_ns ns_hash
-        rdns = find_rdns( ns_hash[:name] )
+        name = ns_hash[ :name ].to_s.downcase
+        rdns = find_rdns( name )
         if rdns == nil
           rdns = ARINcli::Registration::Rdns.new
-          rdns.name= ns_hash[ :name ]
+          rdns.name= name
           self << rdns
         end
         rdns.name_servers << ns_hash[ :host ]
       end
 
       def add_ds ds_hash
-        rdns = find_rdns( ds_hash[:name] )
+        name = ds_hash[ :name ].to_s.downcase
+        rdns = find_rdns( name )
         if rdns == nil
           rdns = ARINcli::Registration::Rdns.new
-          rdns.name= ds_hash[ :name ]
+          rdns.name= name
           self << rdns
         end
         signer = ARINcli::Registration::Signer.new
@@ -148,7 +150,7 @@ module ARINcli
           ds.digest_type=signer[ "digest type" ]
           ds.key_tag=signer[ "key tag" ]
           rdns.signers << ds
-        end
+        end if zone[ "delegation signers" ]
         zones << rdns
       end
       return zones

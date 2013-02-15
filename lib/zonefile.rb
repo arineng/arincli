@@ -178,6 +178,7 @@ class Zonefile
  
  def add_record(type, data= {})
     if @@preserve_name then
+      @lastname = data[:name] = @origin if data[:name].to_s == "@"
       @lastname = data[:name] if data[:name].to_s != ''
       data[:name] = @lastname if data[:name].to_s == ''
     end
@@ -335,7 +336,8 @@ class Zonefile
                      (#{rr_ttl}) \s*
                /ix
             ttl = @soa[:ttl] || $2 || ''
-            @soa[:origin] = $1
+            name = $1 == "@" ? @origin : $1
+            @soa[:origin] = name
             @soa[:ttl] = ttl
             @soa[:primary] = $4
             @soa[:email] = $5
@@ -344,7 +346,7 @@ class Zonefile
             @soa[:retry] = $8
             @soa[:expire] = $9
             @soa[:minimumTTL] = $10
-            @lastname = $1
+            @lastname = name
     elsif line=~ /^(#{valid_name})? \s*
                 #{ttl_cls}
                 PTR \s+

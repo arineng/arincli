@@ -86,7 +86,7 @@ module ARINcli
 
         begin
           @opts.parse!( args )
-          if ! @config.options.modify_zonefile && ! @config.options.edit_rdns
+          if ! @config.options.modify_zonefile && ! @config.options.edit_rdns && !@config.options.help
             raise OptionParser::InvalidArgument, "You must specify either --zonefile or --edit."
           end
           if ! args[ 0 ] && @config.options.edit_rdns
@@ -114,11 +114,16 @@ module ARINcli
         @config.logger.mesg( ARINcli::VERSION )
         @config.setup_workspace
 
-        # because we use this constantly in this code section
-        args = @config.options.argv
-
-        if @config.options.edit_rdns
-          do_edit_rdns
+        exit_code = 0
+        begin
+          if @config.options.edit_rdns
+            do_edit_rdns
+          elsif @config.options.modify_zonefile
+            do_modify_zonefile
+          end
+        rescue ArgumentError => e
+          @config.logger.mesg( e.message )
+          exit_code = 1
         end
 
         @config.logger.end_run
@@ -159,11 +164,11 @@ HELP_SUMMARY
           raise ArgumentError.new( "Unable to find reverse delegation name for " + @config.options.argv[ 0 ] ) unless handle
           @config.options.argv[ 0 ] = handle
         end
-        if ! ( @config.options.argv[ 0 ] =~ ARINcli::IP4_ARPA && args[ 0 ] =~ ARINcli::IP6_ARPA )
+        if ! ( @config.options.argv[ 0 ] =~ ARINcli::IP4_ARPA || @config.options.argv[ 0 ] =~ ARINcli::IP6_ARPA )
           raise ArgumentError.new( "#{@config.options.argv[ 0 ]} does not appear to be a valid reverse delegation name." )
         end
         reg = ARINcli::Registration::RegistrationService.new @config, ARINcli::RDNS_TX_PREFIX
-        element = reg.get_poc( @config.options.argv[ 0 ] )
+        element = reg.get_rdns( @config.options.argv[ 0 ] )
         if element
           file_name = @config.make_file_name( ARINcli::EDIT_RDNS_FILE )
           rdns = ARINcli::Registration.element_to_rdns( element )
@@ -221,7 +226,7 @@ HELP_SUMMARY
           end
           file_name = @config.make_file_name( ARINcli::MODIFY_RDNS_FILE )
           file = File.new( file_name, "w" )
-          file.puts( ARINcli::Registration.zones_to_template( rdns ) )
+          file.puts( ARINcli::Registration.zones_to_template( zones ) )
           file.close
           @config.logger.trace( "Zone information saved to #{file_name}" )
           if ! @config.options.no_verify
