@@ -52,6 +52,7 @@ module ARINcli
   EDIT_RDNS_FILE         = "edit_rdns"
   MODIFY_RDNS_FILE       = "modify_rdns"
   RDNS_TX_PREFIX         = "rdns"
+  REPORTS_TX_PREFIX      = "reports"
 
   #Template constants
   SUBJECT_HEADER         = "Subject:"

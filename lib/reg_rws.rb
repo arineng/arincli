@@ -23,6 +23,15 @@ module ARINcli
 
   module Registration
 
+    class ReportType < ARINcli::Enum
+
+      ReportType.add_item :WHOWAS_NET,    "whoWas/net"
+      ReportType.add_item :WHOWAS_ASN,    "whoWas/asn"
+      ReportType.add_item :ASSOCIATIONS,  "associations"
+      ReportType.add_item :REASSIGNMENT,  "reassignment"
+
+    end
+
     class RegistrationService < ARINcli::RestService
 
       def initialize config, log_suffix=nil
@@ -97,6 +106,14 @@ module ARINcli
         begin_log "PUT", uri, data
         resp = put( uri, data )
         handle_resp( resp, uri )
+      end
+
+      def get_report reportType, reportKey=nil
+        uri = report_service_uri reportType
+        uri.path << "/" + reportKey if reportKey != nil
+        uri = add_api_key( uri )
+        begin_log "GET", uri
+        handle_resp( get( uri ), uri )
       end
 
       def get_data uri
@@ -174,6 +191,12 @@ module ARINcli
       def delegation_service_uri
         uri = URI.parse @config.config[ "registration" ][ "url" ]
         uri.path <<= "/rest/delegation/"
+        return uri
+      end
+
+      def report_service_uri reportType
+        uri = URI.parse @config.config[ "registration" ][ "url" ]
+        uri.path <<= "/rest/report/" + reportType
         return uri
       end
 
