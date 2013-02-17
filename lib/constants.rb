@@ -1,4 +1,4 @@
-# Copyright (C) 2011,2012 American Registry for Internet Numbers
+# Copyright (C) 2011,2012,2013 American Registry for Internet Numbers
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -18,7 +18,7 @@
 
 module ARINcli
 
-  VERSION = "ARINcli v.1000.0.0-SNAPSHOT"
+  VERSION = "ARINcli v.0.6.0"
   COPYRIGHT = "Copyright (c) 2011,2012,2013 American Registry for Internet Numbers (ARIN)"
 
   # regular expressions
