@@ -1,1 +1,1 @@
-git archive HEAD --format=zip --prefix="arinr/" > man/"arinr.zip";
+git archive HEAD --format=zip --prefix="arinr/" > man/"arincli.zip";
