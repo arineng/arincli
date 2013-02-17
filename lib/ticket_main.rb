@@ -442,7 +442,7 @@ HELP_SUMMARY
           if auto_wrap && line.length > auto_wrap
             while line.length > auto_wrap
               cutoff = line.rindex(" ", auto_wrap)
-              cutoff = auto_wrap if cutoff == 0
+              cutoff = auto_wrap if cutoff == nil || cutoff == 0
               @config.logger.raw ARINcli::DataAmount::TERSE_DATA, line[0..cutoff]
               line = line[(cutoff+1)..-1]
             end

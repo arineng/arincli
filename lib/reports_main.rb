@@ -52,13 +52,13 @@ module ARINcli
           opts.separator ""
           opts.separator "Report Options:"
 
-          opts.on( "--type",
+          opts.on( "--type REPORT_TYPE",
                    "Specifies the type of report to request.",
                    "  whowas_net - Who Was report on an IP network by IP address",
                    "  whowas_asn - Who Was report on an Autonomous System number",
                    "  associations - ARIN user associations report",
                    "  reassignment - Network reassignments by NET handle") do |report_type|
-            uptype = type.upcase
+            uptype = report_type.upcase
             raise OptionParser::InvalidArgument, type.to_s unless ReportType.has_value?( uptype )
             @config.options.report_type = uptype
           end
