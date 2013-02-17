@@ -1,0 +1,69 @@
+arinreports(1) -- ARINcli Reports Request
+=========================================
+
+## SYNOPSIS
+
+arinreports [options] --type whowas_net IP_ADDRESS  
+arinreports [options] --type whowas_asn AS_NUMBER  
+arinreports [options] --type associations  
+arinreports [options] --type reassignments NET_HANDLE    
+
+## DESCRIPTION
+
+This program uses ARIN's Reg-RWS(7) service to request reports from ARIN.
+
+Reports can be retreived using the ticket(1) command.
+
+There are four basic types of reports:
+
+  * Who Was Network Report
+    Gets a history of all network registrations based on an IP address.
+
+  * Who Was Autonomous System Number Report
+    Gets a history of all autonomous system number registrations based on
+    an autonomous system number.
+
+  * Associations Report
+    Gets all the POC, Organization, IP network, and autonomous sytem number
+    information associated with the account requesting the report.
+
+  * Reassignments Report
+    Gets a list of the reassignments and realloctions for a network that
+    can re-allocate IP addresses.
+
+## OPTIONS
+
+  * `--type REPORT_TYPE`
+    This flag is mandatory. The valid report types are whowas_net, whowas_asn,
+    associations, and reassignments. See above.
+
+  * `-A`, `--apikey` API_KEY
+    The API_KEY to use. API Keys are associated with ARIN Online accounts and
+    are the methods used for authentication in Reg-RWS(7).
+
+  * `-U`, `--url` URL  
+    The base URL of the Reg-RWS(7) system.
+
+  * `--messages` MESSAGE_LEVEL  
+    Specify one of the message levels: `none` for no messages are to be output,
+    `some` for some messages to be output, or `all` for all messages to be output.
+
+  * `--messages-out` FILE  
+    Specifies that messages are to be written to the given file.
+
+  * `--data` DATA_AMOUNT  
+    Specifies the amount of data to be output. Use of of: `terse`, `normal`,
+    or `extra`.
+ 
+  * `--data-out` FILE  
+    File where data is to be written if specified.
+
+  * `-V`  
+    Equivalent to `--messages all` and `--data extra`
+
+  * `-h`  
+    Displays help.
+
+## SEE ALSO
+
+ticket(1), arincli(7), Reg-RWS(7)

@@ -2,6 +2,7 @@
 arincli(7) arincli.7.ronn
 arinutil(1) arinutil.1.ronn
 arininfo(1) arininfo.1.ronn
+arinreports(1) arinreports.1.ronn
 poc(1) poc.1.ronn
 ticket(1) ticket.1.ronn
 rdns(1) rdns.1.ronn

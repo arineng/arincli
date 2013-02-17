@@ -92,11 +92,11 @@
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
 <p>ARINcli is a set of command line scripts, written in Ruby, that utilize both
-the <a class="man-ref" href="https://www.arin.net/resources/whoisrws/index.html">Whois-RWS<span class="s">(7)</span></a> service and the
-<a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> service. <a class="man-ref" href="https://www.arin.net/resources/whoisrws/index.html">Whois-RWS<span class="s">(7)</span></a> is ARIN's Whois/NICNAME RESTful web service for
+the <a href="https://www.arin.net/resources/whoisrws/index.html" class="man-ref">Whois-RWS<span class="s">(7)</span></a> service and the
+<a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> service. <a href="https://www.arin.net/resources/whoisrws/index.html" class="man-ref">Whois-RWS<span class="s">(7)</span></a> is ARIN's Whois/NICNAME RESTful web service for
 exposing IP network and ASN registration data to the public (Note this service
 pre-dates the IETF WEIRDS/RDAP service and is not yet compatible with that
-specification). <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> is ARIN's
+specification). <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> is ARIN's
 registration RESTful web service available to customers of ARIN.</p>
 
 <p>At the time of this writing, the ARINcli scripts should be considered <strong>beta</strong>
@@ -106,28 +106,29 @@ has not conducted any degree of quality assurance against them.</p>
 <h2 id="COMMANDS">COMMANDS</h2>
 
 <ul>
-<li><p><a class="man-ref" href="arininfo.1.html">arininfo<span class="s">(1)</span></a> queries ARIN's <a class="man-ref" href="https://www.arin.net/resources/whoisrws/index.html">Whois-RWS<span class="s">(7)</span></a> service.</p></li>
-<li><p><a class="man-ref" href="poc.1.html">poc<span class="s">(1)</span></a> creates, modifies, and deletes Point of Contacts (POCs).</p></li>
-<li><p><a class="man-ref" href="rdns.1.html">rdns<span class="s">(1)</span></a> modifies reverse DNS delegations.</p></li>
-<li><p><a class="man-ref" href="ticket.1.html">ticket<span class="s">(1)</span></a> downloads, displays and manages <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a> tickets.</p></li>
-<li><p><a class="man-ref" href="arinutil.1.html">arinutil<span class="s">(1)</span></a> is a utility for managing ARINcli scripts.</p></li>
+<li><p><a href="arininfo.1.html" class="man-ref">arininfo<span class="s">(1)</span></a> queries ARIN's <a href="https://www.arin.net/resources/whoisrws/index.html" class="man-ref">Whois-RWS<span class="s">(7)</span></a> service.</p></li>
+<li><p><a href="poc.1.html" class="man-ref">poc<span class="s">(1)</span></a> creates, modifies, and deletes Point of Contacts (POCs).</p></li>
+<li><p><a href="rdns.1.html" class="man-ref">rdns<span class="s">(1)</span></a> modifies reverse DNS delegations.</p></li>
+<li><p><a href="ticket.1.html" class="man-ref">ticket<span class="s">(1)</span></a> downloads, displays and manages <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a> tickets.</p></li>
+<li><p><a href="arinreports.1.html" class="man-ref">arinreports<span class="s">(1)</span></a> requests reports from ARIN using <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a>.</p></li>
+<li><p><a href="arinutil.1.html" class="man-ref">arinutil<span class="s">(1)</span></a> is a utility for managing ARINcli scripts.</p></li>
 </ul>
 
 
 <h2 id="CONFIGURATION">CONFIGURATION</h2>
 
 <p>The ARINcli commands all use an application data directory to store configuration
-files, caches, etc. The <a class="man-ref" href="arinutil.1.html">arinutil<span class="s">(1)</span></a> command can be used to manipulate the caches
+files, caches, etc. The <a href="arinutil.1.html" class="man-ref">arinutil<span class="s">(1)</span></a> command can be used to manipulate the caches
 and configuration. This application data directory is <code>$HOME/.ARINcli</code> for Unix
 and Unix-like systems, and <code>%APPDATA%\ARINcli</code> for Windows. This directory is
 created automatically the first time an ARINcli command is run.</p>
 
 <p>Configuration is kept in the <code>config.yaml</code> file in the application data directory.
 This is a YAML file and so YAML syntax is required. YAML is designed to be human
-friendly yet machine parsable. For users of <a class="man-ref" href="https://www.arin.net/resources/restful-interfaces.html">Reg-RWS<span class="s">(7)</span></a>, the API Key given will
+friendly yet machine parsable. For users of <a href="https://www.arin.net/resources/restful-interfaces.html" class="man-ref">Reg-RWS<span class="s">(7)</span></a>, the API Key given will
 likely need be changed to the users real API key. An API Key can be obtained
 via <a href="http://www.arin.net/public">ARIN Online</a>. An API Key is not needed for
-<a class="man-ref" href="https://www.arin.net/resources/whoisrws/index.html">Whois-RWS<span class="s">(7)</span></a>.</p>
+<a href="https://www.arin.net/resources/whoisrws/index.html" class="man-ref">Whois-RWS<span class="s">(7)</span></a>.</p>
 
 <h2 id="INSTALLATION">INSTALLATION</h2>
 
