@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ARININFO" "1" "February 2013" "" ""
+.TH "ARININFO" "1" "August 2016" "" ""
 .
 .SH "NAME"
 \fBarininfo\fR \- ARINcli Whois Command
@@ -45,17 +45,7 @@ The QUERY_VALUE can also be a result value from a previous query if it ends with
 1= NET\-192\-136\-136\-0\-1 ( 192\.136\.136\.0 \- 192\.136\.136\.255 )
 .
 .br
-`\-\-\- 1\. Reverse DNS Delegations
-.
-.IP "" 4
-.
-.nf
-
-    `\-\-\- 1= 136\.136\.192\.in\-addr\.arpa\.
-.
-.fi
-.
-.IP "" 0
+\fB\-\-\- 1\. Reverse DNS Delegations\fR\-\-\- 1= 136\.136\.192\.in\-addr\.arpa\.
 .
 .P
 A QUERY_VALUE of "1=1=1=" would be a shortcut for requerying for 136\.136\.192\.in\-addr\.arpa\. The character between the numbers can also be a period character ("\.")\. So "1\.1\.1=" would be equivalent\.

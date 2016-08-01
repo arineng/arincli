@@ -1,14 +1,13 @@
-arincli(7) -- ARIN Command Line Interface
-=========================================
+# arincli -- ARIN Command Line Interface
 
 ## DESCRIPTION
 
 ARINcli is a set of command line scripts, written in Ruby, that utilize both
-the Whois-RWS(7) service and the 
-Reg-RWS(7) service. Whois-RWS(7) is ARIN's Whois/NICNAME RESTful web service for
+the Whois-RWS service and the 
+Reg-RWS service. Whois-RWS is ARIN's Whois/NICNAME RESTful web service for
 exposing IP network and ASN registration data to the public (Note this service
 pre-dates the IETF WEIRDS/RDAP service and is not yet compatible with that
-specification). Reg-RWS(7) is ARIN's
+specification). Reg-RWS is ARIN's
 registration RESTful web service available to customers of ARIN.
 
 At the time of this writing, the ARINcli scripts should be considered **beta**
@@ -17,17 +16,17 @@ has not conducted any degree of quality assurance against them.
 
 ## COMMANDS
 
-  * arininfo(1) queries ARIN's Whois-RWS(7) service.
+  * `arininfo` queries ARIN's Whois-RWS service.
 
-  * poc(1) creates, modifies, and deletes Point of Contacts (POCs).
+  * `poc` creates, modifies, and deletes Point of Contacts (POCs).
 
-  * rdns(1) modifies reverse DNS delegations.
+  * `rdns` modifies reverse DNS delegations.
 
-  * ticket(1) downloads, displays and manages Reg-RWS(7) tickets.
+  * `ticket` downloads, displays and manages Reg-RWS tickets.
 
-  * arinreports(1) requests reports from ARIN using Reg-RWS(7).
+  * `arinreports` requests reports from ARIN using Reg-RWS.
 
-  * arinutil(1) is a utility for managing ARINcli scripts.
+  * `arinutil` is a utility for managing ARINcli scripts.
 
 ## CONFIGURATION
 
@@ -39,10 +38,10 @@ created automatically the first time an ARINcli command is run.
 
 Configuration is kept in the `config.yaml` file in the application data directory.
 This is a YAML file and so YAML syntax is required. YAML is designed to be human
-friendly yet machine parsable. For users of Reg-RWS(7), the API Key given will
+friendly yet machine parsable. For users of Reg-RWS, the API Key given will
 likely need be changed to the users real API key. An API Key can be obtained
 via [ARIN Online](http://www.arin.net/public). An API Key is not needed for
-Whois-RWS(7).
+Whois-RWS.
 
 ## INSTALLATION
 
